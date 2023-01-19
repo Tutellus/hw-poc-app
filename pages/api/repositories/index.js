@@ -33,6 +33,7 @@ async function update ({
   }
   if (!data[repository][id]) {
     data[repository][id] = {
+      id,
       status: 'PENDING'
     };
   }
