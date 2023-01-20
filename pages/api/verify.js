@@ -1,8 +1,10 @@
 import { config } from './config'
 import { abi as DIDFactoryABI } from './abi/DIDFactoryMock.json'
+import { abi as GnosisSafeABI } from './abi/GnosisSafe.json'
 import { abi as GnosisProxyFactoryABI } from './abi/GnosisSafeProxyFactory.json'
-import { ethers } from 'ethers'
-import { getDIDs, getUsers, updateDID, updateUser } from './repositories'
+import { Contract, ethers, utils } from 'ethers'
+import { get as getDIDs, markAsAssigned, update as updateDID } from './repositories/dids'
+import { get as getUsers, markAsVerified } from './repositories/users'
 
 export default async function handler(req, res) {
   const { email, verifyCode } = req.body;
@@ -17,15 +19,10 @@ export default async function handler(req, res) {
     return;
   }
   const dids = await getDIDs();
-  let did = dids.find(did => did.userId === user.id);
+  let did = dids.find(did => did.userId === user._id);
   if (!did) {
     did = await assignDID(email);
-    await updateUser({
-      id: user.id,
-      fields: {
-        status: 'VERIFIED',
-      },
-    })
+    await markAsVerified(user._id);
   }
 
   res.status(200).json({ did })
@@ -43,19 +40,25 @@ async function assignDID(email) {
   }
   const dids = await getDIDs();
   let pendingDID = dids.find(did => !did.userId && did.status === 'PENDING');
-  console.log('pendingDID', pendingDID)
   if (!pendingDID) {
     pendingDID = await createDID();
   }
-  console.log('pendingDID', pendingDID)
   createDID();
-  return await updateDID({
-    id: pendingDID.id,
+  await updateDID({
+    id: pendingDID._id,
     fields: {
-      status: 'ASSIGNED',
-      userId: user.id,
+      userId: user._id,
     },
   });
+  await markAsAssigned(pendingDID._id);
+}
+
+
+function findLogs (receipt, contract, eventName) {
+  const contractLogs = receipt.logs.filter(x => x.address.toLowerCase() === contract.address.toLowerCase())
+  const parsedLogs = contractLogs.map(x => contract.interface.parseLog(x))
+  const eventLogs = parsedLogs.filter(x => x.name === eventName)
+  return eventLogs
 }
 
 async function createDID() {
@@ -69,9 +72,12 @@ async function createDID() {
 
   const nonce = new Date().getTime()
 
+  const ownerAddresses = keysToAddresses(ownerKeys)
+  const masterAddresses = keysToAddresses(masterKeys)
+
   const tx = await didFactoryContract.createDID(
-    keysToAddresses(ownerKeys),
-    keysToAddresses(masterKeys),
+    ownerAddresses,
+    masterAddresses,
     gnosisProxyFactory,
     gnosisSingleton,
     gnosisFallbackHandler,
@@ -80,14 +86,28 @@ async function createDID() {
 
   const receipt = await tx.wait()
 
-  const logsProxyFactory = receipt.logs.filter(x => x.address.toLowerCase() === gnosisProxyFactory.toLowerCase())
-  const parsedLogs = logsProxyFactory.map(x => gnosisProxyFactoryContract.interface.parseLog(x))
-  const proxyAddress = parsedLogs.find(x => x.name === 'ProxyCreation').args.proxy
+  const gnosisProxyCreationLogs = findLogs(receipt, gnosisProxyFactoryContract, 'ProxyCreation', )
+  const didCreationLog = findLogs(receipt, didFactoryContract, 'NewDID')[0]
+
+  const [ownersOfFirst, ownersOfSecond] = await Promise.all([
+    new Contract(gnosisProxyCreationLogs[0].args.proxy, GnosisSafeABI, serverWallet).getOwners(),
+    new Contract(gnosisProxyCreationLogs[1].args.proxy, GnosisSafeABI, serverWallet).getOwners(),
+  ]);
+
+  const ownerMS = ownersOfFirst.every(address => ownerAddresses.includes(utils.getAddress(address)))
+    ? gnosisProxyCreationLogs[0].args.proxy
+    : gnosisProxyCreationLogs[1].args.proxy
+  const masterMS = ownersOfSecond.every(address => masterAddresses.includes(utils.getAddress(address)))
+    ? gnosisProxyCreationLogs[1].args.proxy
+    : gnosisProxyCreationLogs[0].args.proxy
 
   const did = await updateDID({
     fields: {
-      proxyAddress,
+      ownerMS,
+      masterMS,
+      address: didCreationLog.args.did,
       nonce,
+      creationTx: tx.hash,
     },
   });
   return did;

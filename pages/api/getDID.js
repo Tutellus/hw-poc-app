@@ -1,4 +1,5 @@
-import { getDIDs, getUsers } from './repositories'
+import { get as getDIDs } from './repositories/dids'
+import { get as getUsers } from './repositories/users'
 
 export default async function handler(req, res) {
   const { email } = req.body;
@@ -9,6 +10,6 @@ export default async function handler(req, res) {
     return;
   }
   const dids = await getDIDs();
-  let did = dids.find(did => did.userId === user.id);
+  let did = dids.find(did => did.userId === user._id);
   res.status(200).json({ did })
 }

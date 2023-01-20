@@ -9,6 +9,8 @@ export default function Home() {
   const [session, setSession] = React.useState({})
   const [code, setCode] = React.useState('')
   const [did, setDID] = React.useState({})
+  const [txs, setTxs] = React.useState({})
+
   const logged = !!session?.status;
   const showLogin = !loading && !logged;
   const showVerification = !loading && logged && session.status === 'PENDING';
@@ -55,10 +57,42 @@ export default function Home() {
     login();
   }
 
-  const sendTx = async () => {
-    console.log('Sending tx')
+  const requestTx = async () => {
+    setLoading(true)
+    const response = await fetch('/api/tx/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ did }),
+    })
+    await response.json()
+
+    const response2 = await fetch('/api/tx/getTxs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(),
+    })
+    const data2 = await response2.json()
+    setTxs(data2.txs);
+    setLoading(false);
   }
 
+  const confirmTx = async ({ id }) => {
+    setLoading(true)
+    const response = await fetch('/api/tx/confirm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    })
+    const data = await response.json()
+    setLoading(false);
+  }
+  
   const logout = () => {
     setSession({})
     setDID({})
@@ -66,7 +100,6 @@ export default function Home() {
     setCode('')
   }
 
-  console.log('showDID', loading, logged, session.status, did)
   return (
     <>
       <Head>
@@ -101,10 +134,28 @@ export default function Home() {
           <button onClick={logout} className={styles.button}>Logout</button>
         </div>}
         {showDID && <div className={styles.center}>
-          <div>
-            {JSON.stringify(did, null, 2)}
+          <div style={{
+            fontSize: 32,
+            width: '100%',
+          }}>
+            Your account: {did.address}
           </div>
-          <button onClick={sendTx} className={styles.button}>Send Tx</button>
+          {txs?.length > 0 && <div>
+            {txs.map((tx) => (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }} key={tx._id}>
+                <div>{JSON.stringify(tx._id, null, 2)}</div>
+                <button onClick={() => confirmTx({ id: tx._id })} className={styles.button}>2FA Confirm</button>
+                <button onClick={() => executeTx({ id: tx._id })} className={styles.button}>Execute</button>
+              </div>
+            ))
+            }
+          </div>}
+          <button onClick={requestTx} className={styles.button}>Request</button>
           <button onClick={logout} className={styles.button}>Logout</button>
         </div>}
       </main>

@@ -1,4 +1,4 @@
-import { getUsers, updateUser } from './repositories'
+import { get as getUsers, update as updateUser } from './repositories/users'
 
 export default async function handler(req, res) {
   const { email } = req.body;
