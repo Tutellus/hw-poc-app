@@ -23,7 +23,18 @@ async function get() {
   return search(COLLECTION, []);
 }
 
+async function markAsExecuted (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'EXECUTED',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+}
+
 export {
   update,
   get,
+  markAsExecuted,
 };

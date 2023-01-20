@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 export default function Home() {
 
@@ -15,6 +15,12 @@ export default function Home() {
   const showLogin = !loading && !logged;
   const showVerification = !loading && logged && session.status === 'PENDING';
   const showDID = !loading && logged && session.status === 'VERIFIED' && did?.status === 'ASSIGNED';
+
+  // useEffect(() => {
+  //   if (showDID) {
+  //     loadTxs();
+  //   }
+  // }, [showDID]);
 
   const login = async () => {
     setLoading(true)
@@ -57,6 +63,20 @@ export default function Home() {
     login();
   }
 
+  const loadTxs = async () => {
+    setLoading(true)
+    const response2 = await fetch('/api/tx/getTxs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const data2 = await response2.json()
+    const filtered = data2.txs.filter(tx => tx.did === did._id);
+    setTxs(filtered);
+    setLoading(false);
+  }
+
   const requestTx = async () => {
     setLoading(true)
     const response = await fetch('/api/tx/request', {
@@ -66,17 +86,8 @@ export default function Home() {
       },
       body: JSON.stringify({ did }),
     })
-    await response.json()
-
-    const response2 = await fetch('/api/tx/getTxs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(),
-    })
-    const data2 = await response2.json()
-    setTxs(data2.txs);
+    await response.json()    
+    loadTxs();
     setLoading(false);
   }
 
@@ -90,7 +101,26 @@ export default function Home() {
       body: JSON.stringify({ id }),
     })
     const data = await response.json()
+    loadTxs();
     setLoading(false);
+  }
+
+  const executeTx = async ({ id }) => {
+    setLoading(true)
+    const response = await fetch('/api/tx/execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    })
+    await response.json()
+    loadTxs();
+    setLoading(false);
+  }
+
+  const goToExplorer = async ({ hash }) => {
+    window.open(`https://goerli.etherscan.io/tx/${hash}`, '_blank');
   }
   
   const logout = () => {
@@ -98,6 +128,7 @@ export default function Home() {
     setDID({})
     setEmail('')
     setCode('')
+    setTxs([])
   }
 
   return (
@@ -149,8 +180,11 @@ export default function Home() {
                 alignItems: 'center',
               }} key={tx._id}>
                 <div>{JSON.stringify(tx._id, null, 2)}</div>
-                <button onClick={() => confirmTx({ id: tx._id })} className={styles.button}>2FA Confirm</button>
-                <button onClick={() => executeTx({ id: tx._id })} className={styles.button}>Execute</button>
+                {tx?.status === 'PENDING' && <button onClick={() => confirmTx({ id: tx._id })} className={styles.button}>2FA Confirm</button>}
+                {tx?.status === 'PENDING'
+                  ? <button onClick={() => executeTx({ id: tx._id })} className={styles.button}>Execute</button>
+                  : <button onClick={() => goToExplorer({ hash: tx.executionTxHash })} className={styles.button}>See on explorer</button>
+                }
               </div>
             ))
             }

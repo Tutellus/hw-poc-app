@@ -72,6 +72,13 @@ const getNextNonce = async (chainId, safe) => {
 // PUBLIC METHODS
 // ///////////////////////////////////////////////////////////////
 
+async function getSafeData (chainId, safe) {
+  const baseUrl = getUrl(chainId);
+  const url = `${baseUrl}/safes/${safe}`;
+  const { data: result } = await query('GET', url);
+  return result;
+};
+
 async function push (chainId, safe, data) {
   const baseUrl = getUrl(chainId);
   const url = `${baseUrl}/safes/${safe}/multisig-transactions/`;
@@ -121,6 +128,7 @@ async function create (chainId, safe, data, signer) {
 };
 
 export {
+  getSafeData,
   sign,
   create,
   push,
