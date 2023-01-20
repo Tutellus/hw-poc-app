@@ -1,6 +1,6 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
-import { abi as GnosisSafeABI } from '../abi/GnosisSafe.json'
+import { abi as GnosisSafeABI } from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
   const { safe, tx } = req.body;

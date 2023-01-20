@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { getSafeData } from '../../utils/safe'
 import { getOne as getOneTx, markAsExecuted, update as updateTx } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
-import { abi as GnosisSafeABI } from '../abi/GnosisSafe.json'
+import { abi as GnosisSafeABI } from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
   const { id } = req.body;
