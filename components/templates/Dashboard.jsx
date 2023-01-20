@@ -1,8 +1,8 @@
 import { useMainContext } from "@/state/main.context";
+import { getExplorerUrl } from "@/utils/explorer";
 import { useEffect, useRef, useState } from "react";
 
 export const Dashboard = () => {
-
   const ref = useRef(null);
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState(false);
@@ -57,7 +57,12 @@ export const Dashboard = () => {
     <h1>Dashboard</h1>
     {did && <div>
       <h2>My DID</h2>
-      <div>{`Connected >>> ${did?.address}`}</div>
+      <div>Connected</div>
+      <a
+        href={getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did?.address)}
+        target="_blank"
+        rel="noreferrer"
+      >{did?.address}</a>
     </div>}
     {!did && <div>
       <h2>My DID</h2>
