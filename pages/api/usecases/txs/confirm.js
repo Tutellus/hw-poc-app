@@ -1,25 +1,28 @@
-import { config } from '../config';
+import { config } from '../../config';
 import { ethers } from 'ethers'
-import { push, sign } from '../utils/safe'
-import { get as getTxs, update as updateTx } from '../repositories/txs';
-import { get as getDIDs } from '../repositories/dids';
+import { push, sign } from '../../utils/safe'
+import { getOne as getOneTx } from '../../repositories/txs';
+import { getOne as getOneDID } from '../../repositories/dids';
 
 export default async function handler(req, res) {
   const { id } = req.body;
-  const response = await confirm({ id });
+  const response = await execute({ id });
   res.status(200).json(response)
 }
 
-async function confirm({
-  id
-}) {
+async function execute({ id }) {
   try {
-
-    const txs = await getTxs() || [];
-    const tx = txs.find(tx => tx._id === id);
-    if (!tx) {
+    const tx = await getOneTx({ _id: id })
+    // exists? status === 'PENDING'?
+    if (!tx || tx.status !== 'PENDING') {
       return {
-        error: 'Transaction not found'
+        error: 'Transaction not confirmable'
+      }
+    }
+    const did = await getOneDID({ _id: tx.did })
+    if (!did) {
+      return {
+        error: 'DID not found'
       }
     }
     const { ownerKeys, chainId } = config
@@ -28,13 +31,6 @@ async function confirm({
     const signatures = tx.signatures || [];
     if (!signatures.includes(signature)) {
       signatures.push(signature);
-    }
-    const dids = await getDIDs()
-    const did = dids.find(did => did._id === tx.did)
-    if (!did) {
-      return {
-        error: 'DID not found'
-      }
     }
     await push(chainId, did.ownerMS, {
       ...tx,

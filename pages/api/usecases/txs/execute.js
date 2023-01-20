@@ -1,8 +1,8 @@
-import { config } from '../config';
+import { config } from '../../config';
 import { ethers } from 'ethers'
-import { getSafeData } from '../utils/safe'
-import { get as getTxs, markAsExecuted, update as updateTx } from '../repositories/txs';
-import { get as getDIDs } from '../repositories/dids';
+import { getSafeData } from '../../utils/safe'
+import { getOne as getOneTx, markAsExecuted, update as updateTx } from '../../repositories/txs';
+import { getOne as getOneDID } from '../../repositories/dids';
 import { abi as GnosisSafeABI } from '../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
@@ -11,19 +11,17 @@ export default async function handler(req, res) {
   res.status(200).json(response)
 }
 
-async function execute({
+export async function execute({
   id
 }) {
   try {
-    const txs = await getTxs() || [];
-    const tx = txs.find(tx => tx._id === id);
-    if (!tx) {
+    const tx = await getOneTx({ _id: id })
+    if (!tx || tx.status !== 'PENDING') {
       return {
-        error: 'Transaction not found'
+        error: 'Transaction not executable'
       }
     }
-    const dids = await getDIDs()
-    const did = dids.find(did => did._id === tx.did)
+    const did = await getOneDID({ _id: tx.did })
     if (!did) {
       return {
         error: 'DID not found'
@@ -47,7 +45,7 @@ async function execute({
     })
 
     const signaturesBytes = ethers.utils.solidityPack(
-      sortedSignatures.map(signature => 'bytes'),
+      sortedSignatures.map(() => 'bytes'),
       sortedSignatures
     );
 

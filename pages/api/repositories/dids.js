@@ -1,4 +1,4 @@
-import { updateOne, search } from './shared';
+import { updateOne, search, getOne as sharedGetOne } from './shared';
 import { v4 as uuidv4 } from 'uuid';
 
 const COLLECTION = 'dids';
@@ -20,8 +20,12 @@ async function update ({
 };
 
 async function get() {
-  return search(COLLECTION, []);
+  return search(COLLECTION);
 }
+
+async function getOne(filter) {
+  return sharedGetOne(COLLECTION, filter);
+};
 
 async function markAsAssigned (id) {
   const filter = { _id: id };
@@ -36,5 +40,6 @@ async function markAsAssigned (id) {
 export {
   update,
   get,
+  getOne,
   markAsAssigned,
 };
