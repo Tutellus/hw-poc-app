@@ -32,6 +32,6 @@ export const Verify = () => {
       codeChangeFn={codeChangeFn}
       submitFn={submitFn}
     />
-    <button onClick={logOut}>Logout</button>
+    <button disabled={verifying} onClick={logOut}>Logout</button>
   </div> 
 }

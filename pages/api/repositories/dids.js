@@ -27,6 +27,16 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
+async function markAsAssigning (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'ASSIGNING',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+}
+
 async function markAsAssigned (id) {
   const filter = { _id: id };
   const data = {
@@ -41,5 +51,6 @@ export {
   update,
   get,
   getOne,
+  markAsAssigning,
   markAsAssigned,
 };

@@ -1,8 +1,9 @@
+import { config } from '../../config.js'
 import { ethers, utils } from 'ethers'
 import { update as updateDID } from '../../repositories/dids'
-import { abi as DIDFactoryABI } from './abi/DIDFactoryMock.json'
-import { abi as GnosisSafeABI } from './abi/GnosisSafe.json'
-import { abi as GnosisProxyFactoryABI } from './abi/GnosisSafeProxyFactory.json'
+import { abi as DIDFactoryABI } from '../../abi/DIDFactoryMock.json'
+import { abi as GnosisSafeABI } from '../../abi/GnosisSafe.json'
+import { abi as GnosisProxyFactoryABI } from '../../abi/GnosisSafeProxyFactory.json'
 
 function keysToAddresses (keys) {
   return keys.map(ethers.utils.computeAddress)
@@ -17,18 +18,13 @@ function findLogs (receipt, contract, eventName) {
 
 export async function execute() {
   const { chainId, rpcUrl, serverKey, ownerKeys, masterKeys, didFactory, gnosisFallbackHandler, gnosisProxyFactory, gnosisSingleton } = config
-
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
   const serverWallet = new ethers.Wallet(serverKey, provider)
-
   const didFactoryContract = new ethers.Contract(didFactory, DIDFactoryABI, serverWallet)
   const gnosisProxyFactoryContract = new ethers.Contract(gnosisProxyFactory, GnosisProxyFactoryABI, serverWallet)
-
   const nonce = new Date().getTime()
-
   const ownerAddresses = keysToAddresses(ownerKeys)
   const masterAddresses = keysToAddresses(masterKeys)
-
   const tx = await didFactoryContract.createDID(
     ownerAddresses,
     masterAddresses,
@@ -36,11 +32,9 @@ export async function execute() {
     gnosisSingleton,
     gnosisFallbackHandler,
     nonce,
-  )
-
+  );
   const receipt = await tx.wait()
-
-  const gnosisProxyCreationLogs = findLogs(receipt, gnosisProxyFactoryContract, 'ProxyCreation', )
+  const gnosisProxyCreationLogs = findLogs(receipt, gnosisProxyFactoryContract, 'ProxyCreation')
   const didCreationLog = findLogs(receipt, didFactoryContract, 'NewDID')[0]
 
   const [ownersOfFirst, ownersOfSecond] = await Promise.all([

@@ -40,6 +40,7 @@ function MainContextProvider(props) {
     } else {
       router.push('/login');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, ref]);
 
   const memoizedData = useMemo(
