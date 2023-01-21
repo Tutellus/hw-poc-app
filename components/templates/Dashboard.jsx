@@ -125,6 +125,7 @@ export const Dashboard = () => {
     if (session && did) {
       refresh()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [did])
 
   return <div>
