@@ -2,54 +2,170 @@ import { useRouter } from "next/router";
 import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react";
 
 const MainContext = createContext({
+  verifying: false,
+  loggingIn: false,
+  assigningDid: false,
+  loadingDid: false,
+  loadingTransactions: false,
+  transactions: [],
   session: null,
-  setSession: () => {},
+  did: null,
+  logIn: () => {},
   logOut: () => {},
+  verifyUser: () => {},
 });
 
 function MainContextProvider(props) {
 
-  const ref = useRef(null);
-  const [session, setSession] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [assigningDid, setAssigningDid] = useState(false);
+  const [loadingDid, setLoadingDid] = useState(false);
+  const [session, setSession] = useState(null);
+  const [did, setDid] = useState(null);
   const router = useRouter();
-  
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+
+  const logIn = async (email) => {
+    setLoggingIn(true)
+    const response = await fetch('/api/usecases/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+    const { user } = await response.json()
+    setSession(user);
+    setLoggingIn(false)
+  }
+
+  const assignDid = async () => {
+    setAssigningDid(true);
+    const response = await fetch('/api/usecases/dids/assign', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: session._id }),
+    })
+    const { did: item } = await response.json()
+    setDid(item);
+    setAssigningDid(false);
+  }
+
+  const loadDid = async () => {
+    setLoadingDid(true);
+    const response = await fetch('/api/usecases/dids/getOne', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ filter: {
+        userId: session._id,
+      } }),
+    })
+    const { did } = await response.json()
+    if (did) {
+      setDid(did);
+    } else {
+      if (!assigningDid) {
+        await assignDid();
+      }
+    }
+    setLoadingDid(false);
+  }
+
+  const loadTransactions = async () => {
+    setLoadingTransactions(true);
+    const pipeline = [
+      {
+        $match: {
+          did: did._id,
+        },
+      },
+    ];
+    const response = await fetch('/api/usecases/txs/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ pipeline }),
+    })
+    const { txs: items } = await response.json()
+    setTransactions(items);
+    setLoadingTransactions(false);
+  }
+
   const logOut = () => {
-    setSession(null);
     localStorage.removeItem('session');
+    setSession(null);
+    setDid(null);
+    router.push('/');
+    setTransactions([]);
   };
 
+  const verifyUser = async (code) => {
+    setVerifying(true)
+    const response = await fetch('/api/usecases/users/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user: session, code: session.verifyCode }), // hack
+    })
+    const { user } = await response.json()
+    setSession(user);
+    setVerifying(false)
+  }
+
   useEffect(() => {
-    if (!ref.current) {
-      const session = localStorage.getItem('session');
-      if (session) {
-        setSession(JSON.parse(session));
-      }
-      ref.current = true;
+    const localSession = JSON.parse(localStorage.getItem('session'));
+    if (localSession && !session) {
+      setSession(localSession);
     }
-  }, [ref]);
+  }, [session]);
 
   useEffect(() => {
     if (session) {
       localStorage.setItem('session', JSON.stringify(session));
+      if (!loadingDid) {
+        loadDid();
+      }
       if (session?.status === 'VERIFIED') {
         router.push('/dashboard');
       }
       if (session?.status === 'PENDING') {
         router.push('/verify');
       }
-    } else {
-      router.push('/login');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, ref]);
+  }, [session]);
+
+  useEffect(() => {
+    if (did) {
+      loadTransactions();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [did]);
 
   const memoizedData = useMemo(
     () => ({
       session,
-      setSession,
+      did,
+      verifying,
+      loggingIn,
+      assigningDid,
+      loadingDid,
+      loadingTransactions,
+      transactions,
+      logIn,
       logOut,
+      verifyUser,
     }),
-    [session, setSession]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session, did, assigningDid, loadingDid, loadingTransactions, transactions, loggingIn, verifying]
   );
 
   return <MainContext.Provider value={memoizedData} {...props} />;

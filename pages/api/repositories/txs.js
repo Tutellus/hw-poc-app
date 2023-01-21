@@ -19,8 +19,8 @@ async function update ({
   return updateOne(COLLECTION, filter, data)
 };
 
-async function get() {
-  return search(COLLECTION, []);
+async function get(pipeline = []) {
+  return search(COLLECTION, pipeline);
 }
 
 async function getOne(filter) {

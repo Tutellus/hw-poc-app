@@ -1,75 +1,42 @@
 import { useMainContext } from "@/state/main.context";
 import { getExplorerUrl } from "@/utils/explorer";
-import { useEffect, useRef, useState } from "react";
 
 export const Dashboard = () => {
-  const ref = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [assigning, setAssigning] = useState(false);
-  const { session, logOut } = useMainContext();
-  const [did, setDid] = useState(null);
-
-  const assignDid = async () => {
-    setAssigning(true);
-    const response = await fetch('/api/usecases/dids/assign', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: session._id }),
-    })
-    const { did: item } = await response.json()
-    setDid(item);
-    setAssigning(false);
-  }
-
-  const loadDid = async () => {
-    setLoading(true);
-    const response = await fetch('/api/usecases/dids/getOne', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ filter: {
-        userId: session._id,
-      } }),
-    })
-    const { did } = await response.json()
-    if (did) {
-      setDid(did);
-    } else {
-      if (!assigning) {
-        await assignDid();
-      }
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    if (session && !ref.current && !loading) {
-      loadDid();
-      ref.current = true;
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  const { session, did, logOut, assigningDid, transactions, loadingTransactions } = useMainContext();
 
   return <div>
     <h1>Dashboard</h1>
+    {session && <div>{`Email: ${session.email}`}</div>}
     {did && <div>
       <h2>My DID</h2>
       <div>Connected</div>
       <a
+        style={{
+          color: 'cyan',
+        }}
         href={getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did?.address)}
         target="_blank"
         rel="noreferrer"
       >{did?.address}</a>
+      <h2>Transactions</h2>
+      {loadingTransactions && <div>Loading transactions...</div>}
+      {!loadingTransactions && <div>
+        {transactions?.length > 0
+          ? transactions.map((tx) =>
+          <div key={tx._id}>
+            <a href={getExplorerUrl(process.env.CHAIN_ID || 5, 'tx', tx.txHash)} target="_blank" rel="noreferrer">{tx.contractTransactionHash}</a>
+          </div>
+          )
+          : <div>No transactions yet</div>
+        }
+      </div>}
+      <button>New transaction</button>
     </div>}
     {!did && <div>
       <h2>My DID</h2>
       <div>Connecting...</div>
-    </div>
-    }
-    {assigning && <div>Assigning DID...</div>}
+    </div>}
+    {assigningDid && <div>Assigning DID...</div>}
     <button onClick={logOut}>Logout</button>
   </div>
 }
