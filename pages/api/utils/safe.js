@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { utils, constants, Contract } from 'ethers';
-import { abi as GnosisSafeABI } from '../abi/GnosisSafe.json';
+import GnosisSafe from '../abi/GnosisSafe.json';
 
 // ///////////////////////////////////////////////////////////////
 // PRIVATE METHODS
@@ -91,7 +91,7 @@ function sign (hash, signer) {
 };
 
 async function create (chainId, safe, data, signer) {
-  const safeContract = new Contract(safe, GnosisSafeABI, signer);
+  const safeContract = new Contract(safe, GnosisSafe.abi, signer);
   const { safeTxGas } = await estimateTx(chainId, safe, data);
   const nonce = await getNextNonce(chainId, safe);
   const txData = {

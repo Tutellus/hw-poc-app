@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import { abi as DIDMockABI } from '../abi/DIDMock.json'
+import DIDMock from '../abi/DIDMock.json'
 
 function wrapOwner ({
   destination,
@@ -7,7 +7,7 @@ function wrapOwner ({
   value,
   gas
 }) {
-  const didInterface = new utils.Interface(DIDMockABI)
+  const didInterface = new utils.Interface(DIDMock.abi)
   const calldata = didInterface.encodeFunctionData('forwardOwner', [
     destination,
     data,

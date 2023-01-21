@@ -13,6 +13,7 @@ const MainContext = createContext({
   logIn: () => {},
   logOut: () => {},
   verifyUser: () => {},
+  loadTransactions: () => {},
 });
 
 function MainContextProvider(props) {
@@ -154,6 +155,7 @@ function MainContextProvider(props) {
       logIn,
       logOut,
       verifyUser,
+      loadTransactions,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [session, did, assigningDid, loadingDid, loadingTransactions, transactions, loggingIn, verifying]

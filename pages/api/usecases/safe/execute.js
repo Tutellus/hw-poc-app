@@ -1,6 +1,6 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
-import { abi as GnosisSafeABI } from '../../abi/GnosisSafe.json'
+import GnosisSafe from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
   const { safe, tx } = req.body;
@@ -14,7 +14,7 @@ export async function execute({ safe, tx }) {
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
     const serverWallet = new ethers.Wallet(serverKey, provider)
-    const safeContract = new ethers.Contract(safe, GnosisSafeABI, serverWallet)
+    const safeContract = new ethers.Contract(safe, GnosisSafe.abi, serverWallet)
 
     const sortedSignatures = tx.signatures.sort((a, b) => {
       const aAddress = ethers.utils.recoverAddress(tx.contractTransactionHash, a)
