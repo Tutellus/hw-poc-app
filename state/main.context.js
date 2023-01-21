@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from "next/router";
 import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react";
 
@@ -14,6 +15,7 @@ const MainContext = createContext({
   logOut: () => {},
   verifyUser: () => {},
   loadTransactions: () => {},
+  redirect: () => {},
 });
 
 function MainContextProvider(props) {
@@ -112,12 +114,18 @@ function MainContextProvider(props) {
     setVerifying(false)
   }
 
-  useEffect(() => {
-    const localSession = JSON.parse(localStorage.getItem('session'));
-    if (localSession && !session) {
-      setSession(localSession);
+  const redirect = () => {
+    if (session) {
+      if (session?.status === 'VERIFIED') {
+        router.push('/dashboard');
+      }
+      if (session?.status === 'PENDING') {
+        router.push('/verify');
+      }
+    } else {
+      router.push('/login');
     }
-  }, [session]);
+  }
 
   useEffect(() => {
     if (session) {
@@ -125,22 +133,22 @@ function MainContextProvider(props) {
       if (!loadingDid) {
         loadDid();
       }
-      if (session?.status === 'VERIFIED') {
-        router.push('/dashboard');
-      }
-      if (session?.status === 'PENDING') {
-        router.push('/verify');
-      }
+      redirect();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   useEffect(() => {
     if (did) {
       loadTransactions();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [did]);
+
+  useEffect(() => {
+    const localSession = JSON.parse(localStorage.getItem('session'));
+    if (localSession && !session) {
+      setSession(localSession);
+    }
+  }, []);
 
   const memoizedData = useMemo(
     () => ({
@@ -156,8 +164,8 @@ function MainContextProvider(props) {
       logOut,
       verifyUser,
       loadTransactions,
+      redirect,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [session, did, assigningDid, loadingDid, loadingTransactions, transactions, loggingIn, verifying]
   );
 
