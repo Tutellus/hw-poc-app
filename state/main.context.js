@@ -79,19 +79,12 @@ function MainContextProvider(props) {
 
   const loadTransactions = async () => {
     setLoadingTransactions(true);
-    const pipeline = [
-      {
-        $match: {
-          did: did._id,
-        },
-      },
-    ];
-    const response = await fetch('/api/usecases/txs/get', {
+    const response = await fetch('/api/usecases/txs/getByDID', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pipeline }),
+      body: JSON.stringify({ didId: did._id }),
     })
     const { txs: items } = await response.json()
     setTransactions(items);
