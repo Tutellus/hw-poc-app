@@ -1,18 +1,18 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
 import { push, sign } from '../../utils/safe'
-import { getOne as getOneTx } from '../../repositories/txs';
+import { getOne as getOneTx, update as updateTx } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
 
 export default async function handler(req, res) {
-  const { id } = req.body;
-  const response = await execute({ id });
+  const { txId, user } = req.body;
+  const response = await execute({ txId, user });
   res.status(200).json(response)
 }
 
-async function execute({ id }) {
+async function execute({ txId, user }) {
   try {
-    const tx = await getOneTx({ _id: id })
+    const tx = await getOneTx({ _id: txId })
     // exists? status === 'PENDING'?
     if (!tx || tx.status !== 'PENDING') {
       return {
@@ -23,6 +23,11 @@ async function execute({ id }) {
     if (!did) {
       return {
         error: 'DID not found'
+      }
+    }
+    if (did.userId !== user._id) {
+      return {
+        error: 'Unauthorized'
       }
     }
     const { ownerKeys, chainId } = config

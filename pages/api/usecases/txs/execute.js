@@ -6,16 +6,17 @@ import { getOne as getOneDID } from '../../repositories/dids';
 import GnosisSafe from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
-  const { id } = req.body;
-  const response = await execute({ id });
+  const { txId, user } = req.body;
+  const response = await execute({ txId, user });
   res.status(200).json(response)
 }
 
 export async function execute({
-  id
+  txId,
+  user,
 }) {
   try {
-    const tx = await getOneTx({ _id: id })
+    const tx = await getOneTx({ _id: txId })
     if (!tx || tx.status !== 'PENDING') {
       return {
         error: 'Transaction not executable'
@@ -25,6 +26,11 @@ export async function execute({
     if (!did) {
       return {
         error: 'DID not found'
+      }
+    }
+    if (did.userId !== user._id) {
+      return {
+        error: 'Unauthorized'
       }
     }
     const { serverKey, rpcUrl, chainId } = config
@@ -63,13 +69,13 @@ export async function execute({
     );
     const receipt = await executeTx.wait()
     await updateTx({
-      id,
+      id: tx._id,
       fields: {
         executionTxHash: executeTx.hash,
         receipt,
       },
     })
-    await markAsExecuted(id)
+    await markAsExecuted(txId)
     return true
   } catch (error) {
     console.error(error)
