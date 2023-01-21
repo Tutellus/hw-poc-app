@@ -57,14 +57,12 @@ function MainContextProvider(props) {
 
   const loadDid = async () => {
     setLoadingDid(true);
-    const response = await fetch('/api/usecases/dids/getOne', {
+    const response = await fetch('/api/usecases/dids/getByUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ filter: {
-        userId: session._id,
-      } }),
+      body: JSON.stringify({ user: session }),
     })
     const { did } = await response.json()
     if (did) {
@@ -79,12 +77,12 @@ function MainContextProvider(props) {
 
   const loadTransactions = async () => {
     setLoadingTransactions(true);
-    const response = await fetch('/api/usecases/txs/getByDID', {
+    const response = await fetch('/api/usecases/txs/getByUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ didId: did._id }),
+      body: JSON.stringify({ user: session }),
     })
     const { txs: items } = await response.json()
     setTransactions(items);

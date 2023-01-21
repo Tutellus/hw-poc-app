@@ -1,0 +1,23 @@
+import { config } from '../../config.js'
+import { ethers } from 'ethers'
+import ERC20Upgradeable from '../../abi/ERC20Upgradeable.json'
+import { execute as executeGetByUser } from '../../usecases/txs/getByUser.js'
+
+export default async function handler(req, res) {
+  const { token, user } = req.body;
+  const balance = await execute({ token, user });
+  res.status(200).json({ balance });
+}
+
+export async function execute({ token, user }) {
+  const { chainId, rpcUrl, serverKey, ownerKeys, masterKeys, didFactory, gnosisFallbackHandler, gnosisProxyFactory, gnosisSingleton } = config
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
+  const tokenContract = new ethers.Contract(token, ERC20Upgradeable.abi, provider)
+  const did = await executeGetByUser({ user })
+  if (!did) {
+    res.status(404).json({ error: 'DID not found' });
+    return;
+  }
+  const balance = await tokenContract.balanceOf(did.address)
+  return balance;
+}
