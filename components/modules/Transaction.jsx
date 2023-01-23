@@ -36,18 +36,16 @@ export const Transaction = ({
   const explorerUrl = getExplorerUrl(process.env.CHAIN_ID || 5, 'tx', tx.executionTxHash)
 
   return (
-    <div>
-      <div>----------------------------</div>
-            <div>{tx.nonce}</div>
-            <div>{tx.status}</div>
-            <div>{transactionData.name}</div>
-            <div>{`Signatures: ${tx.signatures.length} / ${ownerSafeData.threshold}`}</div>
-            {canExecute && <button disabled={executing} onClick={handleExecute}>{executing ? 'Executing...' : 'Execute'}</button>}
-            {canConfirm && <button disabled={confirming} onClick={handleConfirm}>{confirming ? 'Confirming...' : 'Confirm'}</button>}
-            {tx.status === 'EXECUTED' && <button
-              onClick={() => window.open(explorerUrl, '_blank')}
-            >View in explorer</button>}
-      <div>----------------------------</div>
+    <div className="transaction">
+      <div>{tx.nonce}</div>
+      <div>{tx.status}</div>
+      <div>{transactionData.name}</div>
+      <div>{`Signatures: ${tx.signatures.length} / ${ownerSafeData.threshold}`}</div>
+      {canExecute && <button disabled={executing} onClick={handleExecute}>{executing ? 'Executing...' : 'Execute'}</button>}
+      {canConfirm && <button disabled={confirming} onClick={handleConfirm}>{confirming ? 'Confirming...' : 'Confirm'}</button>}
+      {tx.status === 'EXECUTED' && <button
+        onClick={() => window.open(explorerUrl, '_blank')}
+      >View in explorer</button>}
     </div>
   )
 }

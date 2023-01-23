@@ -5,19 +5,15 @@ export const VerifyForm = ({
   submitFn,
 }) => {
   return (
-    <div>
-      <h1>Verify</h1>
-      <div>
-        <label htmlFor="text">Code</label>
-        <input
-          type="text"
-          name="code"
-          id="code"
-          disabled={verifying}
-          value={code}
-          onChange={codeChangeFn}
-        />
-      </div>
+    <div className="login">
+      <input
+        className="input-email"
+        type="text"
+        placeholder="Your 2FA code here"
+        disabled={verifying}
+        value={code}
+        onChange={codeChangeFn}
+      />
       <button
         type="submit"
         onClick={submitFn}

@@ -1,8 +1,10 @@
 import { useMainContext } from "@/state/main.context";
+import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { Transaction } from "../modules/Transaction";
+import { useConnectWallet } from "@web3-onboard/react"
 
 const tokenAbi = [
   "function mint(address to, uint256 amount) public returns (bool)",
@@ -14,6 +16,9 @@ export const Dashboard = () => {
   const [processingTx, setProcessingTx] = useState(false)
 
   const { session, did, logOut, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
+
+  const [{ wallet }, connect] = useConnectWallet();
+  const [web3Address, setWeb3Address] = useState(null)
 
   const tokenAddress = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 
@@ -129,42 +134,89 @@ export const Dashboard = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [did])
 
-  return <div>
-    <h1>Dashboard</h1>
-    {session && <div>{`Email: ${session.email}`}</div>}
-    {did && <div>
-      <h2>My DID</h2>
-      <div>Connected</div>
-      <a
-        style={{
-          color: 'cyan',
-        }}
-        href={getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address)}
-        target="_blank"
-        rel="noreferrer"
-      >{did?.address}</a>
-      <div>{`Your balance: ${parseFloat(balance).toFixed(2)} TKN`}</div>
-      <h2>Transactions</h2>
-        {loadingTransactions && <div>Loading transactions...</div>}
-        {ownerSafeData && transactions?.length > 0
-          ? transactions.map((tx, index) => <Transaction
-            key={index}
-            tx={tx}
-            abi={tokenAbi}
-            ownerSafeData={ownerSafeData}
-            confirmFn={confirmByCode}
-            executeFn={execute}
-            refresh={refresh}
-          />)
-          : <div>No transactions yet</div>
-        }
-      <button disabled={processingTx} onClick={() => mintTransaction(did.address, 5)}>Mint 5 TKN</button>
-    </div>}
-    {!did && <div>
-      <h2>My DID</h2>
-      <div>Connecting...</div>
-    </div>}
-    {assigningDid && <div>Assigning DID...</div>}
-    <button onClick={logOut}>Logout</button>
+  useEffect(() => {
+    if (wallet) {
+      const firstAddress = wallet.accounts[0].address
+      if (firstAddress) {
+        setWeb3Address(firstAddress)
+      }
+    }
+  }, [wallet])
+
+  return (
+    <div className="dashboard">
+      <div className="grid">
+        {/* my email */}
+        {session && <div className="box">
+          <div className="title">My account</div>
+          <div className="data">{session.email}</div>
+        </div>}
+
+        {/* my did */}
+        <div className="box">
+          <div className="title">My wallet</div>
+          {/* we can truncate address here */}
+          {did ? <div
+            className="data"
+            onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address), '_blank')}
+          >{truncateAddress(did.address)}</div>
+            : <div>Not connected</div>
+          }
+          {assigningDid && <div>Assigning DID...</div>}
+        </div>
+
+        {/* your tokens */}
+        <div className="box">
+          <div className="title">My tokens</div>
+          <div className="data">{balance} TKN</div>
+        </div>
+
+        {/* metamask connect */}
+        <div className="box">
+          <div className="title">My web3</div>
+          {web3Address ? <div className="data">
+            <div> {truncateAddress(web3Address)}</div>
+            <button>Request</button>
+          </div>
+            : <button onClick={() => connect()}>Connect</button>
+          }
+          
+        </div>
+          
+        {/* transactions list */}
+        {did && <div className="box"
+          style={{
+            gridColumn: '1 / 3',
+          }} 
+        >
+          <div className="title">Transactions</div>
+          {loadingTransactions ? <div>Loading transactions...</div>
+            :  ownerSafeData && transactions?.length > 0
+              ? <div className="transactions">
+                {transactions.map((tx, index) => <Transaction
+                  key={index}
+                  tx={tx}
+                  abi={tokenAbi}
+                  ownerSafeData={ownerSafeData}
+                  confirmFn={confirmByCode}
+                  executeFn={execute}
+                  refresh={refresh}
+                />)}
+              </div>
+              : <div>No transactions yet</div>
+          }
+        <button disabled={processingTx} onClick={() => mintTransaction(did.address, 5)}>Mint 5 TKN</button>
+      </div>}
+    </div>
+  
+    {/* logout */}
+    <button style={{
+      position: 'absolute',
+      bottom: 1,
+      right: 1,
+      margin: '1rem',
+    }} onClick={logOut}>Logout</button>
+
   </div>
+  );
 }

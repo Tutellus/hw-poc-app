@@ -18,6 +18,11 @@ export const Verify = () => {
       codeChangeFn={codeChangeFn}
       submitFn={() => verifyUser(code)}
     />
-    <button disabled={verifying} onClick={logOut}>Logout</button>
+    <button style={{
+      position: 'absolute',
+      bottom: 1,
+      right: 1,
+      margin: '1rem',
+    }} disabled={verifying} onClick={logOut}>Logout</button>
   </div> 
 }

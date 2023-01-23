@@ -1,13 +1,16 @@
 import Head from "next/head";
-import styles from '@/styles/Home.module.css'
+import { TopBar } from "../modules/TopBar";
 
 export const Layout = ({ children }) => {
   return (
     <>
       <Head>
-        <title>DID Demo</title>
+        <title>Shared Mgmt Wallet Concept</title>
       </Head>
-      <main>{children}</main>
+      <body>
+        <TopBar></TopBar>
+        {children}
+      </body>
     </>
   )
 };
