@@ -129,13 +129,14 @@ async function create (chainId, safe, data, signer) {
 
 async function createAddOwnerWithThreshold (chainId, safe, owner, threshold, signer) {
   const safeContract = new Contract(safe, GnosisSafe.abi, signer);
-  const originalData = {
+  const originalData = safeContract.interface.encodeFunctionData('addOwnerWithThreshold', [owner, threshold]);
+  const data = {
     to: safe,
     value: 0,
-    data: safeContract.interface.encodeFunctionData('addOwnerWithThreshold', [owner, threshold]),
+    data: originalData,
     operation: 0,
   };
-  const result = await create(chainId, safe, originalData, signer);
+  const result = await create(chainId, safe, data, signer);
   return {
     result,
     originalData,
@@ -146,13 +147,14 @@ async function createAddOwner (chainId, safe, owner, signer) {
   const safeContract = new Contract(safe, GnosisSafe.abi, signer);
   const safeData = await getSafeData(chainId, safe);
   const currentThreshold = safeData.threshold;
-  const originalData = {
+  const originalData = safeContract.interface.encodeFunctionData('addOwnerWithThreshold', [owner, currentThreshold])
+  const data = {
     to: safe,
     value: 0,
-    data: safeContract.interface.encodeFunctionData('addOwnerWithThreshold', [owner, currentThreshold]),
+    data: originalData,
     operation: 0,
   };
-  const result = await create(chainId, safe, originalData, signer);
+  const result = await create(chainId, safe, data, signer);
   return {
     result,
     originalData,
