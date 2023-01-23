@@ -23,7 +23,7 @@ export const Transaction = ({
 
   const handleConfirm = async () => {
     setConfirming(true)
-    await confirmFn(tx._id)
+    await confirmFn(tx._id, tx.code2fa)
     setConfirming(false)
   }
 

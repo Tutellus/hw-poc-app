@@ -56,11 +56,14 @@ async function execute({
 
     const signatures = [tx.signature]
 
+    const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+
     const fields = {
       ...tx,
       did: did._id,
       signatures,
       originalData: data,
+      code2fa,
     };
     await updateTx({ fields })
     return { tx };

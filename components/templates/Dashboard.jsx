@@ -2,7 +2,7 @@ import { useMainContext } from "@/state/main.context";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { Transaction } from "../modules/Transactions";
+import { Transaction } from "../modules/Transaction";
 
 const tokenAbi = [
   "function mint(address to, uint256 amount) public returns (bool)",
@@ -70,15 +70,16 @@ export const Dashboard = () => {
     }
   }
 
-  const confirm = async (txId) => {
-    await fetch('/api/usecases/txs/confirm', {
+  const confirmByCode = async (txId, code) => {
+    await fetch('/api/usecases/txs/confirmByCode', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         user: session,
-        txId
+        txId,
+        code,
       }),
     })
     await refresh()
@@ -151,7 +152,7 @@ export const Dashboard = () => {
             tx={tx}
             abi={tokenAbi}
             ownerSafeData={ownerSafeData}
-            confirmFn={confirm}
+            confirmFn={confirmByCode}
             executeFn={execute}
             refresh={refresh}
           />)

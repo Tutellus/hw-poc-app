@@ -1,4 +1,4 @@
-import mongoDB from './mongo';
+import mongoDB from '../infrastructure/mongo';
 
 const mongoUri = process.env.MONGODB_URI;
 
