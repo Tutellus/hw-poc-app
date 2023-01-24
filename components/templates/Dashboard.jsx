@@ -14,6 +14,7 @@ const tokenAbi = [
 export const Dashboard = () => {
 
   const [processingTx, setProcessingTx] = useState(false)
+  const [requestingWallet, setRequestingWallet] = useState(false)
 
   const { session, did, logOut, loadDid, loadingDid, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
 
@@ -127,6 +128,29 @@ export const Dashboard = () => {
     ])
   }
 
+  const requestWallet = async () => {
+    if (wallet) {
+      setRequestingWallet(true)
+      const web3provider = new ethers.providers.Web3Provider(wallet.provider)
+      const signer = web3provider.getSigner()
+      const message = `I am the owner of this account ${session.email} and this wallet ${web3Address} and I want to add this wallet to my shared wallet`
+      const signature = await signer.signMessage(message);
+      await fetch('/api/usecases/dids/requestAddOwner', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          signature,
+          user: session,
+        }),
+      })
+      refresh()
+      setRequestingWallet(false)
+    }
+  }
+
   useEffect(() => {
     if (session && did) {
       refresh()
@@ -143,6 +167,8 @@ export const Dashboard = () => {
     }
   }, [wallet])
 
+  console.log('did', did)
+
   return (
     <div className="dashboard">
       <div className="grid">
@@ -152,7 +178,7 @@ export const Dashboard = () => {
           <div className="data">{session.email}</div>
         </div>}
 
-        {/* my did */}
+        {/* my wallet */}
         <div className="box">
           <div className="title">My wallet</div>
           {assigningDid
@@ -171,15 +197,18 @@ export const Dashboard = () => {
         {/* your tokens */}
         <div className="box">
           <div className="title">My tokens</div>
-          <div className="data">{balance} TKN</div>
+          <div className="data">
+            <div>{balance}</div>
+            <button disabled={processingTx} onClick={() => mintTransaction(did.address, 5)}>Mint 5 TKN</button>
+          </div>
         </div>
 
-        {/* metamask connect */}
+        {/* my external wallet */}
         <div className="box">
-          <div className="title">My web3</div>
+          <div className="title">My external wallet</div>
           {web3Address ? <div className="data">
             <div> {truncateAddress(web3Address)}</div>
-            <button>Request</button>
+            <button disabled={requestingWallet} onClick={() => requestWallet()}>Request ownership</button>
           </div>
             : <button onClick={() => connect()}>Connect</button>
           }
@@ -208,7 +237,6 @@ export const Dashboard = () => {
               </div>
               : <div>No transactions yet</div>
           }
-        <button disabled={processingTx} onClick={() => mintTransaction(did.address, 5)}>Mint 5 TKN</button>
       </div>}
     </div>
   
