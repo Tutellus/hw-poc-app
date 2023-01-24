@@ -15,7 +15,7 @@ export const Dashboard = () => {
 
   const [processingTx, setProcessingTx] = useState(false)
 
-  const { session, did, logOut, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
+  const { session, did, logOut, loadDid, loadingDid, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
 
   const [{ wallet }, connect] = useConnectWallet();
   const [web3Address, setWeb3Address] = useState(null)
@@ -155,14 +155,17 @@ export const Dashboard = () => {
         {/* my did */}
         <div className="box">
           <div className="title">My wallet</div>
-          {/* we can truncate address here */}
-          {did ? <div
-            className="data"
-            onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address), '_blank')}
-          >{truncateAddress(did.address)}</div>
-            : <div>Not connected</div>
-          }
-          {assigningDid && <div>Assigning DID...</div>}
+          {assigningDid
+            ? <div>Assigning wallet...</div>
+            : loadingDid
+              ? <div>Loading wallet...</div>
+              : did
+                ? <div
+                    className="data"
+                    onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address), '_blank')}
+                  >{truncateAddress(did.address)}</div>
+                : <button onClick={() => loadDid()}>Connect</button>
+            }
         </div>
 
         {/* your tokens */}

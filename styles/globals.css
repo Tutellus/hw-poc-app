@@ -28,7 +28,7 @@
 }
 
 body {
-  display: relative;
+  display: flex;
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
@@ -59,15 +59,15 @@ button:disabled {
 }
 
 .topbar {
-  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 26px 26px;
+
+  padding: 26px 0px;
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   z-index: 1;
-  width: 100%;
+  width: 100vw;
 }
 
 h1 {
@@ -90,7 +90,8 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  height: 100vh;
+  margin-top: 5rem;
+  /* height: 100vh; */
 }
 
 .login .input-email {
@@ -113,7 +114,7 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  height: 100vh;
+  margin-top: 5rem;
 }
 
 .dashboard .grid {
