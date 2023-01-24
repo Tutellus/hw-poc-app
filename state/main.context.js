@@ -89,7 +89,7 @@ function MainContextProvider(props) {
       body: JSON.stringify({ user: session }),
     })
     const { txs: items } = await response.json()
-    setTransactions(items);
+    setTransactions(items.reverse());
     setLoadingTransactions(false);
   }
 

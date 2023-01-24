@@ -17,14 +17,23 @@ export const TransactionsList = ({
     {loadingTransactions
       ? <div>Loading transactions...</div>
       :  ownerSafeData && transactions?.length > 0
-        ? <div className="transactions">
-          {transactions.map((tx, index) => <Transaction
-            key={index}
-            tx={tx}
-            ownerSafeData={ownerSafeData}
-            confirmFn={confirmFn}
-            executeFn={executeFn}
-          />)}</div>
+        ? <table>
+          <thead>
+              <th>#</th>
+              <th>Status</th>
+              <th>Confirmations</th>
+              <th>Actions</th>
+          </thead>
+          <tbody>
+            {transactions.map((tx, index) => <Transaction
+              key={index}
+              tx={tx}
+              ownerSafeData={ownerSafeData}
+              confirmFn={confirmFn}
+              executeFn={executeFn}
+            />)}
+          </tbody>
+        </table>
         : <div>No transactions yet</div>
     }
     </div>

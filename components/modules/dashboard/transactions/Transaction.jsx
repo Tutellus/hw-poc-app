@@ -11,9 +11,10 @@ export const Transaction = ({
   const [confirming, setConfirming] = useState(false)
   const [executing, setExecuting] = useState(false)
 
-  const canConfirm = tx.status !== 'EXECUTED' && tx.signatures.length < ownerSafeData.threshold
+  const isExecuted = tx.status === 'EXECUTED'
+  const canConfirm = !isExecuted && tx.signatures.length < ownerSafeData.threshold
   const canExecute =
-    tx.status !== 'EXECUTED'
+    !isExecuted
     && tx.signatures.length >= ownerSafeData.threshold
     && ownerSafeData.nonce === tx.nonce
 
@@ -32,16 +33,22 @@ export const Transaction = ({
   const explorerUrl = getExplorerUrl(process.env.CHAIN_ID || 5, 'tx', tx.executionTxHash)
 
   return (
-    <div className="transaction">
-      <div>{tx.nonce}</div>
+    <tr>
+      <div
+        onClick={() => window.open(explorerUrl, '_blank')}
+        style={{
+          color: isExecuted ? 'var(--color-primary-light)' : '',
+          cursor: 'pointer',
+        }}
+      >{tx.nonce}</div>
       <div>{tx.status}</div>
       {/* <div>{tx}</div> */}
-      <div>{`Signatures: ${tx.signatures.length} / ${ownerSafeData.threshold}`}</div>
+      <div>{`${tx.signatures.length} / ${ownerSafeData.threshold}`}</div>
       {canExecute && <button disabled={executing} onClick={handleExecute}>{executing ? 'Executing...' : 'Execute'}</button>}
       {canConfirm && <button disabled={confirming} onClick={handleConfirm}>{confirming ? 'Confirming...' : 'Confirm'}</button>}
-      {tx.status === 'EXECUTED' && <button
+      {isExecuted && <button
         onClick={() => window.open(explorerUrl, '_blank')}
       >View in explorer</button>}
-    </div>
+    </tr>
   )
 }
