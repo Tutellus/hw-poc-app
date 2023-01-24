@@ -3,7 +3,6 @@ import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { Transaction } from "../modules/dashboard/transactions/Transaction";
 import { useConnectWallet } from "@web3-onboard/react"
 import { TransactionsList } from "../modules/dashboard/transactions/TransactionsList";
 

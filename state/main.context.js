@@ -11,12 +11,12 @@ const MainContext = createContext({
   transactions: [],
   session: null,
   did: null,
-  loadDid: () => {},
-  logIn: () => {},
-  logOut: () => {},
-  verifyUser: () => {},
-  loadTransactions: () => {},
-  redirect: () => {},
+  loadDid: async () => {},
+  logIn: async () => {},
+  logOut: async () => {},
+  verifyUser: async () => {},
+  loadTransactions: async () => {},
+  redirect: async () => {},
 });
 
 function MainContextProvider(props) {
