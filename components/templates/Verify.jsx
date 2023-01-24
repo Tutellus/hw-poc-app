@@ -4,8 +4,8 @@ import { VerifyForm } from "../modules/VerifyForm";
 
 export const Verify = () => {
 
-  const { verifying, verifyUser, logOut } = useMainContext();
-  const [code, setCode] = useState("");
+  const { session, verifying, verifyUser, logOut } = useMainContext();
+  const [code, setCode] = useState(session?.verifyCode || '');
 
   const codeChangeFn = (e) => {
     setCode(e.target.value)

@@ -3,8 +3,9 @@ import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { Transaction } from "../modules/Transaction";
+import { Transaction } from "../modules/dashboard/transactions/Transaction";
 import { useConnectWallet } from "@web3-onboard/react"
+import { TransactionsList } from "../modules/dashboard/transactions/TransactionsList";
 
 const tokenAbi = [
   "function mint(address to, uint256 amount) public returns (bool)",
@@ -167,8 +168,6 @@ export const Dashboard = () => {
     }
   }, [wallet])
 
-  console.log('did', did)
-
   return (
     <div className="dashboard">
       <div className="grid">
@@ -208,7 +207,7 @@ export const Dashboard = () => {
           <div className="title">My external wallet</div>
           {web3Address ? <div className="data">
             <div> {truncateAddress(web3Address)}</div>
-            <button disabled={requestingWallet} onClick={() => requestWallet()}>Request ownership</button>
+            {/* <button disabled={requestingWallet} onClick={() => requestWallet()}>Request ownership</button> */}
           </div>
             : <button onClick={() => connect()}>Connect</button>
           }
@@ -216,28 +215,13 @@ export const Dashboard = () => {
         </div>
           
         {/* transactions list */}
-        {did && <div className="box"
-          style={{
-            gridColumn: '1 / 3',
-          }} 
-        >
-          <div className="title">Transactions</div>
-          {loadingTransactions ? <div>Loading transactions...</div>
-            :  ownerSafeData && transactions?.length > 0
-              ? <div className="transactions">
-                {transactions.map((tx, index) => <Transaction
-                  key={index}
-                  tx={tx}
-                  abi={tokenAbi}
-                  ownerSafeData={ownerSafeData}
-                  confirmFn={confirmByCode}
-                  executeFn={execute}
-                  refresh={refresh}
-                />)}
-              </div>
-              : <div>No transactions yet</div>
-          }
-      </div>}
+        {did && <TransactionsList
+          ownerSafeData={ownerSafeData}
+          loadingTransactions={loadingTransactions}
+          transactions={transactions}
+          confirmFn={confirmByCode}
+          executeFn={execute}
+        />}
     </div>
   
     {/* logout */}
