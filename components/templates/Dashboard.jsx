@@ -3,8 +3,8 @@ import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { useConnectWallet } from "@web3-onboard/react"
 import { TransactionsList } from "../modules/dashboard/transactions/TransactionsList";
+import { Web3 } from "../modules/dashboard/web3/Web3";
 
 const tokenAbi = [
   "function mint(address to, uint256 amount) public returns (bool)",
@@ -14,12 +14,8 @@ const tokenAbi = [
 export const Dashboard = () => {
 
   const [processingTx, setProcessingTx] = useState(false)
-  const [requestingWallet, setRequestingWallet] = useState(false)
 
   const { session, did, logOut, loadDid, loadingDid, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
-
-  const [{ wallet }, connect] = useConnectWallet();
-  const [web3Address, setWeb3Address] = useState(null)
 
   const tokenAddress = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 
@@ -122,50 +118,18 @@ export const Dashboard = () => {
 
   const refresh = async () => {
     await Promise.all([
-      getBalance(),
-      loadTransactions(),
-      getOwnerSafeData()
+      loadDid(),
     ])
-  }
-
-  const requestWallet = async () => {
-    if (wallet) {
-      setRequestingWallet(true)
-      const web3provider = new ethers.providers.Web3Provider(wallet.provider)
-      const signer = web3provider.getSigner()
-      const message = `I am the owner of this account ${session.email} and this wallet ${web3Address} and I want to add this wallet to my shared wallet`
-      const signature = await signer.signMessage(message);
-      await fetch('/api/usecases/dids/requestAddOwner', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message,
-          signature,
-          user: session,
-        }),
-      })
-      refresh()
-      setRequestingWallet(false)
-    }
   }
 
   useEffect(() => {
     if (session && did) {
-      refresh()
+      getBalance()
+      loadTransactions()
+      getOwnerSafeData()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [did])
-
-  useEffect(() => {
-    if (wallet) {
-      const firstAddress = wallet.accounts[0].address
-      if (firstAddress) {
-        setWeb3Address(firstAddress)
-      }
-    }
-  }, [wallet])
 
   return (
     <div className="dashboard">
@@ -202,17 +166,10 @@ export const Dashboard = () => {
         </div>
 
         {/* my external wallet */}
-        <div className="box">
-          <div className="title">My external wallet</div>
-          {web3Address ? <div className="data">
-            <div> {truncateAddress(web3Address)}</div>
-            {/* <button disabled={requestingWallet} onClick={() => requestWallet()}>Request ownership</button> */}
-          </div>
-            : <button onClick={() => connect()}>Connect</button>
-          }
-          
-        </div>
-          
+        <Web3
+          refresh={refresh}
+        />
+    
         {/* transactions list */}
         {did && <TransactionsList
           ownerSafeData={ownerSafeData}
@@ -221,6 +178,7 @@ export const Dashboard = () => {
           confirmFn={confirmByCode}
           executeFn={execute}
         />}
+        
     </div>
   
     {/* logout */}

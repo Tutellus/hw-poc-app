@@ -1,6 +1,6 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { update as updateDID, get as getOneDID } from '../../repositories/dids'
+import { update as updateDID, getOne as getOneDID } from '../../repositories/dids'
 import { getSafeData } from '../../utils/safe.js'
 
 export default async function handler(req, res) {
@@ -14,7 +14,6 @@ export async function execute({
   signature,
   user,
 }) {
-  
   try {
     // Check if the message is valid
     const address = ethers.utils.verifyMessage(message, signature)
@@ -24,8 +23,6 @@ export async function execute({
       }
     }
 
-    console.log('address', address)
-    
     // Check if the DID exists
     const did = await getOneDID({ userId: user._id })
     if(!did) {
@@ -34,7 +31,11 @@ export async function execute({
       }
     }
 
-    console.log('did', did)
+    if (did.externalWallet) {
+      return {
+        error: 'DID already has an external wallet'
+      }
+    }
 
     // Check if the address is already an owner
     const ownerSafeData = await getSafeData(config.chainId, did.ownerMS)
@@ -45,31 +46,20 @@ export async function execute({
       }
     }
 
-    console.log('ownerSafeData', ownerSafeData)
-
-    // Check if the address is valid
-    const requestedOwners = did.requestedOwners || [];
-    const requestedAddresses = requestedOwners.map(owner => owner.address.toLowerCase());
-    if (!requestedAddresses.includes(address.toLowerCase())) {
-      const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-      requestedOwners.push({
-        address,
-        code2fa,
-      });
-    } else {
-      return {
-        error: 'Address already requested'
-      }
-    }
+    const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
     // Update the DID with the new requested owner
-    await updateDID({
+    const response = await updateDID({
       id: did._id,
       fields: {
-        requestedOwners,
+        externalWallet: address,
+        externalWalletSignature: signature,
+        externalWalletStatus: 'PENDING',
+        externalWallet2fa: code2fa,
       },
     });
-    return did;
+    console.log('response', response)
+    return response;
   } catch (error) {
     console.error(error)
     return {
