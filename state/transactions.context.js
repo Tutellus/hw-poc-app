@@ -27,7 +27,7 @@ function TransactionsProvider(props) {
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   
   const loadTransactions = async () => {
-    if (session && did) {
+    if (session && did && !loadingTransactions) {
       setLoadingTransactions(true);
       const response = await fetch('/api/usecases/txs/getByUser', {
         method: 'POST',

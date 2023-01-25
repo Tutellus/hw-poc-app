@@ -40,7 +40,6 @@ export const ConfirmForm = ({
       tx,
       signer,
     });
-    console.log('signature', signature)
     await confirmBySignature(tx, signature)
     onConfirmed()
     setConfirmingBySignature(false)

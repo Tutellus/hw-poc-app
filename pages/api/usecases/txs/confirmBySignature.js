@@ -1,8 +1,9 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
-import { getSafeData, push } from '../../utils/safe'
-import { getOne as getOneTx, update as updateTx } from '../../repositories/txs';
+import { getSafeData } from '../../utils/safe'
+import { getOne as getOneTx } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
+import { execute as confirm } from './confirm';
 
 export default async function handler(req, res) {
   const { txId, signature, user } = req.body;
@@ -45,32 +46,19 @@ async function execute({ txId, signature, user }) {
     const ownerSafeData = await getSafeData(chainId, did.ownerMS)
     const lcOwners = ownerSafeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {
-      console.error('Invalid signature')
       return {
         error: 'Invalid signature'
       }
     }
 
-    // Check if the signature has already been used
-    const signatures = tx.signatures || [];
-    if (!signatures.includes(signature)) {
-      signatures.push(signature);
-    }
-
-    // Push the transaction to the Safe
-    await push(chainId, did.ownerMS, {
-      ...tx,
+    // Confirm the transaction
+    await confirm({
+      tx,
       signature,
-      sender,
+      signerAddress: sender,
+      safe: did.ownerMS,
     })
 
-    // Update the transaction in the database
-    return await updateTx({
-      id: tx._id,
-      fields: {
-        signatures,
-      }
-    })
   } catch (error) {
     console.error(error)
     return {};

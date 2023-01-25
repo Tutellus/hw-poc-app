@@ -1,8 +1,9 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
-import { push, sign } from '../../utils/safe'
-import { getOne as getOneTx, update as updateTx } from '../../repositories/txs';
+import { getOne as getOneTx } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
+import { execute as confirm } from './confirm';
+import { sign } from '../../utils/safe';
 
 export default async function handler(req, res) {
   const { txId, code, user } = req.body;
@@ -43,32 +44,19 @@ async function execute({ txId, code, user }) {
       }
     }
 
-    // Check if the signature has already been used
-    const { ownerKeys, chainId } = config
+    // Signing
+    const { ownerKeys } = config
     const owner1Wallet = new ethers.Wallet(ownerKeys[1])  
     const signature = sign(tx.contractTransactionHash, owner1Wallet)
-    const signatures = tx.signatures || [];
-    if (!signatures.includes(signature)) {
-      signatures.push(signature);
-    }
 
-    // Push the transaction to the Safe
-    await push(chainId, did.ownerMS, {
-      ...tx,
+    // Confirm the transaction
+    await confirm({
+      tx,
       signature,
-      signatures: undefined,
-      did: undefined,
-      _id: undefined,
-      sender: owner1Wallet.address,
+      signerAddress: owner1Wallet.address,
+      safe: did.ownerMS,
     })
-
-    // Update the transaction
-    return await updateTx({
-      id: tx._id,
-      fields: {
-        signatures,
-      }
-    })
+    return true
   } catch (error) {
     console.error(error)
     return {};
