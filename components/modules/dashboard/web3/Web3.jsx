@@ -71,6 +71,8 @@ export const Web3 = () => {
     }
   }, [did])
 
+  console.log('did', did)
+
   return (
     <div className="box">
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { utils, constants, Contract } from 'ethers';
+import { utils, constants, Contract, Signer, ethers } from 'ethers';
 import GnosisSafe from '../abi/GnosisSafe.json';
 
 // ///////////////////////////////////////////////////////////////
@@ -15,10 +15,7 @@ const query = async (method, url, data) => {
     });
   } catch (error) {
     console.error('ERROR - QUERY:', error);
-    if (error.response.data) {
-      throw new Error(JSON.stringify(error.response.data));
-    }
-    return undefined;
+    return {};
   }
 };
 
@@ -86,14 +83,78 @@ async function push (chainId, safe, data) {
   return result;
 };
 
-function sign (hash, signer) {
-  return utils.joinSignature(signer._signingKey().signDigest(hash));
-};
+function sign ({
+  safe,
+  chainId,
+  to,
+  value,
+  data,
+  operation,
+  safeTxGas,
+  baseGas,
+  gasPrice,
+  gasToken,
+  refundReceiver,
+  nonce,
+  signer,
+}) {
+  try {
+    const domain = {
+      chainId,
+      verifyingContract: safe,
+    };
+    const types = {
+      SafeTx: [
+        { name: "to", type: "address" },
+        { name: "value", type: "uint256" },
+        { name: "data", type: "bytes" },
+        { name: "operation", type: "uint8" },
+        { name: "safeTxGas", type: "uint256" },
+        { name: "baseGas", type: "uint256" },
+        { name: "gasPrice", type: "uint256" },
+        { name: "gasToken", type: "address" },
+        { name: "refundReceiver", type: "address" },
+        { name: "nonce", type: "uint256" },
+      ],
+    };
+    const message = {
+      to,
+      value,
+      data,
+      operation,
+      safeTxGas,
+      baseGas,
+      gasPrice,
+      gasToken,
+      refundReceiver,
+      nonce,
+    };
 
-async function create (chainId, safe, data, signer) {
-  const safeContract = new Contract(safe, GnosisSafe.abi, signer);
+    const contractTransactionHash = utils._TypedDataEncoder.hash(domain, types, message);
+    return {
+      signature: utils.joinSignature(signer._signingKey().signDigest(hash)),
+      contractTransactionHash,
+    } 
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+async function create ({
+  chainId,
+  safe,
+  data,
+  signer,
+  nonce,
+}) {
+
+  if (!nonce) {
+    nonce = await getNextNonce(chainId, safe);
+  }
+
   const { safeTxGas } = await estimateTx(chainId, safe, data);
-  const nonce = await getNextNonce(chainId, safe);
+
   const txData = {
     ...data,
     safe,
@@ -104,21 +165,14 @@ async function create (chainId, safe, data, signer) {
     refundReceiver: constants.AddressZero,
     nonce,
     sender: signer.address,
-    origin: 'POC',
+    origin: 'Shared Wallet Concept',
   };
-  const contractTransactionHash = await safeContract.getTransactionHash(
-    txData.to,
-    txData.value,
-    txData.data,
-    txData.operation,
-    txData.safeTxGas,
-    txData.baseGas,
-    txData.gasPrice,
-    txData.gasToken,
-    txData.refundReceiver,
-    txData.nonce,
-  );
-  const signature = sign(contractTransactionHash, signer);
+  const { signature, contractTransactionHash } = sign({
+    safe,
+    chainId,
+    ...txData,
+    signer,
+  });
   const result = {
     ...txData,
     contractTransactionHash,
@@ -127,9 +181,18 @@ async function create (chainId, safe, data, signer) {
   return result;
 };
 
+function sortSignatures (signatures, contractTransactionHash) {
+  const sortedSignatures = signatures.sort((a, b) => {
+    const aAddress = ethers.utils.recoverAddress(contractTransactionHash, a)
+    const bAddress = ethers.utils.recoverAddress(contractTransactionHash, b)
+    return aAddress.localeCompare(bAddress)
+  })
+}
+
 export {
   getSafeData,
   sign,
   create,
   push,
+  sortSignatures,
 };

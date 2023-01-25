@@ -1,6 +1,7 @@
 import { config } from '../../config';
-import { push, sign } from '../../utils/safe'
-import { update as updateTx } from '../../repositories/txs';
+import { getSafeData, push } from '../../utils/safe'
+import { markAsExecuting, update as updateTx } from '../../repositories/txs';
+import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction';
 
 export async function execute({ 
   tx,
@@ -22,13 +23,25 @@ export async function execute({
       sender: signerAddress,
     })
 
-    // Update the transaction
     await updateTx({
       id: tx._id,
       fields: {
         signatures,
       }
     })
+
+    // Update the transaction
+    const { threshold, nonce } = await getSafeData(chainId, safe)
+
+    // Check if the transaction has enough signatures and try execute
+    if (signatures.length >= threshold && nonce === tx.nonce) {
+      await markAsExecuting(tx._id)
+
+      safeExecuteOwnerTransaction({
+        txId: tx._id,
+      })
+      
+    } 
   } catch (error) {
     console.error(error)
     return {};

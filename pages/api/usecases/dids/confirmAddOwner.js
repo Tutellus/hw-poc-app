@@ -1,10 +1,8 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { markAsExecuting, update as updateTx } from '../../repositories/txs'
-import { update as updateDID, getOne as getOneDID } from '../../repositories/dids'
-import { create, getSafeData, push, sign } from '../../utils/safe.js'
-import { execute as executeOwnerTransaction } from '../safe/executeOwnerTransaction.js'
-
+import { getOne as getOneDID } from '../../repositories/dids'
+import { create, getSafeData, sign, sortSignatures } from '../../utils/safe.js'
+import { execute as executeTx } from '../safe/execute.js'
 import GnosisSafe from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
@@ -60,61 +58,33 @@ export async function execute({
       ]
     );
 
-    // Create tx confirming
-    const tx = await updateTx({
-      fields: {
-        did: did._id,
-        code2fa: code,
-        originalData,
-      },
-    });
-
-    const data = {
-      to: safe,
+    const tx = await create({
+      chainId,
+      safe,
       data: originalData,
-      value: 0,
-      operation: 0,
-    };
-
-    const result = await create(chainId, safe, data, owner0Wallet)
-    await push(chainId, safe, result)
-
-    const signature2 = sign(result.contractTransactionHash, owner1Wallet)
-
-    await push(chainId, did.ownerMS, {
-      ...result,
-      signature: signature2,
-      // signatures: undefined,
-      // did: undefined,
-      // _id: undefined,
-      sender: owner1Wallet.address,
+      signer: owner0Wallet,
     });
 
-    const signatures = [result.signature, signature2];
+    const { signature: signature0, contractTransactionHash } = sign({
+      safe,
+      chainId,
+      ...tx,
+      signer: owner0Wallet,
+    })
 
-    // Create tx confirming
-    await updateTx({
-      id: tx._id,
-      fields: {
-        ...result,
-        signatures,
-      },
-    });
+    const { signature: signature1 } = sign({
+      safe,
+      chainId,
+      ...tx,
+      signer: owner1Wallet,
+    })
 
-    // Mark tx as executing
-    await markAsExecuting(tx._id)
+    const signatures = sortSignatures([signature0.signature, signature1.signature], contractTransactionHash)
 
-    // Execute tx
-    await executeOwnerTransaction({
-      txId: tx._id,
-    });
-
-    // Update DID
-    await updateDID({
-      id: did._id,
-      fields: {
-        externalWalletStatus: 'CONFIRMED',
-      },
+    await executeTx({
+      safe,
+      ...tx,
+      signatures,
     })
 
   } catch (error) {

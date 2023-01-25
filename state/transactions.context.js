@@ -29,15 +29,17 @@ function TransactionsProvider(props) {
   const loadTransactions = async () => {
     if (session && did && !loadingTransactions) {
       setLoadingTransactions(true);
-      const response = await fetch('/api/usecases/txs/getByUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user: session }),
-      })
-      const { txs: items } = await response.json()
-      setTransactions(items.reverse());
+      setTimeout(async () => {
+        const response = await fetch('/api/usecases/txs/getByUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user: session }),
+        })
+        const { txs: items } = await response.json()
+        setTransactions(items.reverse());
+      }, 2000)
       setLoadingTransactions(false);
     }
   }
@@ -131,11 +133,13 @@ function TransactionsProvider(props) {
   }, [transactions]);
 
   useEffect(() => {
-    const interval = setInterval(() => loadTransactions(), 3000);
+    const interval = setInterval(() => {
+      loadTransactions();
+    }, 2000);
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [transactions]);
 
   const memoizedData = useMemo(
     () => ({

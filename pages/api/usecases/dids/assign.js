@@ -21,8 +21,7 @@ export async function execute({ userId }) {
     }
     did = await getOneDID({ status: 'PENDING' });
 
-    if (did) {
-    } else {
+    if (!did) {
       did = await executeCreate();
     }
 

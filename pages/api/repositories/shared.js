@@ -119,32 +119,44 @@ async function searchPaginated({ collection, pipeline = [], pagination = {} }) {
 }
 
 async function search(collection, pipeline) {
+  try {
+    const result = await mongoDB({
+      mongoUri,
+    }).aggregate(collection, pipeline);
+  
+    return result;
+  } catch (error) {
+    return [];
+  }
 
-  const result = await mongoDB({
-    mongoUri,
-  }).aggregate(collection, pipeline);
-
-  return result;
 }
 
 async function updateOne(collection, filter, data) {
+  try {
+    const result = await mongoDB({
+      mongoUri,
+    }).updateOne(collection, filter, data);
+  
+    return result;
+  } catch (error) {
+    return null;
+  }
 
-  const result = await mongoDB({
-    mongoUri,
-  }).updateOne(collection, filter, data);
-
-  return result;
 }
 
 async function getOne(collection, filter) {
+  try {
+    const pipeline = [
+      { $match: filter },
+    ];
+  
+    const result = await searchFirst(collection, pipeline);
+  
+    return result;
+  } catch (error) {
+    return null;
+  }
 
-  const pipeline = [
-    { $match: filter },
-  ];
-
-  const result = await searchFirst(collection, pipeline);
-
-  return result;
 }
 
 async function deleteOne(collection, filter) {

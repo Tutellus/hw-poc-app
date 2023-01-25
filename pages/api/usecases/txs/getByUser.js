@@ -10,8 +10,7 @@ export default async function handler(req, res) {
 export async function execute({ user }) {
   const did = await getDID({ userId: user._id });
   if (!did) {
-    res.status(404).json({ error: 'DID not found' });
-    return;
+    return [];
   }
   const pipeline = [
     {

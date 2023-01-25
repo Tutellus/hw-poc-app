@@ -46,7 +46,7 @@ async function execute({ txId, code, user }) {
 
     // Signing
     const { ownerKeys } = config
-    const owner1Wallet = new ethers.Wallet(ownerKeys[1])  
+    const owner1Wallet = new ethers.Wallet(ownerKeys[1]) 
     const signature = sign(tx.contractTransactionHash, owner1Wallet)
 
     // Confirm the transaction
@@ -59,6 +59,6 @@ async function execute({ txId, code, user }) {
     return true
   } catch (error) {
     console.error(error)
-    return {};
+    return false;
   }
 }

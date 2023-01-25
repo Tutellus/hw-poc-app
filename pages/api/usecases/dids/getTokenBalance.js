@@ -15,8 +15,7 @@ export async function execute({ token, user }) {
   const tokenContract = new ethers.Contract(token, ERC20Upgradeable.abi, provider)
   const did = await executeGetByUser({ user })
   if (!did) {
-    res.status(404).json({ error: 'DID not found' });
-    return;
+    return '0.0';
   }
   const [balance, decimals] = await Promise.all([
     tokenContract.balanceOf(did.address),
