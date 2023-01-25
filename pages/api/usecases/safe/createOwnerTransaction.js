@@ -2,6 +2,7 @@ import { config } from '../../config'
 import { ethers } from 'ethers'
 import { create, push } from '../../utils/safe'
 import { wrapOwner } from '../../utils/did';
+import { getOne as getOneDID } from '../../repositories/dids';
 import { update as updateTx, getOne as getOneTx, markAsCreated } from '../../repositories/txs';
 
 export async function execute ({
@@ -58,7 +59,7 @@ export async function execute ({
   const owner0Wallet = new ethers.Wallet(ownerKeys[0], provider)
 
   const result = await create(chainId, safe, txData, owner0Wallet)
-  await push(chainId, safe, tx)
+  await push(chainId, safe, result)
 
   const signatures = [result.signature];
 

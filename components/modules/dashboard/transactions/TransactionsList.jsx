@@ -17,9 +17,7 @@ export const TransactionsList = () => {
     }} 
   >
     <div className="title">Transactions</div>
-    {loadingTransactions
-      ? <div>Loading transactions...</div>
-      :  ownerSafeData && transactions?.length > 0
+    {ownerSafeData && transactions?.length > 0
         ? <table>
           <thead>
               <th>#</th>

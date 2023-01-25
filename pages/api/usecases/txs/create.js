@@ -22,7 +22,7 @@ async function execute({
       res.status(404).json({ error: 'DID not found' });
       return;
     }
-
+    
     const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
     const tx = await updateTx({ fields: {
@@ -32,14 +32,14 @@ async function execute({
     } })
     
     safeCreateOwnerTransaction({
-      tx,
+      txId: tx._id,
       destination,
       data,
       value,
       gas,
     })
 
-    return { tx };
+    return true;
   } catch (error) {
     console.error(error)
     return error;

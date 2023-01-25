@@ -77,17 +77,19 @@ function SessionProvider(props) {
   }
 
   const loadOwnerSafeData = async () => {
-    const response = await fetch('/api/usecases/safe/getSafeData', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        safe: did.ownerMS
-      }),
-    })
-    const { safeData } = await response.json()
-    setOwnerSafeData(safeData)
+    if (did) {
+      const response = await fetch('/api/usecases/safe/getSafeData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          safe: did.ownerMS
+        }),
+      })
+      const { safeData } = await response.json()
+      setOwnerSafeData(safeData)
+    }
   }
 
   const logOut = () => {
@@ -135,9 +137,7 @@ function SessionProvider(props) {
   }, [session]);
 
   useEffect(() => {
-    if (did) {
-      loadOwnerSafeData();
-    }
+    loadOwnerSafeData();
   }, [did])
 
   useEffect(() => {

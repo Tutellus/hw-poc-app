@@ -25,17 +25,19 @@ function TransactionsProvider(props) {
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   
   const loadTransactions = async () => {
-    setLoadingTransactions(true);
-    const response = await fetch('/api/usecases/txs/getByUser', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ user: session }),
-    })
-    const { txs: items } = await response.json()
-    setTransactions(items.reverse());
-    setLoadingTransactions(false);
+    if (session && did) {
+      setLoadingTransactions(true);
+      const response = await fetch('/api/usecases/txs/getByUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user: session }),
+      })
+      const { txs: items } = await response.json()
+      setTransactions(items.reverse());
+      setLoadingTransactions(false);
+    }
   }
 
   const confirmByCode = async (tx, code) => {
@@ -113,14 +115,19 @@ function TransactionsProvider(props) {
   }
 
   useEffect(() => {
-    if (session && did) {
-      loadTransactions();
-    }
+    loadTransactions();
   }, [did]);
 
   useEffect(() => {
     loadOwnerSafeData();
   }, [transactions]);
+
+  useEffect(() => {
+    const interval = setInterval(() => loadTransactions(), 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const memoizedData = useMemo(
     () => ({

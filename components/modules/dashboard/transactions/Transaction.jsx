@@ -13,10 +13,10 @@ export const Transaction = ({
   const { executingTransaction, executeTransaction } = useTransactions()
 
   const isExecuted = tx.status === 'EXECUTED'
-  const canConfirm = !isExecuted && tx.signatures.length < ownerSafeData.threshold
+  const canConfirm = !isExecuted && tx.signatures?.length < ownerSafeData.threshold
   const canExecute =
     !isExecuted
-    && tx.signatures.length >= ownerSafeData.threshold
+    && tx.signatures?.length >= ownerSafeData.threshold
     && ownerSafeData.nonce === tx.nonce
 
   const handleConfirm = async () => {
@@ -43,7 +43,7 @@ export const Transaction = ({
       >{tx.nonce}</div>
       <div>{tx.status}</div>
       {/* <div>{tx}</div> */}
-      <div>{`${tx.signatures.length} / ${ownerSafeData.threshold}`}</div>
+      <div>{`${tx.signatures?.length || 0} / ${ownerSafeData.threshold}`}</div>
       {canExecute && <button disabled={executingTransaction} onClick={handleExecute}>{executingTransaction ? 'Executing...' : 'Execute'}</button>}
       {canConfirm && <button onClick={handleConfirm}>Confirm</button>}
       {isExecuted && <button
