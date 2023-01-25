@@ -47,13 +47,18 @@ async function execute({ txId, code, user }) {
     // Signing
     const { ownerKeys } = config
     const owner1Wallet = new ethers.Wallet(ownerKeys[1]) 
-    const signature = sign(tx.contractTransactionHash, owner1Wallet)
+
+    const { signature, contractTransactionHash } = sign({
+      safe: did.ownerMS,
+      ...tx,
+      signer: owner1Wallet,
+    })
 
     // Confirm the transaction
     await confirm({
       tx,
       signature,
-      signerAddress: owner1Wallet.address,
+      contractTransactionHash,
       safe: did.ownerMS,
     })
     return true

@@ -1,12 +1,11 @@
 import { config } from '../../config';
-import { getSafeData, push } from '../../utils/safe'
+import { getSafeData } from '../../utils/safe'
 import { markAsExecuting, update as updateTx } from '../../repositories/txs';
 import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction';
 
 export async function execute({ 
   tx,
   safe,
-  signerAddress,
   signature,
 }) {
   try {
@@ -15,13 +14,6 @@ export async function execute({
     if (!signatures.includes(signature)) {
       signatures.push(signature);
     }
-
-    // Push the transaction to the Safe
-    await push(chainId, safe, {
-      ...tx,
-      signature,
-      sender: signerAddress,
-    })
 
     await updateTx({
       id: tx._id,
@@ -37,9 +29,7 @@ export async function execute({
     if (signatures.length >= threshold && nonce === tx.nonce) {
       await markAsExecuting(tx._id)
 
-      safeExecuteOwnerTransaction({
-        txId: tx._id,
-      })
+      safeExecuteOwnerTransaction({ txId: tx._id })
       
     } 
   } catch (error) {

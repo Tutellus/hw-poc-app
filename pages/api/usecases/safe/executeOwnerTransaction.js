@@ -3,6 +3,8 @@ import { config } from '../../config';
 import { getSafeData } from '../../utils/safe'
 import { getOne as getOneTx, update as updateTx, markAsExecuted } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
+import { execute as executeTx } from './execute';
+
 import GnosisSafe from '../../abi/GnosisSafe.json'
 
 export async function execute({
@@ -26,7 +28,7 @@ export async function execute({
   }
 
   // Check if tx is executable
-  const { chainId, serverKey, rpcUrl } = config
+  const { chainId } = config
   const { threshold } = await getSafeData(chainId, did.ownerMS)
   if (tx.signatures.length < threshold) {
     return {
@@ -34,38 +36,42 @@ export async function execute({
     }
   }
 
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
-  const serverWallet = new ethers.Wallet(serverKey, provider)
-  const safeContract = new ethers.Contract(did.ownerMS, GnosisSafe.abi, serverWallet)
+  // Execute the transaction
+  const receipt = await executeTx(tx);
 
-  const sortedSignatures = tx.signatures.sort((a, b) => {
-    const aAddress = ethers.utils.recoverAddress(tx.contractTransactionHash, a)
-    const bAddress = ethers.utils.recoverAddress(tx.contractTransactionHash, b)
-    return aAddress.localeCompare(bAddress)
-  })
+  // const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
+  // const serverWallet = new ethers.Wallet(serverKey, provider)
+  // const safeContract = new ethers.Contract(did.ownerMS, GnosisSafe.abi, serverWallet)
 
-  const signaturesBytes = ethers.utils.solidityPack(
-    sortedSignatures.map(() => 'bytes'),
-    sortedSignatures
-  );
+  // const sortedSignatures = tx.signatures.sort((a, b) => {
+  //   const aAddress = ethers.utils.recoverAddress(tx.contractTransactionHash, a)
+  //   const bAddress = ethers.utils.recoverAddress(tx.contractTransactionHash, b)
+  //   return aAddress.localeCompare(bAddress)
+  // })
 
-  const executeTx = await safeContract.execTransaction(
-    tx.to,
-    tx.value,
-    tx.data,
-    tx.operation,
-    tx.safeTxGas,
-    tx.baseGas,
-    tx.gasPrice,
-    tx.gasToken || constants.AddressZero,
-    tx.refundReceiver || constants.AddressZero,
-    signaturesBytes
-  );
-  const receipt = await executeTx.wait()
+  // const signaturesBytes = ethers.utils.solidityPack(
+  //   sortedSignatures.map(() => 'bytes'),
+  //   sortedSignatures
+  // );
+
+  // const executeTx = await safeContract.execTransaction(
+  //   tx.to,
+  //   tx.value,
+  //   tx.data,
+  //   tx.operation,
+  //   tx.safeTxGas,
+  //   tx.baseGas,
+  //   tx.gasPrice,
+  //   tx.gasToken || constants.AddressZero,
+  //   tx.refundReceiver || constants.AddressZero,
+  //   signaturesBytes
+  // );
+  // const receipt = await executeTx.wait()
+
   await updateTx({
     id: txId,
     fields: {
-      executionTxHash: executeTx.hash,
+      executionTxHash: receipt.executionTxHash,
       receipt,
     },
   })
