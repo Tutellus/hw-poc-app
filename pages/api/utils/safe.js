@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { utils, constants, Contract, Signer, ethers } from 'ethers';
-import GnosisSafe from '../abi/GnosisSafe.json';
+import { utils, constants, ethers } from 'ethers';
+import { get as getTxs } from '../repositories/txs';
 
 // ///////////////////////////////////////////////////////////////
 // PRIVATE METHODS
@@ -42,15 +42,6 @@ const getNetworkKey = (chainId) => {
 
 const getUrl = (chainId) => `https://safe-transaction.${getNetworkKey(chainId)}gnosis.io/api/v1`;
 
-const getTransactions = async (chainId, safe) => {
-  const baseUrl = getUrl(chainId);
-  const url = `${baseUrl}/safes/${safe}/multisig-transactions`;
-  const { data: result } = await query('GET', url);
-  return {
-    transactions: result.results,
-  };
-};
-
 const estimateTx = async (chainId, safe, data) => {
   const baseUrl = getUrl(chainId);
   const url = `${baseUrl}/safes/${safe}/multisig-transactions/estimations/`;
@@ -58,11 +49,12 @@ const estimateTx = async (chainId, safe, data) => {
   return response.data;
 };
 
-const getNextNonce = async (chainId, safe) => {
-  const { transactions } = await getTransactions(chainId, safe);
-  return transactions?.length > 0
-    ? (transactions[0].nonce || 0) + 1
-    : 0;
+const getNextNonce = async (safe) => {
+  const pipeline = [
+    { $match: { safe } },
+  ]
+  const transactions = await getTxs(pipeline) || [];
+  return transactions.length
 };
 
 // ///////////////////////////////////////////////////////////////
@@ -73,13 +65,6 @@ async function getSafeData (chainId, safe) {
   const baseUrl = getUrl(chainId);
   const url = `${baseUrl}/safes/${safe}`;
   const { data: result } = await query('GET', url);
-  return result;
-};
-
-async function push (chainId, safe, data) {
-  const baseUrl = getUrl(chainId);
-  const url = `${baseUrl}/safes/${safe}/multisig-transactions/`;
-  const { data: result } = await query('POST', url, data);
   return result;
 };
 
@@ -150,7 +135,7 @@ async function create ({
 }) {
 
   if (!nonce) {
-    nonce = await getNextNonce(chainId, safe);
+    nonce = await getNextNonce(safe);
   }
 
   const { safeTxGas } = await estimateTx(chainId, safe, data);
@@ -194,6 +179,5 @@ export {
   getSafeData,
   sign,
   create,
-  push,
   sortSignatures,
 };

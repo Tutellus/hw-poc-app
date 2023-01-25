@@ -112,6 +112,7 @@ export async function execute({
         chainId,
         signatures,
         executionTxHash: receipt.transactionHash,
+        safe,
       },
     })
 
