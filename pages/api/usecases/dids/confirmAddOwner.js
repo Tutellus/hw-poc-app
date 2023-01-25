@@ -89,7 +89,7 @@ export async function execute({
 
     const signatures = [signature0, signature1];
     
-    await executeTx({
+    const receipt = await executeTx({
       safe,
       ...tx,
       signatures: sortSignatures({
@@ -111,6 +111,7 @@ export async function execute({
         ...tx,
         chainId,
         signatures,
+        executionTxHash: receipt.transactionHash,
       },
     })
 
