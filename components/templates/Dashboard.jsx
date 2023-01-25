@@ -1,49 +1,33 @@
 import { useSession } from "@/state/session.context";
-import { useTransactions } from "@/state/transactions.context";
-import { truncateAddress } from "@/utils/address";
-import { getExplorerUrl } from "@/utils/explorer";
+
 import { TransactionsList } from "../modules/dashboard/transactions/TransactionsList";
 import { Web3 } from "../modules/dashboard/web3/Web3";
-import { Tokens } from "./Tokens";
+import { Tokens } from "../modules/dashboard/tokens/Tokens";
+import { Wallet } from "../modules/dashboard/wallet/Wallet";
+import { Account } from "../modules/dashboard/account/Account";
 
 export const Dashboard = () => {
 
-  const { session, did, logOut, loadDid, loadingDid, assigningDid } = useSession();
-  const { creatingTransaction, createTransaction } = useTransactions()
+  const { logOut } = useSession();
 
   return (
     <div className="dashboard">
       <div className="grid">
+
         {/* my email */}
-        {session && <div className="box">
-          <div className="title">My account</div>
-          <div className="data">{session.email}</div>
-        </div>}
+        {<Account/>}
 
         {/* my wallet */}
-        <div className="box">
-          <div className="title">My wallet</div>
-          {assigningDid
-            ? <div>Assigning wallet...</div>
-            : loadingDid
-              ? <div>Loading wallet...</div>
-              : did
-                ? <div
-                    className="data"
-                    onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address), '_blank')}
-                  >{truncateAddress(did.address)}</div>
-                : <button onClick={() => loadDid()}>Connect</button>
-            }
-        </div>
+        <Wallet/>
 
         {/* your tokens */}
-        <Tokens />
+        <Tokens/>
 
         {/* my external wallet */}
         <Web3/>
     
         {/* transactions list */}
-        {did && <TransactionsList/>}
+        {<TransactionsList/>}
         
     </div>
   

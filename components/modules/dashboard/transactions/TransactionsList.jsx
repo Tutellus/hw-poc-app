@@ -8,6 +8,8 @@ export const TransactionsList = () => {
   const { ownerSafeData } = useSession();
   const { loadingTransactions, transactions } = useTransactions();
 
+  if (!ownerSafeData) return null;
+
   return (
   <div className="box"
     style={{
