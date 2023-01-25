@@ -126,7 +126,7 @@ function TransactionsProvider(props) {
     } else {
       setTransactions([]);
     }
-  }, [did]);
+  }, [session, did]);
 
   useEffect(() => {
     loadOwnerSafeData();
