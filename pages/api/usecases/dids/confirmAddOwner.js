@@ -1,6 +1,7 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
 import { getOne as getOneDID, update as updateDID } from '../../repositories/dids'
+import { update as updateTx, markAsExecuting, markAsExecuted } from '../../repositories/txs'
 import { create, getSafeData, sign, sortSignatures } from '../../utils/safe.js'
 import { execute as executeTx } from '../safe/execute.js'
 import GnosisSafe from '../../abi/GnosisSafe.json'
@@ -103,6 +104,17 @@ export async function execute({
         externalWalletStatus: 'CONFIRMED',
       }
     })
+
+    const tx2 = await updateTx({
+      fields: {
+        did: did._id,
+        ...tx,
+        chainId,
+        signatures,
+      },
+    })
+
+    await markAsExecuted(tx2._id)
 
   } catch (error) {
     console.error(error)
