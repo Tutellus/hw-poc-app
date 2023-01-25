@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useSession } from "@/state/session.context";
+import { useTransactions } from "@/state/transactions.context";
 import { Transaction } from "./Transaction"
 
-export const TransactionsList = ({
-  ownerSafeData,
-  transactions,
-  loadingTransactions,
-  confirmFn,
-  executeFn,
-}) => {
+export const TransactionsList = () => {
+
+  const { ownerSafeData } = useSession();
+  const { loadingTransactions, transactions } = useTransactions();
+
   return (
   <div className="box"
     style={{
@@ -24,15 +25,9 @@ export const TransactionsList = ({
               <th>Confirmations</th>
               <th>Actions</th>
           </thead>
-          <tbody>
-            {transactions.map((tx, index) => <Transaction
-              key={index}
-              tx={tx}
-              ownerSafeData={ownerSafeData}
-              confirmFn={confirmFn}
-              executeFn={executeFn}
-            />)}
-          </tbody>
+          <div className="table-body">
+            {transactions.map((tx, index) => <Transaction key={index} tx={tx} />)}
+          </div>
         </table>
         : <div>No transactions yet</div>
     }

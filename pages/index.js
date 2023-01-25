@@ -1,8 +1,8 @@
-import { useMainContext } from "@/state/main.context"
+import { useSession } from "@/state/session.context"
 import { useEffect } from "react";
 
 export default function Home() {
-  const { redirect } = useMainContext();
+  const { redirect } = useSession();
 
   // const start = async () => {
   //   await redirect();

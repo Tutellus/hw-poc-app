@@ -64,6 +64,7 @@ async function execute({
       signatures,
       originalData: data,
       code2fa,
+      chainId,
     };
     await updateTx({ fields })
     return { tx };

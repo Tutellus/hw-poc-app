@@ -1,10 +1,10 @@
-import { useMainContext } from "@/state/main.context";
+import { useSession } from "@/state/session.context";
 import { useState } from "react";
 import { VerifyForm } from "../modules/VerifyForm";
 
 export const Verify = () => {
 
-  const { session, verifying, verifyUser, logOut } = useMainContext();
+  const { session, verifying, verifyUser, logOut } = useSession();
   const [code, setCode] = useState(session?.verifyCode || '');
 
   const codeChangeFn = (e) => {

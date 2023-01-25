@@ -16,6 +16,7 @@ async function execute({ txId, signature, user }) {
     // Check if the transaction exists and if it is in a pending state
     const tx = await getOneTx({ _id: txId })
     if (!tx || tx.status !== 'PENDING') {
+      console.error('Transaction not found or not in a pending state')
       return {
         error: 'Transaction not confirmable'
       }
@@ -24,6 +25,7 @@ async function execute({ txId, signature, user }) {
     // Check if the DID exists
     const did = await getOneDID({ _id: tx.did })
     if (!did) {
+      console.error('DID not found')
       return {
         error: 'DID not found'
       }
@@ -31,6 +33,7 @@ async function execute({ txId, signature, user }) {
 
     // Check if the user is the owner of the DID
     if (did.userId !== user._id) {
+      console.error('Unauthorized')
       return {
         error: 'Unauthorized'
       }
@@ -42,6 +45,7 @@ async function execute({ txId, signature, user }) {
     const ownerSafeData = await getSafeData(chainId, did.ownerMS)
     const lcOwners = ownerSafeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {
+      console.error('Invalid signature')
       return {
         error: 'Invalid signature'
       }

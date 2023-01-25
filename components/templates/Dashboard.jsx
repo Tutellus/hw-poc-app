@@ -1,4 +1,5 @@
-import { useMainContext } from "@/state/main.context";
+import { useSession } from "@/state/session.context";
+import { useTransactions } from "@/state/transactions.context";
 import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 import { ethers } from "ethers";
@@ -13,92 +14,29 @@ const tokenAbi = [
 
 export const Dashboard = () => {
 
-  const [processingTx, setProcessingTx] = useState(false)
-
-  const { session, did, logOut, loadDid, loadingDid, assigningDid, loadingTransactions, transactions, loadTransactions } = useMainContext();
+  const { session, did, logOut, loadDid, loadingDid, assigningDid } = useSession();
+  const { creatingTransaction, createTransaction } = useTransactions()
 
   const tokenAddress = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 
   const [balance, setBalance] = useState("0.0")
-  const [ownerSafeData, setOwnerSafeData] = useState(null)
 
-  const getOwnerSafeData = async () => {
-    const response = await fetch('/api/usecases/safe/getSafeData', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        safe: did.ownerMS
-      }),
-    })
-    const { safeData } = await response.json()
-    setOwnerSafeData(safeData)
-  }
-
-  const mintTransaction = async (address, amount) => {
+  const mintTransaction = async () => {
     try {
-    setProcessingTx(true)
-    const rpcUrl = 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06';
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
-    const decimals = await tokenContract.decimals();
-    const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-    const estimateGas = await tokenContract.estimateGas.mint(address, amountBN);
-    const encodedData = tokenContract.interface.encodeFunctionData("mint", [
-      address,
-      amountBN,
-    ]);
-
-    const response = await fetch('/api/usecases/txs/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: session,
-        destination: tokenAddress,
-        data: encodedData,
+      const rpcUrl = 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06';
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+      const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
+      const decimals = 18;
+      const amountBN = ethers.utils.parseUnits('5', decimals);
+      await createTransaction({
+        contract: tokenContract,
+        method: 'mint',
+        args: [did.address, amountBN],
         value: 0,
-        gas: estimateGas,
-      }),
-    })
-    const { tx } = await response.json()
-    loadTransactions()
-    setProcessingTx(false)
+      })
     } catch (error) {
-      console.log(error)
-      setProcessingTx(false)
+      console.error(error)
     }
-  }
-
-  const confirmByCode = async (txId, code) => {
-    await fetch('/api/usecases/txs/confirmByCode', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: session,
-        txId,
-        code,
-      }),
-    })
-    await refresh()
-  }
-
-  const execute = async (txId) => {
-    await fetch('/api/usecases/txs/execute', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: session,
-        txId
-      }),
-    })
-    await refresh()
   }
 
   const getBalance = async () => {
@@ -116,17 +54,9 @@ export const Dashboard = () => {
     setBalance(innerBalance)
   }
 
-  const refresh = async () => {
-    await Promise.all([
-      loadDid(),
-    ])
-  }
-
   useEffect(() => {
     if (session && did) {
       getBalance()
-      loadTransactions()
-      getOwnerSafeData()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [did])
@@ -161,23 +91,15 @@ export const Dashboard = () => {
           <div className="title">My tokens</div>
           <div className="data">
             <div>{balance}</div>
-            <button disabled={processingTx} onClick={() => mintTransaction(did.address, 5)}>Mint 5 TKN</button>
+            <button disabled={creatingTransaction} onClick={mintTransaction}>Mint 5 TKN</button>
           </div>
         </div>
 
         {/* my external wallet */}
-        <Web3
-          refresh={refresh}
-        />
+        <Web3/>
     
         {/* transactions list */}
-        {did && <TransactionsList
-          ownerSafeData={ownerSafeData}
-          loadingTransactions={loadingTransactions}
-          transactions={transactions}
-          confirmFn={confirmByCode}
-          executeFn={execute}
-        />}
+        {did && <TransactionsList/>}
         
     </div>
   

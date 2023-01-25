@@ -1,13 +1,11 @@
-import { useMainContext } from "@/state/main.context";
+import { useSession } from "@/state/session.context";
 import { truncateAddress } from "@/utils/address";
 import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
-export const Web3 = ({
-  refresh
-}) => {
-  const { session, did } = useMainContext();
+export const Web3 = () => {
+  const { session, did, loadDid } = useSession();
   const [{ wallet }, connect] = useConnectWallet();
   const [requestingWallet, setRequestingWallet] = useState(false)
   const [confirmingWallet, setConfirmingWallet] = useState(false)
@@ -37,7 +35,7 @@ export const Web3 = ({
           user: session,
         }),
       });
-      await refresh()
+      await loadDid()
       setRequestingWallet(false)
     }
   }
@@ -54,7 +52,7 @@ export const Web3 = ({
         user: session,
       }),
     })
-    await refresh()
+    await loadDid()
     setConfirmingWallet(false)
   }
 

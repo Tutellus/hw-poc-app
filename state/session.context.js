@@ -2,34 +2,30 @@
 import { useRouter } from "next/router";
 import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react";
 
-const MainContext = createContext({
+const SessionContext = createContext({
   verifying: false,
   loggingIn: false,
   assigningDid: false,
   loadingDid: false,
-  loadingTransactions: false,
-  transactions: [],
   session: null,
   did: null,
+  ownerSafeData: null,
   loadDid: async () => {},
   logIn: async () => {},
   logOut: async () => {},
   verifyUser: async () => {},
-  loadTransactions: async () => {},
   redirect: async () => {},
 });
 
-function MainContextProvider(props) {
-
+function SessionProvider(props) {
   const [verifying, setVerifying] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [assigningDid, setAssigningDid] = useState(false);
   const [loadingDid, setLoadingDid] = useState(false);
   const [session, setSession] = useState(null);
+  const [ownerSafeData, setOwnerSafeData] = useState(null);
   const [did, setDid] = useState(null);
   const router = useRouter();
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
-  const [transactions, setTransactions] = useState([]);
 
   const logIn = async (email) => {
     setLoggingIn(true)
@@ -79,18 +75,18 @@ function MainContextProvider(props) {
     setLoadingDid(false);
   }
 
-  const loadTransactions = async () => {
-    setLoadingTransactions(true);
-    const response = await fetch('/api/usecases/txs/getByUser', {
+  const getOwnerSafeData = async () => {
+    const response = await fetch('/api/usecases/safe/getSafeData', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user: session }),
+      body: JSON.stringify({
+        safe: did.ownerMS
+      }),
     })
-    const { txs: items } = await response.json()
-    setTransactions(items.reverse());
-    setLoadingTransactions(false);
+    const { safeData } = await response.json()
+    setOwnerSafeData(safeData)
   }
 
   const logOut = () => {
@@ -98,7 +94,6 @@ function MainContextProvider(props) {
     setSession(null);
     setDid(null);
     router.push('/');
-    setTransactions([]);
   };
 
   const verifyUser = async (code) => {
@@ -140,9 +135,9 @@ function MainContextProvider(props) {
 
   useEffect(() => {
     if (did) {
-      loadTransactions();
+      getOwnerSafeData();
     }
-  }, [did]);
+  }, [did])
 
   useEffect(() => {
     const localSession = JSON.parse(localStorage.getItem('session'));
@@ -159,29 +154,27 @@ function MainContextProvider(props) {
       loggingIn,
       assigningDid,
       loadingDid,
-      loadingTransactions,
-      transactions,
+      ownerSafeData,
       loadDid,
       logIn,
       logOut,
       verifyUser,
-      loadTransactions,
       redirect,
     }),
-    [session, did, assigningDid, loadingDid, loadingTransactions, transactions, loggingIn, verifying]
+    [session, did, assigningDid, loadingDid, loggingIn, verifying, ownerSafeData]
   );
 
-  return <MainContext.Provider value={memoizedData} {...props} />;
+  return <SessionContext.Provider value={memoizedData} {...props} />;
 }
 
-function useMainContext() {
-  const context = useContext(MainContext);
+function useSession() {
+  const context = useContext(SessionContext);
   if (context === undefined) {
     throw new Error(
-      `useMainContext must be used within a MainContextProvider`
+      `useSessionContext must be used within a SessionContextProvider`
     );
   }
   return context;
 }
 
-export { MainContextProvider, useMainContext };
+export { SessionProvider, useSession };
