@@ -83,7 +83,7 @@ export const Tokens = () => {
             placeholder="Amount"
           />
           <button disabled={!canMint} onClick={mint}>
-            {minting ? 'Processing' : 'Mint'}
+            {minting ? 'Processing...' : 'Mint'}
           </button>
         </div>
       </div>

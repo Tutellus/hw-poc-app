@@ -15,6 +15,7 @@ const SessionContext = createContext({
   logOut: async () => {},
   verifyUser: async () => {},
   redirect: async () => {},
+  loadOwnerSafeData: async () => {},
 });
 
 function SessionProvider(props) {
@@ -75,7 +76,7 @@ function SessionProvider(props) {
     setLoadingDid(false);
   }
 
-  const getOwnerSafeData = async () => {
+  const loadOwnerSafeData = async () => {
     const response = await fetch('/api/usecases/safe/getSafeData', {
       method: 'POST',
       headers: {
@@ -135,7 +136,7 @@ function SessionProvider(props) {
 
   useEffect(() => {
     if (did) {
-      getOwnerSafeData();
+      loadOwnerSafeData();
     }
   }, [did])
 
@@ -160,6 +161,7 @@ function SessionProvider(props) {
       logOut,
       verifyUser,
       redirect,
+      loadOwnerSafeData,
     }),
     [session, did, assigningDid, loadingDid, loggingIn, verifying, ownerSafeData]
   );

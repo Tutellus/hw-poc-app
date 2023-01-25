@@ -11,7 +11,7 @@ export const ConfirmForm = ({
 }) => {
 
   const { ownerSafeData } = useSession()
-  const { confirmByCode, confirmBySignature } = useTransactions()
+  const { confirmingTransaction, confirmByCode, confirmBySignature } = useTransactions()
   const [{ wallet }, connect] = useConnectWallet()
   const [code, setCode] = useState(tx?.code2fa || '');
 

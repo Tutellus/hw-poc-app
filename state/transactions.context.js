@@ -17,7 +17,7 @@ const TransactionsContext = createContext({
 
 function TransactionsProvider(props) {
 
-  const { session, did } = useSession();
+  const { session, did, loadOwnerSafeData } = useSession();
   const [transactions, setTransactions] = useState([]);
   const [executingTransaction, setExecutingTransaction] = useState(false);
   const [confirmingTransaction, setConfirmingTransaction] = useState(false);
@@ -117,6 +117,10 @@ function TransactionsProvider(props) {
       loadTransactions();
     }
   }, [did]);
+
+  useEffect(() => {
+    loadOwnerSafeData();
+  }, [transactions]);
 
   const memoizedData = useMemo(
     () => ({
