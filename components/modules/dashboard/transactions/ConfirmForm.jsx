@@ -11,19 +11,27 @@ export const ConfirmForm = ({
 }) => {
 
   const { ownerSafeData } = useSession()
-  const { confirmingTransaction, confirmByCode, confirmBySignature } = useTransactions()
+  const { confirmByCode, confirmBySignature } = useTransactions()
   const [{ wallet }, connect] = useConnectWallet()
   const [code, setCode] = useState(tx?.code2fa || '');
 
+  const [confirmingByCode, setConfirmingByCode] = useState(false)
+  const [confirmingBySignature, setConfirmingBySignature] = useState(false)
+
   const connectedWallet = wallet?.accounts[0]?.address;
-  const canConfirmBySignature = ownerSafeData?.owners?.map(owner => owner.toLowerCase()).includes(connectedWallet?.toLowerCase())
+
+  const canConfirmByCode = !confirmingByCode && !confirmingBySignature
+  const canConfirmBySignature = !confirmingByCode && !confirmingBySignature && ownerSafeData?.owners?.map(owner => owner.toLowerCase()).includes(connectedWallet?.toLowerCase())
 
   const handleConfirmByCode = async () => {
+    setConfirmingByCode(true)
     await confirmByCode(tx, code)
     onConfirmed()
+    setConfirmingByCode(false)
   }
 
   const handleConfirmBySignature = async () => {
+    setConfirmingBySignature(true)
     const provider = new ethers.providers.Web3Provider(wallet.provider)
     const signer = provider.getSigner()
     const signature = await signTransaction({
@@ -34,6 +42,7 @@ export const ConfirmForm = ({
     });
     await confirmBySignature(tx, signature)
     onConfirmed()
+    setConfirmingBySignature(false)
   }
 
   return (
@@ -54,12 +63,15 @@ export const ConfirmForm = ({
         gap: '1rem',
       }}>
         <button
+          disabled={!canConfirmByCode}
           onClick={handleConfirmByCode}
-        >Confirm by code</button>
+        >{confirmingByCode ? 'Confirming...' : 'Confirm by code'}
+        </button>
         {connectedWallet && <button
           disabled={!canConfirmBySignature}
           onClick={handleConfirmBySignature}
-        >Confirm by signature</button>}
+        >{confirmingBySignature ? 'Confirming...' : 'Confirm by signature'}
+        </button>}
         {!connectedWallet && <button
           onClick={() => connect()}
         >Connect to sign</button>}
