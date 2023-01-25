@@ -13,7 +13,7 @@ async function update ({
       ...fields,
     },
     $setOnInsert: {
-      status: 'PENDING',
+      status: 'CREATING',
     },
   };
   return updateOne(COLLECTION, filter, data)
@@ -27,6 +27,16 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
+async function markAsExecuting (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'EXECUTING',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+}
+
 async function markAsExecuted (id) {
   const filter = { _id: id };
   const data = {
@@ -37,9 +47,21 @@ async function markAsExecuted (id) {
   return updateOne(COLLECTION, filter, data)
 }
 
+async function markAsCreated (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'CREATED',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+}
+
 export {
   update,
   get,
   getOne,
+  markAsExecuting,
   markAsExecuted,
+  markAsCreated,
 };
