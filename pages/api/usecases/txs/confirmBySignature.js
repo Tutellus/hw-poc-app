@@ -61,9 +61,6 @@ async function execute({ txId, signature, user }) {
     await push(chainId, did.ownerMS, {
       ...tx,
       signature,
-      signatures: undefined,
-      did: undefined,
-      _id: undefined,
       sender,
     })
 

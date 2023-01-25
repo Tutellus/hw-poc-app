@@ -90,6 +90,7 @@ export const Web3 = () => {
             gap: '10px',
           }}>
             <input
+              disabled={confirmingWallet}
               type="text"
               value={externalWalletCode}
               placeholder="Insert 2fa code"

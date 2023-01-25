@@ -119,7 +119,7 @@ function TransactionsProvider(props) {
   }
 
   useEffect(() => {
-    if (did) {
+    if (did && session) {
       loadTransactions();
     } else {
       setTransactions([]);
@@ -131,7 +131,7 @@ function TransactionsProvider(props) {
   }, [transactions]);
 
   useEffect(() => {
-    const interval = setInterval(() => loadTransactions(), 5000);
+    const interval = setInterval(() => loadTransactions(), 3000);
     return () => {
       clearInterval(interval);
     };

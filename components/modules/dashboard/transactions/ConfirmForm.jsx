@@ -40,6 +40,7 @@ export const ConfirmForm = ({
       tx,
       signer,
     });
+    console.log('signature', signature)
     await confirmBySignature(tx, signature)
     onConfirmed()
     setConfirmingBySignature(false)
@@ -52,8 +53,9 @@ export const ConfirmForm = ({
       alignItems: 'center',
       gap: '1rem',
     }}>
-      <h2>Confirm transaction</h2>
+      <div>Confirm transaction</div>
       <input
+        disabled={confirmingTransaction}
         onChange={(e) => setCode(e.target.value)}
         value={code}
         placeholder="Insert 2FA code"

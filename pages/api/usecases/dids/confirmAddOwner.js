@@ -1,10 +1,11 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { update as updateTx } from '../../repositories/txs'
+import { markAsExecuting, update as updateTx } from '../../repositories/txs'
 import { update as updateDID, getOne as getOneDID } from '../../repositories/dids'
-import { getSafeData } from '../../utils/safe.js'
-import { execute as createOwnerTransaction } from '../safe/createOwnerTransaction.js'
+import { create, getSafeData, push, sign } from '../../utils/safe.js'
 import { execute as executeOwnerTransaction } from '../safe/executeOwnerTransaction.js'
+
+import GnosisSafe from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
   const { code, user } = req.body
@@ -44,6 +45,7 @@ export async function execute({
     const { chainId, rpcUrl, ownerKeys } = config
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
     const owner0Wallet = new ethers.Wallet(ownerKeys[0], provider)
+    const owner1Wallet = new ethers.Wallet(ownerKeys[1], provider)
     
     const safe = did.ownerMS
     const safeContract = new ethers.Contract(safe, GnosisSafe.abi, owner0Wallet);
@@ -58,34 +60,61 @@ export async function execute({
       ]
     );
 
-    const gas = await safeContract.estimateGas.addOwnerWithThreshold(
-      did.externalWallet,
-      currentThreshold
-    );
-
+    // Create tx confirming
     const tx = await updateTx({
       fields: {
         did: did._id,
         code2fa: code,
         originalData,
       },
-    })
-
-    await createOwnerTransaction({
-      txId: tx._id,
-      destination: safe,
-      value: 0,
-      data: originalData,
-      gas,
     });
 
+    const data = {
+      to: safe,
+      data: originalData,
+      value: 0,
+      operation: 0,
+    };
+
+    const result = await create(chainId, safe, data, owner0Wallet)
+    await push(chainId, safe, result)
+
+    const signature2 = sign(result.contractTransactionHash, owner1Wallet)
+
+    await push(chainId, did.ownerMS, {
+      ...result,
+      signature: signature2,
+      // signatures: undefined,
+      // did: undefined,
+      // _id: undefined,
+      sender: owner1Wallet.address,
+    });
+
+    const signatures = [result.signature, signature2];
+
+    // Create tx confirming
+    await updateTx({
+      id: tx._id,
+      fields: {
+        ...result,
+        signatures,
+      },
+    });
+
+    // Mark tx as executing
+    await markAsExecuting(tx._id)
+
+    // Execute tx
     await executeOwnerTransaction({
       txId: tx._id,
     });
 
+    // Update DID
     await updateDID({
-      _id: did._id,
-      externalWalletStatus: 'CONFIRMED',
+      id: did._id,
+      fields: {
+        externalWalletStatus: 'CONFIRMED',
+      },
     })
 
   } catch (error) {

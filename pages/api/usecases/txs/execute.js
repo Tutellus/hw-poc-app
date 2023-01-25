@@ -2,7 +2,7 @@ import { config } from '../../config';
 import { getSafeData } from '../../utils/safe'
 import { getOne as getOneTx, markAsExecuting } from '../../repositories/txs';
 import { getOne as getOneDID } from '../../repositories/dids';
-import { execute as safeExecuteOwnerTransaction } from '../../usecases/safe/executeOwnerTransaction'
+import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction'
 
 export default async function handler(req, res) {
   const { txId, user } = req.body;

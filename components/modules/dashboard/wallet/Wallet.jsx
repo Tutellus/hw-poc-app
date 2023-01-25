@@ -11,8 +11,6 @@ export const Wallet = () => {
       <div className="title">My wallet</div>
       {assigningDid
         ? <div>Assigning wallet...</div>
-        : loadingDid
-          ? <div>Loading wallet...</div>
           : did
             ? <div
                 style={{
@@ -21,7 +19,7 @@ export const Wallet = () => {
                 className="data"
                 onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', did.address), '_blank')}
               >{truncateAddress(did.address)}</div>
-            : <button onClick={() => loadDid()}>Connect</button>
+            : <button disabled={loadingDid} onClick={() => loadDid()}>Connect</button>
         }
     </div>
   )

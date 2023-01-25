@@ -66,6 +66,7 @@ export async function execute ({
   const fields = {
     ...result,
     signatures,
+    chainId,
   };
 
   await updateTx({

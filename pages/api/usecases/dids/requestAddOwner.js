@@ -58,7 +58,6 @@ export async function execute({
         externalWallet2fa: code2fa,
       },
     });
-    console.log('response', response)
     return response;
   } catch (error) {
     console.error(error)
