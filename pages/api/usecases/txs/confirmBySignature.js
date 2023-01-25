@@ -15,7 +15,7 @@ async function execute({ txId, signature, user }) {
 
     // Check if the transaction exists and if it is in a pending state
     const tx = await getOneTx({ _id: txId })
-    if (!tx || tx.status !== 'PENDING') {
+    if (!tx || tx.status !== 'CREATED') {
       console.error('Transaction not found or not in a pending state')
       return {
         error: 'Transaction not confirmable'

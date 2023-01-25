@@ -3,6 +3,7 @@ import { Web3OnboardProvider, init } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { ModalProvider } from '@/state/modal.context'
 import { TransactionsProvider } from '@/state/transactions.context'
+import { SafeProvider } from '@/state/safe.context'
 
 const ethereumGoerli = {
   id: '0x5',
@@ -34,9 +35,11 @@ export const Providers = ({ children }) => {
     <ModalProvider>
       <Web3OnboardProvider web3Onboard={onboard}>
         <SessionProvider>
-          <TransactionsProvider>
-            {children}
-          </TransactionsProvider>
+          <SafeProvider>
+            <TransactionsProvider>
+              {children}
+            </TransactionsProvider>
+          </SafeProvider>
         </SessionProvider>
       </Web3OnboardProvider>
     </ModalProvider>

@@ -9,13 +9,11 @@ const SessionContext = createContext({
   loadingDid: false,
   session: null,
   did: null,
-  ownerSafeData: null,
   loadDid: async () => {},
   logIn: async () => {},
   logOut: async () => {},
   verifyUser: async () => {},
   redirect: async () => {},
-  loadOwnerSafeData: async () => {},
 });
 
 function SessionProvider(props) {
@@ -24,7 +22,6 @@ function SessionProvider(props) {
   const [assigningDid, setAssigningDid] = useState(false);
   const [loadingDid, setLoadingDid] = useState(false);
   const [session, setSession] = useState(null);
-  const [ownerSafeData, setOwnerSafeData] = useState(null);
   const [did, setDid] = useState(null);
   const router = useRouter();
 
@@ -76,22 +73,6 @@ function SessionProvider(props) {
     setLoadingDid(false);
   }
 
-  const loadOwnerSafeData = async () => {
-    if (did) {
-      const response = await fetch('/api/usecases/safe/getSafeData', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          safe: did.ownerMS
-        }),
-      })
-      const { safeData } = await response.json()
-      setOwnerSafeData(safeData)
-    }
-  }
-
   const logOut = () => {
     localStorage.removeItem('session');
     setSession(null);
@@ -137,10 +118,6 @@ function SessionProvider(props) {
   }, [session]);
 
   useEffect(() => {
-    loadOwnerSafeData();
-  }, [did])
-
-  useEffect(() => {
     const localSession = JSON.parse(localStorage.getItem('session'));
     if (localSession && !session) {
       setSession(localSession);
@@ -155,15 +132,13 @@ function SessionProvider(props) {
       loggingIn,
       assigningDid,
       loadingDid,
-      ownerSafeData,
       loadDid,
       logIn,
       logOut,
       verifyUser,
       redirect,
-      loadOwnerSafeData,
     }),
-    [session, did, assigningDid, loadingDid, loggingIn, verifying, ownerSafeData]
+    [session, did, assigningDid, loadingDid, loggingIn, verifying]
   );
 
   return <SessionContext.Provider value={memoizedData} {...props} />;

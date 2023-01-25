@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   res.status(200).json(response)
 }
 
-async function execute({
+export async function execute({
   user,
   destination,
   data,

@@ -2,7 +2,9 @@ import { config } from '../../config.js'
 import { ethers } from 'ethers'
 import { update as updateTx } from '../../repositories/txs'
 import { update as updateDID, getOne as getOneDID } from '../../repositories/dids'
-import { createAddOwner, push } from '../../utils/safe.js'
+import { getSafeData } from '../../utils/safe.js'
+import { execute as createOwnerTransaction } from '../safe/createOwnerTransaction.js'
+import { execute as executeOwnerTransaction } from '../safe/executeOwnerTransaction.js'
 
 export default async function handler(req, res) {
   const { code, user } = req.body
@@ -42,34 +44,49 @@ export async function execute({
     const { chainId, rpcUrl, ownerKeys } = config
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
     const owner0Wallet = new ethers.Wallet(ownerKeys[0], provider)
-    const {
-      result: tx,
-      originalData,
-    } = await createAddOwner(chainId, did.ownerMS, did.externalWallet, owner0Wallet)
-    await push(chainId, did.ownerMS, tx)
+    
+    const safe = did.ownerMS
+    const safeContract = new ethers.Contract(safe, GnosisSafe.abi, owner0Wallet);
+    const safeData = await getSafeData(chainId, safe);
+    const currentThreshold = safeData.threshold;
 
-    const signatures = [tx.signature]
+    const originalData = safeContract.interface.encodeFunctionData(
+      'addOwnerWithThreshold',
+      [
+        did.externalWallet,
+        currentThreshold
+      ]
+    );
 
-    const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    const gas = await safeContract.estimateGas.addOwnerWithThreshold(
+      did.externalWallet,
+      currentThreshold
+    );
 
-    const fields = {
-      ...tx,
-      did: did._id,
-      signatures,
-      originalData,
-      code2fa,
-    };
-
-    await updateTx({ fields })
-
-    // Remove the owner from the list of requested owners
-    const response = await updateDID({
-      id: did._id,
+    const tx = await updateTx({
       fields: {
-        externalWalletStatus: 'APPROVING'
+        did: did._id,
+        code2fa: code,
+        originalData,
       },
+    })
+
+    await createOwnerTransaction({
+      txId: tx._id,
+      destination: safe,
+      value: 0,
+      data: originalData,
+      gas,
     });
-    return response;
+
+    await executeOwnerTransaction({
+      txId: tx._id,
+    });
+
+    await updateDID({
+      _id: did._id,
+      externalWalletStatus: 'CONFIRMED',
+    })
 
   } catch (error) {
     console.error(error)

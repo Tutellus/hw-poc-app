@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useSession } from "@/state/session.context";
+import { useSafe } from "@/state/safe.context";
 import { useTransactions } from "@/state/transactions.context";
 import { Transaction } from "./Transaction"
 
 export const TransactionsList = () => {
 
-  const { ownerSafeData } = useSession();
-  const { loadingTransactions, transactions } = useTransactions();
+  const { ownerSafeData } = useSafe();
+  const { transactions } = useTransactions();
 
   if (!ownerSafeData) return null;
 

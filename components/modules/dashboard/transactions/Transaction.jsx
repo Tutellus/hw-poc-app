@@ -1,5 +1,5 @@
 import { useModal } from "@/state/modal.context"
-import { useSession } from "@/state/session.context"
+import { useSafe } from "@/state/safe.context"
 import { useTransactions } from "@/state/transactions.context"
 import { getExplorerUrl } from "@/utils/explorer"
 import { ConfirmForm } from "./ConfirmForm"
@@ -8,14 +8,16 @@ export const Transaction = ({
   tx
 }) => {
 
-  const { ownerSafeData } = useSession()
+  const { ownerSafeData } = useSafe()
   const { openModal, closeModal } = useModal()
   const { executingTransaction, executeTransaction } = useTransactions()
 
+  const isCreated = tx.status === 'CREATED'
   const isExecuted = tx.status === 'EXECUTED'
-  const canConfirm = !isExecuted && tx.signatures?.length < ownerSafeData.threshold
+
+  const canConfirm = isCreated && tx.signatures?.length < ownerSafeData.threshold
   const canExecute =
-    !isExecuted
+    isCreated
     && tx.signatures?.length >= ownerSafeData.threshold
     && ownerSafeData.nonce === tx.nonce
 

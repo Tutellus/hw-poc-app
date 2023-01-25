@@ -15,7 +15,7 @@ async function execute({ txId, code, user }) {
 
     // Check if the transaction exists and if it is in a pending state
     const tx = await getOneTx({ _id: txId })
-    if (!tx || tx.status !== 'PENDING') {
+    if (!tx || tx.status !== 'CREATED') {
       return {
         error: 'Transaction not confirmable'
       }

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { useSafe } from "./safe.context";
 import { useSession } from "./session.context";
 
 const TransactionsContext = createContext({
@@ -17,7 +18,8 @@ const TransactionsContext = createContext({
 
 function TransactionsProvider(props) {
 
-  const { session, did, loadOwnerSafeData } = useSession();
+  const { session, did } = useSession();
+  const { loadOwnerSafeData } = useSafe();
   const [transactions, setTransactions] = useState([]);
   const [executingTransaction, setExecutingTransaction] = useState(false);
   const [confirmingTransaction, setConfirmingTransaction] = useState(false);
@@ -41,6 +43,7 @@ function TransactionsProvider(props) {
   }
 
   const confirmByCode = async (tx, code) => {
+    setConfirmingTransaction(true);
     await fetch('/api/usecases/txs/confirmByCode', {
       method: 'POST',
       headers: {
@@ -52,7 +55,8 @@ function TransactionsProvider(props) {
         code,
       }),
     })
-    loadTransactions()
+    await loadTransactions()
+    setConfirmingTransaction(false);
   }
 
   const confirmBySignature = async (tx, signature) => {
@@ -115,7 +119,11 @@ function TransactionsProvider(props) {
   }
 
   useEffect(() => {
-    loadTransactions();
+    if (did) {
+      loadTransactions();
+    } else {
+      setTransactions([]);
+    }
   }, [did]);
 
   useEffect(() => {
@@ -123,7 +131,7 @@ function TransactionsProvider(props) {
   }, [transactions]);
 
   useEffect(() => {
-    const interval = setInterval(() => loadTransactions(), 10000);
+    const interval = setInterval(() => loadTransactions(), 5000);
     return () => {
       clearInterval(interval);
     };
