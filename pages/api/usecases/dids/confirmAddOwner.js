@@ -1,6 +1,6 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { getOne as getOneDID } from '../../repositories/dids'
+import { getOne as getOneDID, update as updateDID } from '../../repositories/dids'
 import { create, getSafeData, sign, sortSignatures } from '../../utils/safe.js'
 import { execute as executeTx } from '../safe/execute.js'
 import GnosisSafe from '../../abi/GnosisSafe.json'
@@ -58,10 +58,17 @@ export async function execute({
       ]
     );
 
+    const data = {
+      to: safe,
+      value: 0,
+      data: originalData,
+      operation: 0,
+    }
+
     const tx = await create({
       chainId,
       safe,
-      data: originalData,
+      data,
       signer: owner0Wallet,
     });
 
@@ -79,12 +86,22 @@ export async function execute({
       signer: owner1Wallet,
     })
 
-    const signatures = sortSignatures([signature0.signature, signature1.signature], contractTransactionHash)
-
+    const signatures = [signature0, signature1];
+    
     await executeTx({
       safe,
       ...tx,
-      signatures,
+      signatures: sortSignatures({
+        signatures,
+        contractTransactionHash,
+      }),
+    })
+
+    await updateDID({
+      id: did._id,
+      fields: {
+        externalWalletStatus: 'CONFIRMED',
+      }
     })
 
   } catch (error) {

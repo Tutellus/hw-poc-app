@@ -132,7 +132,7 @@ function sign ({
 
     const contractTransactionHash = utils._TypedDataEncoder.hash(domain, types, message);
     return {
-      signature: utils.joinSignature(signer._signingKey().signDigest(hash)),
+      signature: utils.joinSignature(signer._signingKey().signDigest(contractTransactionHash)),
       contractTransactionHash,
     } 
   } catch (error) {
@@ -181,12 +181,13 @@ async function create ({
   return result;
 };
 
-function sortSignatures (signatures, contractTransactionHash) {
+function sortSignatures ({ signatures, contractTransactionHash }) {
   const sortedSignatures = signatures.sort((a, b) => {
     const aAddress = ethers.utils.recoverAddress(contractTransactionHash, a)
     const bAddress = ethers.utils.recoverAddress(contractTransactionHash, b)
     return aAddress.localeCompare(bAddress)
   })
+  return sortedSignatures;
 }
 
 export {
