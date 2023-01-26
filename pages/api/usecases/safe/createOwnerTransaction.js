@@ -6,14 +6,12 @@ import { getOne as getOneDID } from '../../repositories/dids';
 import { update as updateTx, getOne as getOneTx, markAsCreated } from '../../repositories/txs';
 
 export async function execute ({
-  txId,
+  tx,
   destination,
   data,
   value,
   gas,
 }) {
-
-  const tx = await getOneTx({ _id: txId })
 
   if (!tx || tx.status !== 'CREATING') {
     return {
@@ -25,11 +23,7 @@ export async function execute ({
 
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
 
-  const {
-    did: didId,
-  } = tx;
-
-  const did = await getOneDID({ _id: didId })
+  const did = await getOneDID({ _id: tx.did })
 
   if (!did) {
     return {
@@ -75,9 +69,9 @@ export async function execute ({
   };
 
   await updateTx({
-    id: txId,
+    id: tx._id,
     fields,
   });
 
-  await markAsCreated(txId);
+  await markAsCreated(tx._id);
 }

@@ -1,4 +1,3 @@
-import { config } from '../../config';
 import { getSafeData } from '../../utils/safe'
 
 export default async function handler(req, res) {
@@ -8,7 +7,6 @@ export default async function handler(req, res) {
 }
 
 export async function execute ({ safe }) {
-  const { chainId } = config;
-  const safeData = await getSafeData(chainId, safe);
+  const safeData = await getSafeData(safe);
   return safeData;
 }

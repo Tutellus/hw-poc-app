@@ -26,7 +26,7 @@ export async function execute({
 
   // Check if tx is executable
   const { chainId } = config
-  const { threshold } = await getSafeData(chainId, did.ownerMS)
+  const { threshold } = await getSafeData(did.ownerMS)
   if (tx.signatures.length < threshold) {
     return {
       error: 'Transaction not executable'

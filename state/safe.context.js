@@ -42,7 +42,7 @@ function SafeProvider(props) {
         }),
       })
       const { safeData } = await response.json()
-      setOwnerSafeData(safeData)
+      setMasterSafeData(safeData)
     }
   }
 

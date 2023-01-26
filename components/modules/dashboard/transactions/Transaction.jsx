@@ -4,9 +4,7 @@ import { useTransactions } from "@/state/transactions.context"
 import { getExplorerUrl } from "@/utils/explorer"
 import { ConfirmForm } from "./ConfirmForm"
 
-export const Transaction = ({
-  tx
-}) => {
+export const Transaction = ({ tx }) => {
 
   const { ownerSafeData } = useSafe()
   const { openModal, closeModal } = useModal()
@@ -20,7 +18,6 @@ export const Transaction = ({
     isCreated
     && tx.signatures?.length >= ownerSafeData.threshold
     && ownerSafeData.nonce === tx.nonce
-
   const handleConfirm = async () => {
     openModal(<ConfirmForm
       tx={tx}

@@ -48,7 +48,7 @@ export async function execute({
     
     const safe = did.ownerMS
     const safeContract = new ethers.Contract(safe, GnosisSafe.abi, owner0Wallet);
-    const safeData = await getSafeData(chainId, safe);
+    const safeData = await getSafeData(safe);
     const currentThreshold = safeData.threshold;
 
     const originalData = safeContract.interface.encodeFunctionData(

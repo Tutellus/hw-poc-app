@@ -38,7 +38,7 @@ export async function execute({
     }
 
     // Check if the address is already an owner
-    const ownerSafeData = await getSafeData(config.chainId, did.ownerMS)
+    const ownerSafeData = await getSafeData(did.ownerMS)
     const { owners } = ownerSafeData
     if (owners.includes(address)) {
       return {

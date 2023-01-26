@@ -32,7 +32,7 @@ export async function execute({
     } })
     
     safeCreateOwnerTransaction({
-      txId: tx._id,
+      tx,
       destination,
       data,
       value,
