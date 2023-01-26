@@ -2,7 +2,7 @@ import { useSession } from "@/state/session.context"
 
 export const Account = () => {
 
-  const { session } = useSession()
+  const { session, logOut } = useSession()
 
   if (!session) return null
 
@@ -10,6 +10,7 @@ export const Account = () => {
     <div className="box">
       <div className="title">My account</div>
       <div className="data">{session.email}</div>
+      <button onClick={logOut}>Logout</button>
     </div>
   )
 }
