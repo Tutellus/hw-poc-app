@@ -31,7 +31,7 @@ export async function execute({
       code2fa,
     } })
     
-    safeCreateOwnerTransaction({
+    await safeCreateOwnerTransaction({
       tx,
       destination,
       data,

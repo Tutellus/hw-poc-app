@@ -77,7 +77,7 @@ function SessionProvider(props) {
     localStorage.removeItem('session');
     setSession(null);
     setDid(null);
-    router.push('/');
+    router.push('/login');
   };
 
   const verifyUser = async (code) => {
