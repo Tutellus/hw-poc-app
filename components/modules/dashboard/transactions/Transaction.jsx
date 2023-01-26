@@ -2,7 +2,7 @@ import { useModal } from "@/state/modal.context"
 import { useSafe } from "@/state/safe.context"
 import { useTransactions } from "@/state/transactions.context"
 import { getExplorerUrl } from "@/utils/explorer"
-import { ConfirmForm } from "./ConfirmForm"
+import { ConfirmForm } from "./forms/ConfirmForm"
 
 export const Transaction = ({ tx }) => {
 

@@ -1,13 +1,11 @@
 const signTransaction = async ({
-  safe,
-  chainId,
   tx,
   signer,
 }) => {
   try {
     const domain = {
-      chainId,
-      verifyingContract: safe,
+      chainId: tx.chainId,
+      verifyingContract: tx.safe,
     };
     const types = {
       SafeTx: [

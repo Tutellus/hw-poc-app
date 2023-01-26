@@ -42,7 +42,6 @@ async function execute({ txId, signature, user }) {
 
     // Check if the signature is valid
     const sender = ethers.utils.recoverAddress(tx.contractTransactionHash, signature)
-    const { chainId } = config
     const ownerSafeData = await getSafeData(did.ownerMS)
     const lcOwners = ownerSafeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {

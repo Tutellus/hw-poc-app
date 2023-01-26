@@ -35,8 +35,6 @@ export const ConfirmForm = ({
     const provider = new ethers.providers.Web3Provider(wallet.provider)
     const signer = provider.getSigner()
     const signature = await signTransaction({
-      safe: ownerSafeData.address,
-      chainId: tx.chainId,
       tx,
       signer,
     });
