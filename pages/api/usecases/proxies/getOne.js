@@ -4,11 +4,6 @@ export default async function handler(req, res) {
   try {
     const { filter } = req.body;
     const proxy = await getOneProxy(filter);
-
-    if (!proxy) {
-      throw new Error('Proxy not found');
-    }
-
     res.status(200).json({ proxy });
   } catch (error) {
     console.error(error)
