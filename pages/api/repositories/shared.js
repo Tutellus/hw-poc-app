@@ -1,6 +1,7 @@
+import { config } from '../config';
 import mongoDB from '../infrastructure/mongo';
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = config['mongo'][process.env.NODE_ENV];
 
 const composePaginationPipeline = ({
   offset = 0,

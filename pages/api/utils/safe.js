@@ -1,18 +1,19 @@
 import { utils, constants, ethers } from 'ethers';
 import { config } from '../config';
-import { get as getTxs } from '../repositories/txs';
+import { get as getProposals } from '../repositories/proposals';
 import GnosisSafe from '../abi/GnosisSafe.json';
 
 async function estimateGas ({
+  chainId,
   safe,
   to,
   value,
   data,
 }) {
 
-  const { rpcUrl } = config;
+  const { rpc } = config[chainId];
 
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const provider = new ethers.providers.JsonRpcProvider(rpc);
   const safeTxGas = await provider.estimateGas({
     to,
     value,
@@ -27,13 +28,13 @@ async function getNextNonce (safe) {
   const pipeline = [
     { $match: { safe } },
   ]
-  const transactions = await getTxs(pipeline) || [];
-  return transactions.length
+  const proposals = await getProposals(pipeline) || [];
+  return proposals.length
 };
 
-async function getSafeData (safe) {
-  const { rpcUrl } = config;
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+async function getSafeData ({ safe, chainId }) {
+  const { rpc } = config[chainId];
+  const provider = new ethers.providers.JsonRpcProvider(rpc);
   const safeContract = new ethers.Contract(safe, GnosisSafe.abi, provider);
   const [owners, thresholdBN, nonceBN, nextNonce] = await Promise.all([
     safeContract.getOwners(),
@@ -82,17 +83,20 @@ async function create ({
     sender: signer.address,
     origin: 'Shared Wallet Concept',
   };
+
   const { signature, contractTransactionHash } = sign({
     safe,
     chainId,
     ...txData,
     signer,
   });
+
   const result = {
     ...txData,
     contractTransactionHash,
     signature,
   };
+
   return result;
 };
 

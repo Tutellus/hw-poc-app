@@ -1,5 +1,5 @@
-import { get as getTxs } from '../../repositories/txs';
-import { getOne as getDID } from '../../repositories/dids';
+import { get as getTxs } from '../../repositories/submitals';
+import { getOne as getProxy } from '../../repositories/proxies';
 
 export default async function handler(req, res) {
   const { user } = req.body;
@@ -8,14 +8,14 @@ export default async function handler(req, res) {
 }
 
 export async function execute({ user }) {
-  const did = await getDID({ userId: user._id });
-  if (!did) {
+  const proxy = await getProxy({ userId: user._id });
+  if (!proxy) {
     return [];
   }
   const pipeline = [
     {
       $match: {
-        did: did._id,
+        proxy: proxy._id,
       },
     },
   ];

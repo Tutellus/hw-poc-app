@@ -1,7 +1,7 @@
 import { TransactionsList } from "../modules/dashboard/transactions/TransactionsList";
 import { Web3 } from "../modules/dashboard/web3/Web3";
 import { Tokens } from "../modules/dashboard/tokens/Tokens";
-import { Wallet } from "../modules/dashboard/wallet/Wallet";
+import { Proxy } from "../modules/dashboard/proxy/Proxy";
 import { Account } from "../modules/dashboard/account/Account";
 
 export const Dashboard = () => {
@@ -13,7 +13,7 @@ export const Dashboard = () => {
         {<Account/>}
 
         {/* my wallet */}
-        <Wallet/>
+        <Proxy/>
 
         {/* your tokens */}
         <Tokens/>

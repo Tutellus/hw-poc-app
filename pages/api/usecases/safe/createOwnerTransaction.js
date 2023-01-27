@@ -1,9 +1,9 @@
 import { config } from '../../config'
 import { ethers } from 'ethers'
 import { create } from '../../utils/safe'
-import { wrapOwner } from '../../utils/did';
-import { getOne as getOneDID } from '../../repositories/dids';
-import { update as updateTx, getOne as getOneTx, markAsCreated } from '../../repositories/txs';
+import { wrapOwner } from '../../utils/proxy';
+import { getOne as getOneProxy } from '../../repositories/proxies';
+import { update as updateTx, getOne as getOneTx, markAsCreated } from '../../repositories/submitals';
 
 export async function execute ({
   tx,
@@ -23,18 +23,18 @@ export async function execute ({
 
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl, chainId)
 
-  const did = await getOneDID({ _id: tx.did })
+  const proxy = await getOneProxy({ _id: tx.proxy })
 
-  if (!did) {
+  if (!proxy) {
     return {
-      error: 'DID not found'
+      error: 'Proxy not found'
     }
   }
 
   const {
-    address: didAddress,
-    ownerMS: safe,
-  } = did;
+    address: proxyAddress,
+    ownerSafe: safe,
+  } = proxy;
 
   const wrappedCalldata = wrapOwner({
     destination,
@@ -44,7 +44,7 @@ export async function execute ({
   })
 
   const txData = {
-    to: didAddress,
+    to: proxyAddress,
     data: wrappedCalldata,
     value: 0,
     operation: 0,

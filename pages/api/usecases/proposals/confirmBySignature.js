@@ -1,8 +1,8 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
 import { getSafeData } from '../../utils/safe'
-import { getOne as getOneTx } from '../../repositories/txs';
-import { getOne as getOneDID } from '../../repositories/dids';
+import { getOne as getOneTx } from '../../repositories/submitals';
+import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as confirm } from './confirm';
 
 export default async function handler(req, res) {
@@ -23,17 +23,17 @@ async function execute({ txId, signature, user }) {
       }
     }
 
-    // Check if the DID exists
-    const did = await getOneDID({ _id: tx.did })
-    if (!did) {
-      console.error('DID not found')
+    // Check if the Proxy exists
+    const proxy = await getOneProxy({ _id: tx.proxy })
+    if (!proxy) {
+      console.error('Proxy not found')
       return {
-        error: 'DID not found'
+        error: 'Proxy not found'
       }
     }
 
-    // Check if the user is the owner of the DID
-    if (did.userId !== user._id) {
+    // Check if the user is the owner of the Proxy
+    if (proxy.userId !== user._id) {
       console.error('Unauthorized')
       return {
         error: 'Unauthorized'
@@ -42,7 +42,7 @@ async function execute({ txId, signature, user }) {
 
     // Check if the signature is valid
     const sender = ethers.utils.recoverAddress(tx.contractTransactionHash, signature)
-    const ownerSafeData = await getSafeData(did.ownerMS)
+    const ownerSafeData = await getSafeData(proxy.ownerSafe)
     const lcOwners = ownerSafeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {
       return {
@@ -55,7 +55,7 @@ async function execute({ txId, signature, user }) {
       tx,
       signature,
       signerAddress: sender,
-      safe: did.ownerMS,
+      safe: proxy.ownerSafe,
     })
 
   } catch (error) {

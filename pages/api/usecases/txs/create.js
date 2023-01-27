@@ -1,5 +1,5 @@
-import { update as updateTx } from '../../repositories/txs';
-import { getOne as getOneDID } from '../../repositories/dids';
+import { update as updateTx } from '../../repositories/submitals';
+import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as safeCreateOwnerTransaction } from '../../usecases/safe/createOwnerTransaction';
 
 export default async function handler(req, res) {
@@ -16,17 +16,17 @@ export async function execute({
   gas,
 }) {
   try {
-    const did = await getOneDID({ userId: user._id })
+    const proxy = await getOneProxy({ userId: user._id })
 
-    if (!did) {
-      res.status(404).json({ error: 'DID not found' });
+    if (!proxy) {
+      res.status(404).json({ error: 'Proxy not found' });
       return;
     }
     
     const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
     const tx = await updateTx({ fields: {
-      did: did._id,
+      proxy: proxy._id,
       originalData: data,
       code2fa,
     } })

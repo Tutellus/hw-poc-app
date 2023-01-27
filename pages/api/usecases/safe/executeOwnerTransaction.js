@@ -1,7 +1,7 @@
 import { config } from '../../config';
 import { getSafeData } from '../../utils/safe'
-import { getOne as getOneTx, update as updateTx, markAsExecuted } from '../../repositories/txs';
-import { getOne as getOneDID } from '../../repositories/dids';
+import { getOne as getOneTx, update as updateTx, markAsExecuted } from '../../repositories/submitals';
+import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as executeTx } from './execute';
 
 export async function execute({
@@ -16,17 +16,17 @@ export async function execute({
     }
   }
 
-  // Check if did exists
-  const did = await getOneDID({ _id: tx.did })
-  if (!did) {
+  // Check if proxy exists
+  const proxy = await getOneProxy({ _id: tx.proxy })
+  if (!proxy) {
     return {
-      error: 'DID not found'
+      error: 'Proxy not found'
     }
   }
 
   // Check if tx is executable
   const { chainId } = config
-  const { threshold } = await getSafeData(did.ownerMS)
+  const { threshold } = await getSafeData(proxy.ownerSafe)
   if (tx.signatures.length < threshold) {
     return {
       error: 'Transaction not executable'

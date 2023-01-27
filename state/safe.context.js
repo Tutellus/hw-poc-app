@@ -12,17 +12,18 @@ const SafeContext = createContext({
 function SafeProvider(props) {
   const [masterSafeData, setMasterSafeData] = useState(null);
   const [ownerSafeData, setOwnerSafeData] = useState(null);
-  const { did } = useSession()
+  const { proxy } = useSession()
 
   const loadOwnerSafeData = async () => {
-    if (did) {
+    if (proxy) {
       const response = await fetch('/api/usecases/safe/getSafeData', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          safe: did.ownerMS
+          safe: proxy.ownerSafe,
+          chainId: proxy.chainId,
         }),
       })
       const { safeData } = await response.json()
@@ -31,14 +32,15 @@ function SafeProvider(props) {
   }
 
   const loadMasterSafeData = async () => {
-    if (did) {
+    if (proxy) {
       const response = await fetch('/api/usecases/safe/getSafeData', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          safe: did.masterMS
+          safe: proxy.masterSafe,
+          chainId: proxy.chainId,
         }),
       })
       const { safeData } = await response.json()
@@ -49,7 +51,7 @@ function SafeProvider(props) {
   useEffect(() => {
     loadOwnerSafeData()
     loadMasterSafeData()
-  }, [did])
+  }, [proxy])
 
   const memoizedData = useMemo(
     () => ({

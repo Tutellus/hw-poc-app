@@ -12,7 +12,7 @@ export const Tokens = () => {
 
   const tokenAddress = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 
-  const { session, did } = useSession()
+  const { session, proxy } = useSession()
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState('0.0')
   const [amount, setAmount] = useState('')
@@ -21,7 +21,7 @@ export const Tokens = () => {
   const canMint = !minting && amountFloat !== NaN && amountFloat > 0
 
   const getBalance = async () => {
-    const response = await fetch('/api/usecases/dids/getTokenBalance', {
+    const response = await fetch('/api/usecases/proxys/getTokenBalance', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,11 +36,11 @@ export const Tokens = () => {
   }
 
   useEffect(() => {
-    if (did) {
+    if (proxy) {
       getBalance()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [did, transactions])
+  }, [proxy, transactions])
 
   const mint = async () => {
     setMinting(true)
@@ -53,7 +53,7 @@ export const Tokens = () => {
       await createTransaction({
         contract: tokenContract,
         method: 'mint',
-        args: [did.address, amountBN],
+        args: [proxy.address, amountBN],
         value: 0,
       })
     } catch (error) {

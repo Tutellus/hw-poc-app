@@ -1,22 +1,43 @@
 import { utils } from 'ethers'
-import DIDMock from '../abi/DIDMock.json'
+import Proxy from '../abi/Proxy.json'
 
 function wrapOwner ({
-  destination,
+  to,
   data,
   value,
   gas
 }) {
-  const didInterface = new utils.Interface(DIDMock.abi)
-  const calldata = didInterface.encodeFunctionData('forwardOwner', [
-    destination,
-    data,
-    value,
-    gas
-  ])
-  return calldata
+  return new utils.Interface(Proxy.abi)
+  .encodeFunctionData(
+    'forwardOwner',
+    [
+      to,
+      data,
+      value,
+      gas
+    ]
+  )
+}
+
+function wrapMaster ({
+  to,
+  data,
+  value,
+  gas
+}) {
+  return new utils.Interface(Proxy.abi)
+  .encodeFunctionData(
+    'forwardMaster',
+    [
+      to,
+      data,
+      value,
+      gas
+    ]
+  )
 }
 
 export {
-  wrapOwner
+  wrapOwner,
+  wrapMaster,
 }

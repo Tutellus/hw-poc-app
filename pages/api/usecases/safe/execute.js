@@ -51,7 +51,8 @@ export async function execute({
   
     return receipt
   } catch (error) {
-    con
+    console.error(error)
+    throw error
   }
   
 }

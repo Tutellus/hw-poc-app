@@ -18,7 +18,7 @@ const TransactionsContext = createContext({
 
 function TransactionsProvider(props) {
 
-  const { session, did } = useSession();
+  const { session, proxy } = useSession();
   const { loadOwnerSafeData } = useSafe();
   const [transactions, setTransactions] = useState([]);
   const [executingTransaction, setExecutingTransaction] = useState(false);
@@ -27,7 +27,7 @@ function TransactionsProvider(props) {
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   
   const loadTransactions = async () => {
-    if (session && did && !loadingTransactions) {
+    if (session && proxy && !loadingTransactions) {
       setLoadingTransactions(true);
       setTimeout(async () => {
         const response = await fetch('/api/usecases/txs/getByUser', {
@@ -121,12 +121,12 @@ function TransactionsProvider(props) {
   }
 
   useEffect(() => {
-    if (did && session) {
+    if (proxy && session) {
       loadTransactions();
     } else {
       setTransactions([]);
     }
-  }, [session, did]);
+  }, [session, proxy]);
 
   useEffect(() => {
     loadOwnerSafeData();

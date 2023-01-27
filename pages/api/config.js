@@ -1,17 +1,15 @@
 export const config = {
-  chainId: 5, // goerli
-  rpcUrl: 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06', // goerli
-  serverKey: '0xefd44239bde79731d052d6e19e07ac3a739dcd1f473be0cfed38182c63b77d86', // TBD
-  ownerKeys: [
-    '0x0000000000000000000000000000000000000000000000000000000000000001', // TBD
-    '0x0000000000000000000000000000000000000000000000000000000000000002', // TBD
-  ],
-  masterKeys: [
-    '0x0000000000000000000000000000000000000000000000000000000000000003', // TBD
-    '0x0000000000000000000000000000000000000000000000000000000000000004', // TBD
-  ],
-  didFactory: '0x806cca586df2eee6db4339dff2212752e65c983d',
-  gnosisProxyFactory: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2', // goerli
-  gnosisSingleton: '0xd9db270c1b5e3bd161e8c8503c55ceabee709552', // goerli
-  gnosisFallbackHandler: '0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4', // goerli
+  "5": {
+    rpc: 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06',
+    forwardPolicies: '0x29270cBA568927605F86C80B3B795cd6be1a3b91',
+    proxyFactory: '0x6ad2de512C5ebe425bdf847a48553c6172b95141',
+    safeProxyFactory: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
+    safeSingleton: '0xd9db270c1b5e3bd161e8c8503c55ceabee709552',
+    safeFallbackHandler: '0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4',
+  },
+  mongo: {
+    local: 'mongodb://localhost:27017/smw',
+    development: 'mongodb://localhost:27017/smw',
+    production: 'mongodb://localhost:27017/smw',
+  },
 }

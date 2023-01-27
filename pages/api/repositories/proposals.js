@@ -1,7 +1,7 @@
 import { updateOne, search, getOne as sharedGetOne } from './shared';
 import { v4 as uuidv4 } from 'uuid';
 
-const COLLECTION = 'txs';
+const COLLECTION = 'proposals';
 
 async function update ({
   id = uuidv4(),
@@ -13,7 +13,7 @@ async function update ({
       ...fields,
     },
     $setOnInsert: {
-      status: 'CREATING',
+      status: 'PENDING',
     },
   };
   return updateOne(COLLECTION, filter, data)
@@ -27,31 +27,21 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
-async function markAsExecuting (id) {
+async function markAsProcessing (id) {
   const filter = { _id: id };
   const data = {
     $set: {
-      status: 'EXECUTING',
+      status: 'PROCESSING',
     },
   };
   return updateOne(COLLECTION, filter, data)
 }
 
-async function markAsExecuted (id) {
+async function markAsProcessed (id) {
   const filter = { _id: id };
   const data = {
     $set: {
-      status: 'EXECUTED',
-    },
-  };
-  return updateOne(COLLECTION, filter, data)
-}
-
-async function markAsCreated (id) {
-  const filter = { _id: id };
-  const data = {
-    $set: {
-      status: 'CREATED',
+      status: 'PROCESSED',
     },
   };
   return updateOne(COLLECTION, filter, data)
@@ -61,7 +51,6 @@ export {
   update,
   get,
   getOne,
-  markAsExecuting,
-  markAsExecuted,
-  markAsCreated,
+  markAsProcessing,
+  markAsProcessed,
 };

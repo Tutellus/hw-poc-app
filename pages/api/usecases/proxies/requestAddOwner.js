@@ -1,6 +1,6 @@
 import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { update as updateDID, getOne as getOneDID } from '../../repositories/dids'
+import { update as updateProxy, getOne as getOneProxy } from '../../repositories/proxies'
 import { getSafeData } from '../../utils/safe.js'
 
 export default async function handler(req, res) {
@@ -23,22 +23,22 @@ export async function execute({
       }
     }
 
-    // Check if the DID exists
-    const did = await getOneDID({ userId: user._id })
-    if(!did) {
+    // Check if the Proxy exists
+    const proxy = await getOneProxy({ userId: user._id })
+    if(!proxy) {
       return {
-        error: 'DID not found'
+        error: 'Proxy not found'
       }
     }
 
-    if (did.externalWallet) {
+    if (proxy.externalWallet) {
       return {
-        error: 'DID already has an external wallet'
+        error: 'Proxy already has an external wallet'
       }
     }
 
     // Check if the address is already an owner
-    const ownerSafeData = await getSafeData(did.ownerMS)
+    const ownerSafeData = await getSafeData(proxy.ownerSafe)
     const { owners } = ownerSafeData
     if (owners.includes(address)) {
       return {
@@ -48,9 +48,9 @@ export async function execute({
 
     const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
-    // Update the DID with the new requested owner
-    const response = await updateDID({
-      id: did._id,
+    // Update the Proxy with the new requested owner
+    const response = await updateProxy({
+      id: proxy._id,
       fields: {
         externalWallet: address,
         externalWalletSignature: signature,

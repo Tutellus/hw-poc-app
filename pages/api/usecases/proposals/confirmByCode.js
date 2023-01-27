@@ -1,7 +1,7 @@
 import { config } from '../../config';
 import { ethers } from 'ethers'
-import { getOne as getOneTx } from '../../repositories/txs';
-import { getOne as getOneDID } from '../../repositories/dids';
+import { getOne as getOneTx } from '../../repositories/submitals';
+import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as confirm } from './confirm';
 import { sign } from '../../utils/safe';
 
@@ -22,16 +22,16 @@ async function execute({ txId, code, user }) {
       }
     }
 
-    // Check if the DID exists
-    const did = await getOneDID({ _id: tx.did })
-    if (!did) {
+    // Check if the Proxy exists
+    const proxy = await getOneProxy({ _id: tx.proxy })
+    if (!proxy) {
       return {
-        error: 'DID not found'
+        error: 'Proxy not found'
       }
     }
 
-    // Check if the user is the owner of the DID
-    if (did.userId !== user._id) {
+    // Check if the user is the owner of the Proxy
+    if (proxy.userId !== user._id) {
       return {
         error: 'Unauthorized'
       }
@@ -49,7 +49,7 @@ async function execute({ txId, code, user }) {
     const owner1Wallet = new ethers.Wallet(ownerKeys[1]) 
 
     const { signature, contractTransactionHash } = sign({
-      safe: did.ownerMS,
+      safe: proxy.ownerSafe,
       ...tx,
       signer: owner1Wallet,
     })
@@ -59,7 +59,7 @@ async function execute({ txId, code, user }) {
       tx,
       signature,
       contractTransactionHash,
-      safe: did.ownerMS,
+      safe: proxy.ownerSafe,
     })
     return true
   } catch (error) {

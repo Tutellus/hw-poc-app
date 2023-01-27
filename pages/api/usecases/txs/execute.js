@@ -1,7 +1,7 @@
 import { config } from '../../config';
 import { getSafeData } from '../../utils/safe'
-import { getOne as getOneTx, markAsExecuting } from '../../repositories/txs';
-import { getOne as getOneDID } from '../../repositories/dids';
+import { getOne as getOneTx, markAsExecuting } from '../../repositories/submitals';
+import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction'
 
 export default async function handler(req, res) {
@@ -24,23 +24,23 @@ export async function execute({
       }
     }
 
-    // Check if did exists
-    const did = await getOneDID({ _id: tx.did })
-    if (!did) {
+    // Check if proxy exists
+    const proxy = await getOneProxy({ _id: tx.proxy })
+    if (!proxy) {
       return {
-        error: 'DID not found'
+        error: 'Proxy not found'
       }
     }
 
-    // Check if user is the owner of the DID
-    if (did.userId !== user._id) {
+    // Check if user is the owner of the Proxy
+    if (proxy.userId !== user._id) {
       return {
         error: 'Unauthorized'
       }
     }
 
     // Check if tx is executable
-    const { threshold } = await getSafeData(did.ownerMS)
+    const { threshold } = await getSafeData(proxy.ownerSafe)
     if (tx.status !== 'CREATED' && tx.signatures.length < threshold) {
       return {
         error: 'Transaction not executable'

@@ -1,5 +1,5 @@
 import { getSafeData } from '../../utils/safe'
-import { markAsExecuting, update as updateTx } from '../../repositories/txs';
+import { markAsExecuting, update as updateTx } from '../../repositories/submitals';
 import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction';
 
 export async function execute({ 
