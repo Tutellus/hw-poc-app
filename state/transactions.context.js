@@ -79,27 +79,30 @@ function TransactionsProvider(props) {
   }
 
   const createTransaction = async ({
-    contract,
+    contractId,
+    projectId,
     method,
-    args,
+    params,
     value,
+    user,
   }) => {
     setCreatingTransaction(true);
-    const data = contract.interface.encodeFunctionData(method, args);
-    const gas = await contract.estimateGas.mint(...args);
-    await fetch('/api/usecases/txs/create', {
+    const result = await fetch('/api/usecases/submitals/submit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        user: session,
-        destination: contract.address,
-        data,
+        contractId,
+        projectId,
+        method,
+        params,
         value,
-        gas,
+        user,
       }),
-    })
+    });
+    const { response } = await result.json();
+    console.log(response);
     await loadTransactions()
     setCreatingTransaction(false);
   }

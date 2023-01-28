@@ -1,4 +1,4 @@
-import { getOneContract } from '../../repositories/submitals';
+import { getOne as getOneContract } from '../../repositories/contracts';
 import { markAsProcessing, update as updateSubmital } from '../../repositories/submitals';
 import { getOne as getOneProxy } from '../../repositories/proxies';
 import { execute as createProposal } from '../proposals/create';
@@ -6,9 +6,23 @@ import { execute as process } from '../contracts/process';
 
 export default async function handler(req, res) {
   try {
-    const { contractId, method, params, value, user } = req.body;
-    const response = await execute({ contractId, method, params, value, user });
-    res.status(200).json(response)
+    const {
+      contractId,
+      projectId,
+      method,
+      params,
+      value,
+      user,
+    } = req.body;
+    const response = await execute({
+      contractId,
+      projectId,
+      method,
+      params,
+      value,
+      user
+    });
+    res.status(200).json({ response })
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: error.message })
@@ -18,8 +32,10 @@ export default async function handler(req, res) {
 
 export async function execute({
   contractId,
+  projectId,
   method,
   params,
+  value,
   user,
 }) {
   try {
@@ -42,6 +58,7 @@ export async function execute({
     const proxy = await getOneProxy({
       userId,
       chainId,
+      projectId,
     });
 
     if (!proxy) {
@@ -55,6 +72,7 @@ export async function execute({
       contract,
       method,
       params,
+      value,
       proxyAddress,
     })
 
@@ -62,7 +80,7 @@ export async function execute({
       throw new Error('Cannot process contract data');
     }
 
-    const { to, value, gas, data } = contractData;
+    const { to, value: innerValue, gas, data } = contractData;
 
     // Creates a submital
     const submital = await updateSubmital({
@@ -70,9 +88,11 @@ export async function execute({
         proxyId,
         userId,
         chainId,
+        projectId,
+        contractId,
         to,
         data,
-        value,
+        value: innerValue,
         gas,
       }
     });

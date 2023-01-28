@@ -6,6 +6,7 @@ export async function execute({
   proxyAddress,
   method,
   params,
+  value,
 }) {
   try {
     const { rpc } = config[contract.chainId];
@@ -14,6 +15,7 @@ export async function execute({
     const result = {
       to: contract.address,
       data: contractInstance.interface.encodeFunctionData(method, params),
+      value,
       gas: await contractInstance.estimateGas[method](...params, { from: proxyAddress }),
     }
     return result;

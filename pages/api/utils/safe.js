@@ -67,6 +67,7 @@ async function create ({
   }
 
   const safeTxGas = await estimateGas({
+    chainId,
     safe,
     ...data,
   });

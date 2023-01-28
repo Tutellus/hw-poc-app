@@ -11,8 +11,6 @@ const TOKEN_ABI = [
 const CHAIN_ID = 5
 
 export const Tokens = () => {
-
-
   const { session, proxy } = useSession()
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState('0.0')
@@ -102,27 +100,24 @@ export const Tokens = () => {
   }, [proxy, transactions])
 
   const mint = async () => {
-    // setMinting(true)
-    // try {
-    //   const rpcUrl = 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06';
-    //   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    //   const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
-    //   const decimals = 18;
-    //   const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-    //   await createTransaction({
-    //     contract: tokenContract,
-    //     method: 'mint',
-    //     args: [proxy.address, amountBN],
-    //     value: 0,
-    //   })
-    // } catch (error) {
-    //   console.error(error)
-    // }
-    // setMinting(false)
-    // setAmount('')
+    setMinting(true)
+    try {
+      const decimals = 18;
+      const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
+      await createTransaction({
+        contractId: contract._id,
+        projectId: proxy.projectId,
+        method: 'mint',
+        params: [proxy.address, amountBN],
+        value: 0,
+        user: session,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+    setMinting(false)
+    setAmount('')
   }
-
-  console.log('contract', contract)
 
   return (
     <div className="box">

@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import Proxy from '../abi/Proxy.json'
+import Proxy from '../abi/ProxyMock.json'
 
 function wrapOwner ({
   to,
