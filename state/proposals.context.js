@@ -89,21 +89,21 @@ function ProposalsProvider(props) {
     setConfirmingProposal(false);
   }
 
-  const confirmBySignature = async (tx, signature) => {
-    // setConfirmingProposal(true);
-    // await fetch('/api/usecases/txs/confirmBySignature', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     user: session,
-    //     txId: tx._id,
-    //     signature,
-    //   }),
-    // })
-    // await loadProposals()
-    // setConfirmingProposal(false);
+  const confirmBySignature = async (proposal, signature) => {
+    setConfirmingProposal(true);
+    await fetch('/api/usecases/txs/confirmBySignature', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        proposalId: proposal._id,
+        signature,
+        user: session,
+      }),
+    })
+    await loadProposals()
+    setConfirmingProposal(false);
   }
 
   const submit = async ({
