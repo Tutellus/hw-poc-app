@@ -147,7 +147,7 @@ function ProposalsProvider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       loadOwnerProposals();
-    }, 5000);
+    }, 2000);
     return () => {
       clearInterval(interval);
     };
@@ -156,7 +156,7 @@ function ProposalsProvider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       loadMasterProposals();
-    }, 5000);
+    }, 2000);
     return () => {
       clearInterval(interval);
     };

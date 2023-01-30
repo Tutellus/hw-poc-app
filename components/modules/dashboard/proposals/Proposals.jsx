@@ -11,12 +11,12 @@ export const Proposals = () => {
   return (
     <div className="proposals">
       <div className="box">
-          <div className="title">Owner Proposals</div>
+          <div className="title">{`Owner Proposals (${ownerSafeData?.threshold} sig.)`}</div>
           {ownerProposals?.length > 0
               ? <table>
                 <thead>
                     <th>#</th>
-                    <th>Sig</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </thead>
                 <div className="table-body">
@@ -33,12 +33,12 @@ export const Proposals = () => {
           }
       </div>
       <div className="box">
-        <div className="title">Master Proposals</div>
+      <div className="title">{`Master Proposals (${masterSafeData?.threshold} sig.)`}</div>
         {masterProposals?.length > 0
             ? <table>
               <thead>
                   <th>#</th>
-                  <th>Sig</th>
+                  <th>Status</th>
                   <th>Actions</th>
               </thead>
               <div className="table-body">

@@ -26,6 +26,11 @@
 
   --color-shadow: rgba(0, 0, 0, 0.1);
 
+  --color-orange: #f08035;
+  --color-yellow: #d0cc11;
+  --color-red: #e22929;
+  --color-green: #16c516;
+
   --account-center-z-index: 200;
 }
 

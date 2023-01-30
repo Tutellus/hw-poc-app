@@ -67,10 +67,8 @@ export async function execute({ proposalId }) {
         fields: { receipt },
       })
       proposal = await markAsExecuted(proposalId);
-      console.log('EXECUTED', proposal)
     } catch (error) {
       proposal = await markAsFailed(proposalId);
-      console.error('FAILED', proposal)
     } 
     return proposal;
   } catch (error) {
