@@ -10,8 +10,8 @@ import Safe from '../../abi/GnosisSafe.json'
 
 export default async function handler(req, res) {
   const { proxyId, code, user } = req.body
-  const response = await execute({ proxyId, code, user })
-  res.status(200).json(response)
+  const proposal = await execute({ proxyId, code, user })
+  res.status(200).json({ proposal })
 }
 
 export async function execute({
@@ -119,24 +119,22 @@ export async function execute({
         signature: signature1,
         awaitExecution: true,
       });
-
-      await updateProxy({
-        id: proxyId,
-        fields: {
-          externalWallet: {
-            ...externalWallet,
-            status: 'CONFIRMED',
-            proposalId: proposal._id,
-          }
-        }
-      })
-
     };
 
+    await updateProxy({
+      id: proxyId,
+      fields: {
+        externalWallet: {
+          ...externalWallet,
+          status: 'CONFIRMED',
+          proposalId: proposal._id,
+        }
+      }
+    });
+  
+    return proposal;
   } catch (error) {
     console.error(error)
-    return {
-      error: 'Error'
-    }
+    throw error;
   }
 }
