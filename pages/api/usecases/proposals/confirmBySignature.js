@@ -1,65 +1,48 @@
-import { config } from '../../config';
 import { ethers } from 'ethers'
 import { getSafeData } from '../../utils/safe'
-import { getOne as getOneTx } from '../../repositories/submitals';
-import { getOne as getOneProxy } from '../../repositories/proxies';
+import { getOne as getProposal } from '../../repositories/proposals';
+import { getOne as getProxy } from '../../repositories/proxies';
 import { execute as confirm } from './confirm';
 
 export default async function handler(req, res) {
-  const { txId, signature, user } = req.body;
-  const response = await execute({ txId, signature, user });
+  const { proposalId, signature, user } = req.body;
+  const response = await execute({ proposalId, signature, user });
   res.status(200).json(response)
 }
 
-async function execute({ txId, signature, user }) {
+async function execute({ proposalId, signature, user }) {
   try {
 
     // Check if the transaction exists and if it is in a pending state
-    const tx = await getOneTx({ _id: txId })
-    if (!tx || tx.status !== 'CREATED') {
-      console.error('Transaction not found or not in a pending state')
-      return {
-        error: 'Transaction not confirmable'
-      }
+    const proposal = await getProposal({ _id: proposalId })
+    if (!proposal || proposal.status !== 'PENDING') {
+      throw new Error('Proposal not signable')
     }
 
     // Check if the Proxy exists
-    const proxy = await getOneProxy({ _id: tx.proxy })
+    const proxy = await getProxy({ _id: proposal.proxyId })
     if (!proxy) {
-      console.error('Proxy not found')
-      return {
-        error: 'Proxy not found'
-      }
+      throw new Error('Proxy not found')
     }
 
     // Check if the user is the owner of the Proxy
     if (proxy.userId !== user._id) {
-      console.error('Unauthorized')
-      return {
-        error: 'Unauthorized'
-      }
+      throw new Error('User not authorized')
     }
 
     // Check if the signature is valid
-    const sender = ethers.utils.recoverAddress(tx.contractTransactionHash, signature)
-    const ownerSafeData = await getSafeData(proxy.ownerSafe)
-    const lcOwners = ownerSafeData.owners.map(owner => owner.toLowerCase())
+    const sender = ethers.utils.recoverAddress(proposal.contractTransactionHash, signature)
+    const safeData = await getSafeData(proposal.safe)
+    const lcOwners = safeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {
-      return {
-        error: 'Invalid signature'
-      }
+      throw new Error('Invalid signature')
     }
 
     // Confirm the transaction
-    await confirm({
-      tx,
-      signature,
-      signerAddress: sender,
-      safe: proxy.ownerSafe,
-    })
-
+    const result = await confirm({ proposal, signature })
+    return result;
   } catch (error) {
     console.error(error)
-    return {};
+    throw error;
   }
 }
