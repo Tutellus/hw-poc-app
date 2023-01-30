@@ -49,6 +49,7 @@ export const Web3 = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        proxyId: proxy._id,
         code: externalWalletCode,
         user: session,
       }),

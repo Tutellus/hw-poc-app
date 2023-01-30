@@ -29,7 +29,7 @@ export const Proposals = () => {
                   )}
                 </div>
               </table>
-              : <div>No proposals yet</div>
+              : <div className="data">No proposals yet</div>
           }
       </div>
       <div className="box">
@@ -50,7 +50,7 @@ export const Proposals = () => {
                 />)}
               </div>
             </table>
-            : <div>No proposals yet</div>
+            : <div className="data">No proposals yet</div>
         }
       </div>
     </div>

@@ -2,15 +2,15 @@ import { getSafeData } from '../../utils/safe'
 import { update as updateProposal, markAsExecuting } from '../../repositories/proposals';
 import { execute as executeProposal } from './execute';
 
-export async function execute({ proposal, signature }) {
+export async function execute({ proposal, signature, awaitExecution = false }) {
   try {
     const signatures = proposal.signatures || [];
     if (!signatures.includes(signature)) {
       signatures.push(signature);
     }
 
-    let threshold, nextNonce;
-    [proposal, { threshold, nextNonce }] = await Promise.all([
+    let threshold;
+    [proposal, { threshold }] = await Promise.all([
       updateProposal({
         id: proposal._id,
         fields: {
@@ -26,7 +26,11 @@ export async function execute({ proposal, signature }) {
     // Check if the transaction has enough signatures and try execute (nonce?)
     if (signatures.length >= threshold) {
       proposal = await markAsExecuting(proposal._id)
-      executeProposal({ proposalId: proposal._id })
+      if (awaitExecution) {
+        await executeProposal({ proposalId: proposal._id })
+      } else {
+        executeProposal({ proposalId: proposal._id })
+      }
     }
     return proposal;
   } catch (error) {

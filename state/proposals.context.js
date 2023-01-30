@@ -18,9 +18,8 @@ const ProposalsContext = createContext({
 
 function ProposalsProvider(props) {
 
-  const { session } = useSession();
-  const { ownerSafeData, masterSafeData } = useSafe();
-
+  const { session, proxy } = useSession();
+  
   const [ownerProposals, setOwnerProposals] = useState([]);
   const [masterProposals, setMasterProposals] = useState([]);
 
@@ -38,7 +37,7 @@ function ProposalsProvider(props) {
   }
 
   const loadOwnerProposals = async () => {
-    if (ownerSafeData && !loadingOwnerProposals) {
+    if (proxy?.ownerSafe) {
       setLoadingOwnerProposals(true);
       setTimeout(async () => {
         const response = await fetch('/api/usecases/proposals/getBySafe', {
@@ -46,7 +45,7 @@ function ProposalsProvider(props) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ safe: ownerSafeData.address }),
+          body: JSON.stringify({ safe: proxy?.ownerSafe }),
         })
         const { proposals: items } = await response.json()
         setOwnerProposals(items.reverse());
@@ -56,7 +55,7 @@ function ProposalsProvider(props) {
   }
 
   const loadMasterProposals = async () => {
-    if (masterSafeData?.address && !loadingMasterProposals) {
+    if (proxy?.masterSafe) {
       setLoadingMasterProposals(true);
       setTimeout(async () => {
         const response = await fetch('/api/usecases/proposals/getBySafe', {
@@ -64,7 +63,7 @@ function ProposalsProvider(props) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ safe: masterSafeData.address }),
+          body: JSON.stringify({ safe: proxy?.masterSafe }),
         })
         const { proposals: items } = await response.json()
         setMasterProposals(items.reverse());
@@ -135,16 +134,13 @@ function ProposalsProvider(props) {
   }
 
   useEffect(() => {
-    if (ownerSafeData) {
-      loadOwnerProposals();
+    if (proxy) {
+      loadProposals();
+    } else {
+      setOwnerProposals([]);
+      setMasterProposals([]);
     }
-  }, [ownerSafeData]);
-
-  useEffect(() => {
-    if (masterSafeData) {
-      loadMasterProposals();
-    }
-  }, [masterSafeData]);
+  }, [proxy]);
 
   useEffect(() => {
     const interval = setInterval(() => {

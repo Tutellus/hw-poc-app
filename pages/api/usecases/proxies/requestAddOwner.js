@@ -3,8 +3,8 @@ import { update as updateProxy, getOne as getProxy } from '../../repositories/pr
 import { getSafeData } from '../../utils/safe.js'
 
 export default async function handler(req, res) {
-  const { message, signature, user } = req.body
-  const response = await execute({ message, signature, user })
+  const { message, signature, user, proxyId } = req.body
+  const response = await execute({ message, signature, user, proxyId })
   res.status(200).json(response)
 }
 
@@ -37,7 +37,10 @@ export async function execute({
     }
 
     // Check if the address is already an owner
-    const ownerSafeData = await getSafeData(proxy.ownerSafe)
+    const ownerSafeData = await getSafeData({
+      safe: proxy.ownerSafe,
+      chainId: proxy.chainId,
+    })
     const { owners } = ownerSafeData
     if (owners.includes(address)) {
       throw new Error('Address already an owner')

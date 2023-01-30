@@ -49,8 +49,13 @@ function SafeProvider(props) {
   }
 
   useEffect(() => {
-    loadOwnerSafeData()
-    loadMasterSafeData()
+    if (proxy) {
+      loadOwnerSafeData()
+      loadMasterSafeData()
+    } else {
+      setOwnerSafeData(null)
+      setMasterSafeData(null)
+    }
   }, [proxy])
 
   const memoizedData = useMemo(
