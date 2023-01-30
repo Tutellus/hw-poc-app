@@ -1,6 +1,5 @@
-import { config } from '../../config.js'
 import { ethers } from 'ethers'
-import { update as updateProxy, getOne as getOneProxy } from '../../repositories/proxies'
+import { update as updateProxy, getOne as getProxy } from '../../repositories/proxies'
 import { getSafeData } from '../../utils/safe.js'
 
 export default async function handler(req, res) {
@@ -12,38 +11,36 @@ export default async function handler(req, res) {
 export async function execute({
   message,
   signature,
+  proxyId,
   user,
 }) {
   try {
     // Check if the message is valid
     const address = ethers.utils.verifyMessage(message, signature)
     if (!ethers.utils.isAddress(address)) {
-      return {
-        error: 'Invalid signature'
-      }
+      throw new Error('Invalid signature')
     }
 
     // Check if the Proxy exists
-    const proxy = await getOneProxy({ userId: user._id })
+    const proxy = await getProxy({ _id: proxyId })
     if(!proxy) {
-      return {
-        error: 'Proxy not found'
-      }
+      throw new Error('Proxy not found')
+    }
+
+    // Check if the user is the owner of the Proxy
+    if (proxy.userId !== user._id) {
+      throw new Error('User not authorized')
     }
 
     if (proxy.externalWallet) {
-      return {
-        error: 'Proxy already has an external wallet'
-      }
+      throw new Error('Proxy already has an external wallet')
     }
 
     // Check if the address is already an owner
     const ownerSafeData = await getSafeData(proxy.ownerSafe)
     const { owners } = ownerSafeData
     if (owners.includes(address)) {
-      return {
-        error: 'Address already owner'
-      }
+      throw new Error('Address already an owner')
     }
 
     const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
@@ -52,17 +49,18 @@ export async function execute({
     const response = await updateProxy({
       id: proxy._id,
       fields: {
-        externalWallet: address,
-        externalWalletSignature: signature,
-        externalWalletStatus: 'PENDING',
-        externalWallet2fa: code2fa,
+        externalWallet: {
+          address,
+          message,
+          signature,
+          code2fa,
+          status: 'PENDING',
+        },
       },
     });
     return response;
   } catch (error) {
     console.error(error)
-    return {
-      error: 'Error requesting owner'
-    }
+    throw error;
   }
 }

@@ -1,20 +1,6 @@
 import { ethers } from "ethers";
 import { config } from "../config";
-import { Transaction } from "./Transaction";
 import { GasCalculator } from "./GasCalculator";
-import { getOne as getProject } from "../repositories/projects";
-
-class ExecutableTransaction {
-  constructor(transactionInstance) {
-    const transaction = new Transaction(transactionInstance);
-    this.from = transaction.from;
-    this.to = transaction.to;
-    this.data = transaction.data;
-    this.value = transaction.value;
-    this.gasPrice = transaction.gasPrice;
-    this.gasLimit = transaction.gasLimit;
-  }
-}
 
 export class Executor {
   constructor() {
@@ -55,45 +41,53 @@ export class Executor {
     this.setNonce(chainId, address, currentNonce + 1);
   }
 
-  async execute(transactionInstance) {
+  async execute({
+    to,
+    data,
+    value = 0,
+    signer,
+  }) {
     try {
-      const transaction = new Transaction(transactionInstance);
-      
-      const { chainId, projectId } = transaction;
 
-      const project = await getProject({ _id: projectId });
-
-      const { rpc } = config[chainId];
-      const { executorKey } = project;
-      const provider = new ethers.providers.JsonRpcProvider(rpc);
-      const executor = new ethers.Wallet(executorKey, provider);
-
-      transaction.from = executor.address; 
+      const provider = signer.provider;
+      const chainId = await provider.getNetwork().then((network) => network.chainId);
+      const transaction = {
+        from: signer.address,
+        to,
+        data,
+        value,
+        chainId,
+      };
 
       const gasCalculator = new GasCalculator({
-        gasLimitMultiplier: 1.2, // config var
-        gasPriceMultiplier: 1.2, // config var
+        gasLimitMultiplier: 2, // config var
+        gasPriceMultiplier: 2, // config var
       });
 
+
       const [gasPrice, gasLimit] = await Promise.all([
-        gasCalculator.getGasPrice(chainId),
-        gasCalculator.getGasLimit(transaction),
+        gasCalculator.getGasPrice(provider),
+        gasCalculator.getGasLimit(provider, transaction),
       ]);
 
-      if (!project) {
-        throw new Error("Project not found");
-      }
+      await this.syncNonce(chainId, signer.address);
 
-      await this.syncNonce(chainId, executor.address);
-
-      transaction.nonce = this.getNonce(chainId, executor.address);
+      transaction.nonce = this.getNonce(chainId, signer.address);
       transaction.gasPrice = gasPrice;
       transaction.gasLimit = gasLimit;
 
-      this.addNonce(chainId, executor.address);
+      this.addNonce(chainId, signer.address);
 
-      const executableTransaction = new ExecutableTransaction(transaction);
-      const tx = await executor.sendTransaction(executableTransaction);
+      const executableTransaction = {
+        to: transaction.to,
+        value: transaction.value,
+        data: transaction.data,
+        gasLimit: transaction.gasLimit,
+        gasPrice: transaction.gasPrice,
+        nonce: transaction.nonce,
+      };
+
+      const tx = await signer.sendTransaction(executableTransaction);
       const receipt = await tx.wait();
       return receipt;
     } catch (error) {

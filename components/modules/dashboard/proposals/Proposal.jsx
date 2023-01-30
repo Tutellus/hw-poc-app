@@ -22,7 +22,7 @@ export const Proposal = ({ safeData, proposal }) => {
     // await executeTransaction(proposal)
   }
 
-  const explorerUrl = getExplorerUrl(proposal.chainId, 'tx', proposal.executionTxHash)
+  const explorerUrl = getExplorerUrl(proposal.chainId, 'tx', proposal.receipt?.transactionHash)
 
   return (
     <div className="table-row">
@@ -31,7 +31,7 @@ export const Proposal = ({ safeData, proposal }) => {
       {canConfirm && <button onClick={handleConfirm}>Confirm</button>}
       {isExecuted && <button
         onClick={() => window.open(explorerUrl, '_blank')}
-      >View in explorer</button>}
+      >View</button>}
     </div>
   )
 }

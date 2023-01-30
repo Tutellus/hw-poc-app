@@ -27,21 +27,31 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
-async function markAsProcessing (id) {
+async function markAsExecuting (id) {
   const filter = { _id: id };
   const data = {
     $set: {
-      status: 'PROCESSING',
+      status: 'EXECUTING',
     },
   };
   return updateOne(COLLECTION, filter, data)
 }
 
-async function markAsProcessed (id) {
+async function markAsExecuted (id) {
   const filter = { _id: id };
   const data = {
     $set: {
-      status: 'PROCESSED',
+      status: 'EXECUTED',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+}
+
+async function markAsFailed (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'FAILED',
     },
   };
   return updateOne(COLLECTION, filter, data)
@@ -51,6 +61,7 @@ export {
   update,
   get,
   getOne,
-  markAsProcessing,
-  markAsProcessed,
+  markAsExecuting,
+  markAsExecuted,
+  markAsFailed,
 };

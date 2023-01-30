@@ -142,11 +142,19 @@ export const Tokens = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Amount"
                 />
-                <button disabled={!canMint} onClick={mint}>
+                <button
+                  disabled={!canMint}
+                  onClick={mint}
+                >
                   {minting ? 'Processing...' : 'Mint'}
                 </button>
               </div>
-            : <button onClick={updateContract}>Update contract</button>
+            : <button
+                disabled={loadingContract}
+                onClick={updateContract}
+              >
+                {loadingContract ? 'Loading...' : 'Load contract'}
+              </button>
           }
         </div>
       </div>

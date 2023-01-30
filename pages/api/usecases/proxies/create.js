@@ -1,13 +1,12 @@
 import { config } from '../../config.js'
 import { ethers, utils } from 'ethers'
 import { update as updateProxy } from '../../repositories/proxies'
-import { getOne as getOneProject } from '../../repositories/projects'
+import { getOne as getProject } from '../../repositories/projects'
 
 import Proxy from '../../abi/ProxyMock.json'
 import ProxyFactory from '../../abi/ProxyFactoryMock.json'
 import Safe from '../../abi/GnosisSafe.json'
 import SafeProxyFactory from '../../abi/GnosisSafeProxyFactory.json'
-import { Transaction } from '../../models/Transaction'
 import { execute as executeTx } from '../../infrastructure/executor'
 
 function keysToAddresses (keys) {
@@ -23,7 +22,7 @@ function findLogs (receipt, contract, eventName) {
 
 export async function execute({ chainId, projectId }) {
   try {
-    const project = await getOneProject({ _id: projectId })
+    const project = await getProject({ _id: projectId })
 
     if (!project) {
       throw new Error('Project not found')
@@ -54,15 +53,12 @@ export async function execute({ chainId, projectId }) {
           masterAddresses,
         ]
       );
-    
-    const transaction = new Transaction({
-      projectId,
-      chainId,
-      to: proxyFactory, 
+      
+    const receipt = await executeTx({
+      to: proxyFactory,
       data: proxyFactoryContract.interface.encodeFunctionData('createProxy', [initializeCalldata]),
+      signer: executorWallet,
     });
-
-    const receipt = await executeTx(transaction);
 
     const safeProxyCreationLogs = findLogs(receipt, safeProxyFactoryContract, 'ProxyCreation')
     const proxyCreationLog = findLogs(receipt, proxyFactoryContract, 'NewProxy')[0]

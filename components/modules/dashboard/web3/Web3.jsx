@@ -13,9 +13,9 @@ export const Web3 = () => {
   const [web3Address, setWeb3Address] = useState(null)
   const [externalWalletCode, setExternalWalletCode] = useState(null)
 
-  const existsExternalWallet = proxy?.externalWallet;
-  const externalWallet = existsExternalWallet ? proxy?.externalWallet : web3Address;
-  const externalWalletIsPending = proxy?.externalWalletStatus === 'PENDING';
+  const existsExternalWallet = proxy?.externalWallet?.address;
+  const externalWallet = existsExternalWallet ? proxy?.externalWallet?.address : web3Address;
+  const externalWalletIsPending = proxy?.externalWallet?.status === 'PENDING';
   
   const requestExternalWallet = async () => {
     if (web3Address) {
@@ -24,7 +24,7 @@ export const Web3 = () => {
       const signer = web3provider.getSigner()
       const message = `I am the owner of this account ${session.email} and this wallet ${web3Address} and I want to add this wallet to my shared wallet`
       const signature = await signer.signMessage(message);
-      await fetch('/api/usecases/proxys/requestAddOwner', {
+      await fetch('/api/usecases/proxies/requestAddOwner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,6 +32,7 @@ export const Web3 = () => {
         body: JSON.stringify({
           message,
           signature,
+          proxyId: proxy._id,
           user: session,
         }),
       });
@@ -42,7 +43,7 @@ export const Web3 = () => {
 
   const confirmExternalWallet = async () => {
     setConfirmingWallet(true)
-    await fetch('/api/usecases/proxys/confirmAddOwner', {
+    await fetch('/api/usecases/proxies/confirmAddOwner', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ export const Web3 = () => {
 
   useEffect(() => {
     if (proxy) {
-      setExternalWalletCode(proxy?.externalWallet2fa)
+      setExternalWalletCode(proxy?.externalWallet?.code2fa)
     }
   }, [proxy])
 

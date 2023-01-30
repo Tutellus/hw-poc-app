@@ -18,21 +18,13 @@ export class GasCalculator {
   updateGasPriceMultiplier(gasPriceMultiplier) {
     this.gasPriceMultiplier = gasPriceMultiplier;
   }
-
-  getProvider (chainId) {
-    const { rpc } = config[chainId];
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
-    return provider;
-  }
   
-  async getGasPrice(chainId) {
-    const provider = this.getProvider(chainId);
+  async getGasPrice(provider) {
     const gasPrice = await provider.getGasPrice();
     return gasPrice * this.gasPriceMultiplier;
   }
 
-  async getGasLimit(transaction) {
-    const provider = this.getProvider(transaction.chainId);
+  async getGasLimit(provider, transaction) {
     const gasLimit = await provider.estimateGas(transaction);
     return gasLimit * this.gasLimitMultiplier;
   }
