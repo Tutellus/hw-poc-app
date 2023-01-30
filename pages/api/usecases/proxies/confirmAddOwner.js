@@ -59,7 +59,7 @@ export async function execute({
     const owner1Wallet = new ethers.Wallet(ownerKeys[1], provider);
 
     const safeInterface = new ethers.utils.Interface(Safe.abi);
-    const { threshold } = await getSafeData({
+    const { threshold, nonce } = await getSafeData({
       safe,
       chainId,
     });
@@ -109,25 +109,29 @@ export async function execute({
         chainId,
         proxyId,
         signatures,
+        code2fa: externalWallet.code2fa,
       }
     });
 
-    proposal = await confirmProposal({
-      proposal,
-      signature: signature1,
-      awaitExecution: true,
-    });
+    if (nonce === proposal.nonce) {
+      proposal = await confirmProposal({
+        proposal,
+        signature: signature1,
+        awaitExecution: true,
+      });
 
-    await updateProxy({
-      id: proxyId,
-      fields: {
-        externalWallet: {
-          ...externalWallet,
-          status: 'CONFIRMED',
-          proposalId: proposal._id,
+      await updateProxy({
+        id: proxyId,
+        fields: {
+          externalWallet: {
+            ...externalWallet,
+            status: 'CONFIRMED',
+            proposalId: proposal._id,
+          }
         }
-      }
-    })
+      })
+
+    };
 
   } catch (error) {
     console.error(error)

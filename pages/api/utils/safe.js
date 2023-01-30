@@ -24,11 +24,14 @@ async function estimateGas ({
   return safeTxGas;
 };
 
+// TODO: try replacing unused nonces
 async function getNextNonce (safe) {
   const pipeline = [
     { $match: {
       safe,
-      status: 'EXECUTED',
+      status: {
+        $nin: ["FAILED"],
+      }
     } },
   ]
   const proposals = await getProposals(pipeline) || [];

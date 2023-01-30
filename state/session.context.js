@@ -102,7 +102,6 @@ function SessionProvider(props) {
   const verifyUser = async (code) => {
     if (session) {
       setVerifying(true)  
-      console.log('params', session, code, chainId, projectId);
       const response = await fetch('/api/usecases/users/verify', {
         method: 'POST',
         headers: {

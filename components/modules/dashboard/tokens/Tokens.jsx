@@ -54,7 +54,7 @@ export const Tokens = () => {
         abi: TOKEN_ABI,
         chainId: CHAIN_ID,
       }
-      console.log({params})
+  
       const response = await fetch('/api/usecases/contracts/update', {
         method: 'POST',
         headers: {

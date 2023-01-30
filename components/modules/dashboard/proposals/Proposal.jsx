@@ -46,10 +46,7 @@ export const Proposal = ({ safeData, proposal }) => {
   const isPending = proposal.status === 'PENDING'
   const isExecuted = proposal.status === 'EXECUTED'
 
-  console.log('safeData', safeData?.nonce)
-  console.log('proposal', proposal?.nonce)
-
-  const canConfirm = isPending && proposal.signatures?.length < safeData?.threshold //&& proposal?.nonce === safeData?.nonce
+  const canConfirm = isPending // && proposal.signatures?.length < safeData?.threshold //&& proposal?.nonce === safeData?.nonce
 
   const handleConfirm = async () => {
     openModal(<ConfirmForm

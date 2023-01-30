@@ -9,8 +9,8 @@ export async function execute({ proposal, signature, awaitExecution = false }) {
       signatures.push(signature);
     }
 
-    let threshold;
-    [proposal, { threshold }] = await Promise.all([
+    let threshold, nonce;
+    [proposal, { threshold, nonce }] = await Promise.all([
       updateProposal({
         id: proposal._id,
         fields: {
@@ -24,7 +24,7 @@ export async function execute({ proposal, signature, awaitExecution = false }) {
     ])
 
     // Check if the transaction has enough signatures and try execute (nonce?)
-    if (signatures.length >= threshold) {
+    if (signatures.length >= threshold && nonce === proposal.nonce) {
       proposal = await markAsExecuting(proposal._id)
       if (awaitExecution) {
         await executeProposal({ proposalId: proposal._id })

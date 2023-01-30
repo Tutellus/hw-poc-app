@@ -32,7 +32,10 @@ async function execute({ proposalId, signature, user }) {
 
     // Check if the signature is valid
     const sender = ethers.utils.recoverAddress(proposal.contractTransactionHash, signature)
-    const safeData = await getSafeData(proposal.safe)
+    const safeData = await getSafeData({
+      safe: proposal.safe,
+      chainId: proposal.chainId,
+    })
     const lcOwners = safeData.owners.map(owner => owner.toLowerCase())
     if (!lcOwners.includes(sender.toLowerCase())) {
       throw new Error('Invalid signature')
