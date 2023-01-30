@@ -1,5 +1,5 @@
 import { useSession } from "@/state/session.context";
-import { useTransactions } from "@/state/transactions.context"
+import { useProposals } from "@/state/proposals.context"
 import { ethers } from "ethers"
 import { useEffect, useState } from "react"
 
@@ -15,7 +15,7 @@ export const Tokens = () => {
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState('0.0')
   const [amount, setAmount] = useState('')
-  const { transactions, createTransaction } = useTransactions()
+  const { transactions, submit } = useProposals()
 
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
@@ -30,7 +30,6 @@ export const Tokens = () => {
         address: TOKEN_ADDRESS,
         chainId: CHAIN_ID,
       };
-      console.log({filter})
       const response = await fetch('/api/usecases/contracts/getOne', {
         method: 'POST',
         headers: {
@@ -104,7 +103,7 @@ export const Tokens = () => {
     try {
       const decimals = 18;
       const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-      await createTransaction({
+      await submit({
         contractId: contract._id,
         projectId: proxy.projectId,
         method: 'mint',
@@ -133,7 +132,10 @@ export const Tokens = () => {
           }}
         >
           {contract 
-            ? <div>
+            ? <div style={{
+                display: 'flex',
+                gap: '8px',
+            }}>
                 <input
                   type="text"
                   value={amount}

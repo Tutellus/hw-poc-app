@@ -6,16 +6,8 @@ import { getOne as getOneProject } from '../../repositories/projects';
 import { wrapOwner } from '../../utils/proxy';
 import { create } from '../../utils/safe';
 
-export default async function handler(req, res) {
-  const { user, destination, data, value, gas } = req.body;
-  const response = await execute({ user, destination, data, value, gas });
-  res.status(200).json(response)
-}
-
 export async function execute({ submital }) {
   try {
-
-    console.log('submital', submital)
 
     const { chainId, projectId, proxyId } = submital;
     

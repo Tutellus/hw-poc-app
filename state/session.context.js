@@ -124,21 +124,25 @@ function SessionProvider(props) {
   const redirect = () => {
     if (session) {
       if (session?.status === 'PENDING') {
-        router.push('/verify');
+        if (router.pathname !== '/verify') {
+          router.push('/verify');
+        }
       } else {
-        router.push('/dashboard');
+        if (router.pathname !== '/dashboard') {
+          router.push('/dashboard');
+        }
       }
     } else {
-      router.push('/login');
+      if (router.pathname !== '/login') {
+        router.push('/login');
+      }
     }
   }
 
   useEffect(() => {
     if (session) {
       localStorage.setItem('session', JSON.stringify(session));
-      if (!loadingProxy) {
-        loadProxy();
-      }
+      loadProxy();
       redirect();
     }
   }, [session]);

@@ -1,5 +1,5 @@
 import { useSafe } from "@/state/safe.context";
-import { useTransactions } from "@/state/transactions.context";
+import { useProposals } from "@/state/proposals.context";
 import { signTransaction } from "@/utils/safe";
 import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
@@ -11,7 +11,7 @@ export const ConfirmForm = ({
 }) => {
 
   const { ownerSafeData } = useSafe()
-  const { confirmingTransaction, confirmByCode, confirmBySignature } = useTransactions()
+  const { confirmingTransaction, confirmByCode, confirmBySignature } = useProposals()
   const [{ wallet }, connect] = useConnectWallet()
   const [code, setCode] = useState(tx?.code2fa || '');
 

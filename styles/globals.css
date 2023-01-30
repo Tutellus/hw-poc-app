@@ -93,7 +93,6 @@ h2 {
   justify-content: center;
   gap: 16px;
   margin-top: 5rem;
-  /* height: 100vh; */
 }
 
 .login .input-email {
@@ -110,42 +109,39 @@ h2 {
   color: var(--color-text-light);
 }
 
-.dashboard {
+.layout {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 5rem;
 }
 
-.dashboard .grid {
+.dashboard {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-items: center;
+  margin: 5rem;
   width: 100%;
   max-width: 800px;
-  padding: 16px;
+  gap: 10px;
 }
 
 .box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
   border-radius: 8px;
   background-color: var(--color-background-light);
   box-shadow: 0 0 8px var(--color-shadow);
   border: 1px solid var(--color-border);
+  width: 100%;
 }
 
 .box .title {
   font-size: 1rem;
   font-weight: 500;
-  margin: 0;
-  padding: 0;
   color: var(--color-primary-light);
+  padding: 8px;
+  margin: 4px;
 }
 
 .box .data {
@@ -153,7 +149,9 @@ h2 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  padding: 8px;
+  gap: 4px;
+  margin: 4px;
 }
 
 table {
@@ -163,7 +161,7 @@ table {
 
 table thead {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: 0 10px;
   border-bottom: 1px solid var(--color-border);
 }
@@ -182,7 +180,7 @@ table .table-body {
 
 table .table-body .table-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-bottom: 1px solid var(--color-border-light);
   padding: 10px;
 }
@@ -211,4 +209,11 @@ input {
 
 input::placeholder {
   color: var(--color-text-lighter);
+}
+
+.proposals {
+  display: flex;
+  grid-column: span 2;
+  gap: 8px;
+  width: 100%;
 }

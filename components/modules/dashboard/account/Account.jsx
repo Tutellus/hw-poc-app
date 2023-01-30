@@ -9,8 +9,10 @@ export const Account = () => {
   return (
     <div className="box">
       <div className="title">My account</div>
-      <div className="data">{session.email}</div>
-      <button onClick={logOut}>Logout</button>
+      <div className="data">
+        {session.email}
+        <button onClick={logOut}>Logout</button>
+      </div>
     </div>
   )
 }

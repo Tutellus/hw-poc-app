@@ -47,6 +47,7 @@ async function getSafeData ({ safe, chainId }) {
   const nonce = nonceBN.toNumber();
 
   return {
+    address: safe,
     owners,
     threshold,
     nonce,
