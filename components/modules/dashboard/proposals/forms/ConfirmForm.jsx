@@ -1,9 +1,9 @@
 import { useSafe } from "@/state/safe.context";
 import { useProposals } from "@/state/proposals.context";
 import { signProposal } from "@/utils/safe";
-import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { useState } from "react"
+import { useWallet } from "@/state/wallet.context";
 
 export const ConfirmForm = ({
   proposal,
@@ -12,7 +12,7 @@ export const ConfirmForm = ({
 
   const { ownerSafeData } = useSafe()
   const { confirmingTransaction, confirmByCode, confirmBySignature } = useProposals()
-  const [{ wallet }, connect] = useConnectWallet()
+  const { wallet, correctChain, settingChain, connect, handleSwitch } = useWallet();
   const [code, setCode] = useState(proposal?.code2fa || '');
 
   const [confirmingByCode, setConfirmingByCode] = useState(false)
@@ -66,7 +66,15 @@ export const ConfirmForm = ({
           onClick={handleConfirmByCode}
         >{confirmingByCode ? 'Confirming...' : 'Confirm by code'}
         </button>
-        {connectedWallet && <button
+        {connectedWallet && !correctChain && <button
+          style={{
+            backgroundColor: 'red',
+          }}
+          disabled={settingChain}
+          onClick={handleSwitch}
+        >{settingChain ? 'Switching...' : 'Switch to Goerli'}
+        </button>}
+        {connectedWallet && correctChain && <button
           disabled={!canConfirmBySignature}
           onClick={handleConfirmBySignature}
         >{confirmingBySignature ? 'Confirming...' : 'Confirm by signature'}

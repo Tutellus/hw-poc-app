@@ -91,7 +91,7 @@ function ProposalsProvider(props) {
 
   const confirmBySignature = async (proposal, signature) => {
     setConfirmingProposal(true);
-    await fetch('/api/usecases/txs/confirmBySignature', {
+    await fetch('/api/usecases/proposals/confirmBySignature', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

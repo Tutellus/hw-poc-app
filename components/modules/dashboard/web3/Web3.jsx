@@ -1,12 +1,12 @@
 import { useSession } from "@/state/session.context";
+import { useWallet } from "@/state/wallet.context";
 import { truncateAddress } from "@/utils/address";
-import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
 export const Web3 = () => {
   const { session, proxy, loadProxy } = useSession();
-  const [{ wallet }, connect] = useConnectWallet();
+  const { wallet, connect }= useWallet();
   const [requestingWallet, setRequestingWallet] = useState(false)
   const [confirmingWallet, setConfirmingWallet] = useState(false)
 
