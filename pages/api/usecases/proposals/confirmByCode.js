@@ -1,69 +1,60 @@
-import { config } from '../../config';
 import { ethers } from 'ethers'
-import { getOne as getOneTx } from '../../repositories/submitals';
-import { getOne as getOneProxy } from '../../repositories/proxies';
+import { getOne as getProposal } from '../../repositories/proposals';
+import { getOne as getProxy } from '../../repositories/proxies';
+import { getOne as getProject } from '../../repositories/projects';
 import { execute as confirm } from './confirm';
 import { sign } from '../../utils/safe';
 
 export default async function handler(req, res) {
-  const { txId, code, user } = req.body;
-  const response = await execute({ txId, code, user });
-  res.status(200).json(response)
+  const { proposalId, code, user } = req.body;
+  const response = await execute({ proposalId, code, user });
+  res.status(200).json({ proposal: response })
 }
 
-async function execute({ txId, code, user }) {
+async function execute({ proposalId, code, user }) {
   try {
 
     // Check if the transaction exists and if it is in a pending state
-    const tx = await getOneTx({ _id: txId })
-    if (!tx || tx.status !== 'CREATED') {
-      return {
-        error: 'Transaction not confirmable'
-      }
+    const proposal = await getProposal({ _id: proposalId })
+    if (!proposal || proposal.status !== 'PENDING') {
+      throw new Error('Proposal not signable')
+    }
+
+    // Check if the code is valid
+    if (proposal.code2fa !== code) {
+      throw new Error('Invalid code')
     }
 
     // Check if the Proxy exists
-    const proxy = await getOneProxy({ _id: tx.proxy })
+    const proxy = await getProxy({ _id: proposal.proxyId })
     if (!proxy) {
-      return {
-        error: 'Proxy not found'
-      }
+      throw new Error('Proxy not found')
     }
 
     // Check if the user is the owner of the Proxy
     if (proxy.userId !== user._id) {
-      return {
-        error: 'Unauthorized'
-      }
+      throw new Error('User not authorized')
     }
 
-    // Check if the code is valid
-    if (tx.code2fa !== code) {
-      return {
-        error: 'Invalid code'
-      }
+    const project = await getProject({ _id: proxy.projectId })
+    if (!project) {
+      throw new Error('Project not found')
     }
 
     // Signing
-    const { ownerKeys } = config
+    const { ownerKeys } = project;
     const owner1Wallet = new ethers.Wallet(ownerKeys[1]) 
 
-    const { signature, contractTransactionHash } = sign({
-      safe: proxy.ownerSafe,
-      ...tx,
+    const { signature } = sign({
+      ...proposal,
       signer: owner1Wallet,
     })
 
     // Confirm the transaction
-    await confirm({
-      tx,
-      signature,
-      contractTransactionHash,
-      safe: proxy.ownerSafe,
-    })
-    return true
+    const result = await confirm({ proposal, signature });
+    return result;
   } catch (error) {
     console.error(error)
-    return false;
+    throw error;
   }
 }

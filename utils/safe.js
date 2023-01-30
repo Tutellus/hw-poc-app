@@ -1,11 +1,11 @@
-const signTransaction = async ({
-  tx,
+const signProposal = async ({
+  proposal,
   signer,
 }) => {
   try {
     const domain = {
-      chainId: tx.chainId,
-      verifyingContract: tx.safe,
+      chainId: proposal.chainId,
+      verifyingContract: proposal.safe,
     };
     const types = {
       SafeTx: [
@@ -22,16 +22,16 @@ const signTransaction = async ({
       ],
     };
     const message = {
-      to: tx.to,
-      value: tx.value,
-      data: tx.data,
-      operation: tx.operation,
-      safeTxGas: tx.safeTxGas,
-      baseGas: tx.baseGas,
-      gasPrice: tx.gasPrice,
-      gasToken: tx.gasToken,
-      refundReceiver: tx.refundReceiver,
-      nonce: tx.nonce,
+      to: proposal.to,
+      value: proposal.value,
+      data: proposal.data,
+      operation: proposal.operation,
+      safeTxGas: proposal.safeTxGas,
+      baseGas: proposal.baseGas,
+      gasPrice: proposal.gasPrice,
+      gasToken: proposal.gasToken,
+      refundReceiver: proposal.refundReceiver,
+      nonce: proposal.nonce,
     };
     const signature = await signer._signTypedData(domain, types, message);
     return signature;
@@ -42,5 +42,5 @@ const signTransaction = async ({
 }
 
 export {
-  signTransaction,
+  signProposal,
 }

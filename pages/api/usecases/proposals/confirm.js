@@ -1,32 +1,30 @@
 import { getSafeData } from '../../utils/safe'
-import { markAsExecuting, update as updateTx } from '../../repositories/submitals';
-import { execute as safeExecuteOwnerTransaction } from '../safe/executeOwnerTransaction';
+import { update as updateProposal, markAsProcessing } from '../../repositories/proposals';
 
-export async function execute({ 
-  tx,
-  signature,
-}) {
+export async function execute({ proposal, signature }) {
   try {
-    const signatures = tx.signatures || [];
+    const signatures = proposal.signatures || [];
     if (!signatures.includes(signature)) {
       signatures.push(signature);
     }
 
-    const [, { threshold, nonce }] = await Promise.all([
-      updateTx({
-        id: tx._id,
+    let threshold;
+    [proposal, { threshold, nonce }] = await Promise.all([
+      updateProposal({
+        id: proposal._id,
         fields: {
           signatures,
         }
       }),
-      getSafeData(tx.safe),
+      getSafeData(proposal.safe),
     ])
 
-    // Check if the transaction has enough signatures and try execute
-    if (signatures.length >= threshold && nonce === tx.nonce) {
-      await markAsExecuting(tx._id)
-      safeExecuteOwnerTransaction({ txId: tx._id })
-    } 
+    // Check if the transaction has enough signatures and try execute (nonce?)
+    if (signatures.length >= threshold) {
+      proposal = await markAsProcessing(proposal._id)
+      // add to executor...
+    }
+    return proposal;
   } catch (error) {
     console.error(error)
     return {};

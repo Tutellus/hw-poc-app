@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useSafe } from "./safe.context";
+import { useSession } from "./session.context";
 
 const ProposalsContext = createContext({
   ownerProposals: [],
@@ -15,6 +16,7 @@ const ProposalsContext = createContext({
 
 function ProposalsProvider(props) {
 
+  const { session } = useSession();
   const { ownerSafeData, masterSafeData } = useSafe();
 
   const [ownerProposals, setOwnerProposals] = useState([]);
@@ -25,6 +27,13 @@ function ProposalsProvider(props) {
 
   const [loadingOwnerProposals, setLoadingOwnerProposals] = useState(false);
   const [loadingMasterProposals, setLoadingMasterProposals] = useState(false);
+
+  const loadProposals = async () => {
+    await Promise.all([
+      loadOwnerProposals(),
+      loadMasterProposals(),
+    ])
+  }
 
   const loadOwnerProposals = async () => {
     if (ownerSafeData && !loadingOwnerProposals) {
@@ -62,21 +71,21 @@ function ProposalsProvider(props) {
     }
   }
 
-  const confirmByCode = async (tx, code) => {
-    // setConfirmingProposal(true);
-    // await fetch('/api/usecases/txs/confirmByCode', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     user: session,
-    //     txId: tx._id,
-    //     code,
-    //   }),
-    // })
-    // await loadProposals()
-    // setConfirmingProposal(false);
+  const confirmByCode = async (proposal, code) => {
+    setConfirmingProposal(true);
+    await fetch('/api/usecases/proposals/confirmByCode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        proposalId: proposal._id,
+        code,
+        user: session,
+      }),
+    })
+    await loadProposals()
+    setConfirmingProposal(false);
   }
 
   const confirmBySignature = async (tx, signature) => {

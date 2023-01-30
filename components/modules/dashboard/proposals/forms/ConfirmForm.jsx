@@ -1,19 +1,19 @@
 import { useSafe } from "@/state/safe.context";
 import { useProposals } from "@/state/proposals.context";
-import { signTransaction } from "@/utils/safe";
+import { signProposal } from "@/utils/safe";
 import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { useState } from "react"
 
 export const ConfirmForm = ({
-  tx,
+  proposal,
   onConfirmed,
 }) => {
 
   const { ownerSafeData } = useSafe()
   const { confirmingTransaction, confirmByCode, confirmBySignature } = useProposals()
   const [{ wallet }, connect] = useConnectWallet()
-  const [code, setCode] = useState(tx?.code2fa || '');
+  const [code, setCode] = useState(proposal?.code2fa || '');
 
   const [confirmingByCode, setConfirmingByCode] = useState(false)
   const [confirmingBySignature, setConfirmingBySignature] = useState(false)
@@ -25,7 +25,7 @@ export const ConfirmForm = ({
 
   const handleConfirmByCode = async () => {
     setConfirmingByCode(true)
-    await confirmByCode(tx, code)
+    await confirmByCode(proposal, code)
     onConfirmed()
     setConfirmingByCode(false)
   }
@@ -34,11 +34,11 @@ export const ConfirmForm = ({
     setConfirmingBySignature(true)
     const provider = new ethers.providers.Web3Provider(wallet.provider)
     const signer = provider.getSigner()
-    const signature = await signTransaction({
-      tx,
+    const signature = await signProposal({
+      proposal,
       signer,
     });
-    await confirmBySignature(tx, signature)
+    await confirmBySignature(proposal, signature)
     onConfirmed()
     setConfirmingBySignature(false)
   }
