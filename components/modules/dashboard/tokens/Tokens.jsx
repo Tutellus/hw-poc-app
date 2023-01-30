@@ -77,18 +77,19 @@ export const Tokens = () => {
   }, [contract])
 
   const getBalance = async () => {
-    // const response = await fetch('/api/usecases/proxys/getTokenBalance', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     token: tokenAddress,
-    //     user: session
-    //   }),
-    // })
-    // const { balance: innerBalance } = await response.json()
-    // setBalance(innerBalance)
+    const response = await fetch('/api/usecases/tokens/getTokenBalance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chainId: CHAIN_ID,
+        token: TOKEN_ADDRESS,
+        address: proxy.address,
+      }),
+    })
+    const { balance: innerBalance } = await response.json()
+    setBalance(innerBalance)
   }
 
   useEffect(() => {

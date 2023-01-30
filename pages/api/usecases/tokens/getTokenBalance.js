@@ -3,8 +3,8 @@ import { ethers } from 'ethers'
 import ERC20Upgradeable from '../../abi/ERC20Upgradeable.json'
 
 export default async function handler(req, res) {
-  const { token, user } = req.body;
-  const balance = await execute({ token, user });
+  const { chainId, token, address } = req.body;
+  const balance = await execute({ chainId, token, address });
   res.status(200).json({ balance });
 }
 

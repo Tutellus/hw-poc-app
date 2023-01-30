@@ -93,11 +93,12 @@ h2 {
 
 .login {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
   gap: 16px;
   margin-top: 5rem;
+  width: 100%;
 }
 
 .login .input-email {
@@ -145,8 +146,9 @@ h2 {
   font-size: 1rem;
   font-weight: 500;
   color: var(--color-primary-light);
-  padding: 8px;
-  margin: 4px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  font-size: 1.2rem;
 }
 
 .box .data {
@@ -155,8 +157,9 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 8px;
-  gap: 4px;
-  margin: 4px;
+  gap: 10px;
+  margin: 8px;
+  font-size: 1.1rem;
 }
 
 table {
