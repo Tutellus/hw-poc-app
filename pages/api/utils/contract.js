@@ -17,6 +17,8 @@ function getFunctionName (item) {
   }
 }
 
+
+// TODO: verify contract implementation if proxy
 export async function verifyContract ({
   provider,
   address,
