@@ -9,7 +9,7 @@ export const config = {
   },
   mongo: {
     local: 'mongodb://localhost:27017/smw',
-    development: 'mongodb://localhost:27017/smw',
-    production: 'mongodb://localhost:27017/smw',
+    development: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
+    production: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
 }
