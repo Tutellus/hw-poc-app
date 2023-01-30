@@ -26,7 +26,10 @@ async function estimateGas ({
 
 async function getNextNonce (safe) {
   const pipeline = [
-    { $match: { safe } },
+    { $match: {
+      safe,
+      status: 'EXECUTED',
+    } },
   ]
   const proposals = await getProposals(pipeline) || [];
   return proposals.length
@@ -46,13 +49,14 @@ async function getSafeData ({ safe, chainId }) {
   const threshold = thresholdBN.toNumber();
   const nonce = nonceBN.toNumber();
 
-  return {
+  const result = {
     address: safe,
     owners,
     threshold,
     nonce,
     nextNonce,
-  };
+  }
+  return result;
 };
 
 async function create ({
@@ -73,7 +77,7 @@ async function create ({
     ...data,
   });
 
-  const txData = {
+  const wrappedData = {
     ...data,
     safe,
     safeTxGas,
@@ -86,15 +90,17 @@ async function create ({
     origin: 'Shared Wallet Concept',
   };
 
+  console.log('wrappedData', wrappedData)
+  
   const { signature, contractTransactionHash } = sign({
     safe,
     chainId,
-    ...txData,
+    ...wrappedData,
     signer,
   });
 
   const result = {
-    ...txData,
+    ...wrappedData,
     contractTransactionHash,
     signature,
   };

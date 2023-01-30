@@ -9,8 +9,8 @@ export async function execute({ proposal, signature }) {
       signatures.push(signature);
     }
 
-    let threshold;
-    [proposal, { threshold }] = await Promise.all([
+    let threshold, nextNonce;
+    [proposal, { threshold, nextNonce }] = await Promise.all([
       updateProposal({
         id: proposal._id,
         fields: {

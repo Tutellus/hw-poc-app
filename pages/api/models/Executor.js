@@ -64,7 +64,6 @@ export class Executor {
         gasPriceMultiplier: 2, // config var
       });
 
-
       const [gasPrice, gasLimit] = await Promise.all([
         gasCalculator.getGasPrice(provider),
         gasCalculator.getGasLimit(provider, transaction),

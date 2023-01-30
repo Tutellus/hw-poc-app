@@ -3,7 +3,6 @@ import { Executor } from "../models/Executor";
 let infrastructure;
 
 const init = () => {
-  // TODO: resync here
   infrastructure = new Executor();
 };
 

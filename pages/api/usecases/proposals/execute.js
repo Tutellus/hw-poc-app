@@ -32,6 +32,7 @@ export async function execute({ proposalId }) {
     const sortedSignatures = proposal.signatures.sort((a, b) => {
       const aAddress = ethers.utils.recoverAddress(proposal.contractTransactionHash, a)
       const bAddress = ethers.utils.recoverAddress(proposal.contractTransactionHash, b)
+      console.log(aAddress, bAddress)
       return aAddress.localeCompare(bAddress)
     })
   
