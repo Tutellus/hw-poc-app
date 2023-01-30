@@ -90,8 +90,6 @@ async function create ({
     origin: 'Shared Wallet Concept',
   };
 
-  console.log('wrappedData', wrappedData)
-  
   const { signature, contractTransactionHash } = sign({
     safe,
     chainId,

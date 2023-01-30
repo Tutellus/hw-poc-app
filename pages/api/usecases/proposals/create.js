@@ -1,27 +1,17 @@
 import { ethers } from 'ethers';
 import { config } from '../../config';
 import { update as updateProposal } from '../../repositories/proposals';
-import { getOne as getOneProxy } from '../../repositories/proxies';
-import { getOne as getOneProject } from '../../repositories/projects';
 import { wrapOwner } from '../../utils/proxy';
 import { create } from '../../utils/safe';
 
-export async function execute({ submital }) {
+export async function execute({
+  proxy,
+  project,
+  submital,
+}) {
   try {
-
-    const { chainId, projectId, proxyId } = submital;
     
-    const proxy = await getOneProxy({ _id: proxyId });
-    if (!proxy) {
-      throw new Error('Proxy not found');
-    }
-
-    const project = await getOneProject({ _id: projectId });
-
-    if (!project) {
-      throw new Error('Project not found');
-    }
-
+    const { chainId } = proxy;
     const { masterKeys, ownerKeys } = project;
 
     // TODO: Implement forward policies here if OWNER or MASTER (only owner now)
@@ -37,7 +27,7 @@ export async function execute({ submital }) {
     /////////////////////////////////////////////////////////////////////////////
 
     // Wraps data of submital
-    const wrappedData = wrapOwner(submital);
+    const wrappedData = wrapOwner(submital); // TODO: Implement forward policies here if OWNER or MASTER (only owner now)
     const data = {
       to: proxy.address,
       data: wrappedData,
@@ -63,9 +53,9 @@ export async function execute({ submital }) {
       fields: {
         ...result,
         submitalId: submital._id,
-        projectId,
+        projectId: project._id,
         chainId,
-        proxyId,
+        proxyId: proxy._id,
         signatures,
         code2fa,
       },

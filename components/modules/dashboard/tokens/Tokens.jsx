@@ -15,7 +15,7 @@ export const Tokens = () => {
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState('0.0')
   const [amount, setAmount] = useState('')
-  const { transactions, submit } = useProposals()
+  const { transactions, loadProposals, submit } = useProposals()
 
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
@@ -114,6 +114,7 @@ export const Tokens = () => {
     } catch (error) {
       console.error(error)
     }
+    await loadProposals()
     setMinting(false)
     setAmount('')
   }

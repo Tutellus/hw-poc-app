@@ -1,6 +1,7 @@
-import { getOne as getOneContract } from '../../repositories/contracts';
+import { getOne as getContract } from '../../repositories/contracts';
+import { getOne as getProject } from '../../repositories/projects';
 import { markAsProcessing, update as updateSubmital } from '../../repositories/submitals';
-import { getOne as getOneProxy } from '../../repositories/proxies';
+import { getOne as getProxy } from '../../repositories/proxies';
 import { execute as createProposal } from '../proposals/create';
 import { execute as process } from '../contracts/process';
 
@@ -43,7 +44,11 @@ export async function execute({
     const { _id: userId } = user;
 
     // Gets contract
-    const contract = await getOneContract({ _id: contractId });
+    const [contract, project] = await Promise.all([
+      getContract({ _id: contractId }),
+      getProject({ _id: projectId }),
+    ]);
+
     if (!contract) {
       throw new Error('Contract not found');
     }
@@ -55,7 +60,7 @@ export async function execute({
     const { chainId } = contract;
 
     // Gets proxy depending on user and chainId
-    const proxy = await getOneProxy({
+    const proxy = await getProxy({
       userId,
       chainId,
       projectId,
@@ -107,7 +112,11 @@ export async function execute({
     await markAsProcessing(submitalId);
 
     // Creates a proposal
-    const proposal = await createProposal({ submital })
+    const proposal = await createProposal({
+      submital,
+      proxy,
+      project,
+    })
     return proposal;
 
   } catch (error) {
