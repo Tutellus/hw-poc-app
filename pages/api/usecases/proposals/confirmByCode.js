@@ -42,12 +42,21 @@ async function execute({ proposalId, code, user }) {
     }
 
     // Signing
-    const { ownerKeys } = project;
-    const owner1Wallet = new ethers.Wallet(ownerKeys[1]) 
+    const { ownerKeys, masterKeys } = project;
+
+    let signer;
+
+    if (proposal.safe === proxy.ownerSafe) {
+      signer = new ethers.Wallet(ownerKeys[1])
+    } else if (proposal.safe === proxy.masterSafe) {
+      signer = new ethers.Wallet(masterKeys[1])
+    } else {
+      throw new Error('Invalid safe')
+    }
 
     const { signature } = sign({
       ...proposal,
-      signer: owner1Wallet,
+      signer,
     })
 
     // Confirm the transaction
