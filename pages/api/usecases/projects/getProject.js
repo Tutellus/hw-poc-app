@@ -1,4 +1,4 @@
-import { getOne as getOneProject } from '../../repositories/projects';
+import { getOne as getProject } from '../../repositories/projects';
 
 export default async function handler(req, res) {
   try {
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
 export async function execute({ projectId }) {
   try {
-    const project = await getOneProject({ _id: projectId });
+    const project = await getProject({ _id: projectId });
     if (!project) {
       throw new Error('Project not found');
     }

@@ -1,9 +1,9 @@
-import { getOne as getOneProxy } from '../../repositories/proxies';
+import { getOne as getProxy } from '../../repositories/proxies';
 
 export default async function handler(req, res) {
   try {
     const { filter } = req.body;
-    const proxy = await getOneProxy(filter);
+    const proxy = await getProxy(filter);
     res.status(200).json({ proxy });
   } catch (error) {
     console.error(error)

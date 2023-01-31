@@ -1,8 +1,8 @@
 import { config } from '../../config';
 import { execute as assign } from '../proxies/assign';
-import { getOne as getOneProject } from '../../repositories/projects';
-import { getOne as getOneProxy } from '../../repositories/proxies';
-import { getOne as getOneUser } from '../../repositories/users';
+import { getOne as getProject } from '../../repositories/projects';
+import { getOne as getProxy } from '../../repositories/proxies';
+import { getOne as getUser } from '../../repositories/users';
 
 export default async function handler(req, res) {
   try {
@@ -22,7 +22,7 @@ export async function execute ({
 }) {
   try {
 
-    const user = await getOneUser({ _id: userId });
+    const user = await getUser({ _id: userId });
 
     if (!user) {
       throw new Error('User not found');
@@ -34,13 +34,13 @@ export async function execute ({
       throw new Error('Unsupported chain');
     }
 
-    const project = await getOneProject({ _id: projectId });
+    const project = await getProject({ _id: projectId });
 
     if (!project) {
       throw new Error('Project not found');
     }
 
-    let proxy = await getOneProxy({ userId, chainId, projectId });
+    let proxy = await getProxy({ userId, chainId, projectId });
 
     if (proxy) {
       return proxy;

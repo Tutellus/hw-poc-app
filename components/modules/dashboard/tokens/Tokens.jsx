@@ -1,121 +1,19 @@
-import { useSession } from "@/state/session.context";
-import { useProposals } from "@/state/proposals.context"
-import { ethers } from "ethers"
-import { useEffect, useState } from "react"
-
-const TOKEN_ADDRESS = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
-const TOKEN_ABI = [
-  "function mint(address to, uint256 amount) public returns (bool)",
-  "function decimals() public view returns (uint8)",
-];
-const CHAIN_ID = 5
+import { useState } from "react"
+import { useContract } from "@/state/contract.context";
 
 export const Tokens = () => {
-  const { session, proxy } = useSession()
-  const [minting, setMinting] = useState(false)
-  const [balance, setBalance] = useState('0.0')
-  const [amount, setAmount] = useState('')
-  const { ownerProposals, loadProposals, submit } = useProposals()
 
-  const [loadingContract, setLoadingContract] = useState(false)
-  const [contract, setContract] = useState(null)
+  const { loadingContract, contract, balance, updateContract, mint } = useContract();
+
+  const [amount, setAmount] = useState('')
+  const [minting, setMinting] = useState(false)
 
   const amountFloat = parseFloat(amount)
   const canMint = !minting && amountFloat !== NaN && amountFloat > 0
 
-  const loadContract = async () => {
-    try {
-      setLoadingContract(true)
-      const filter = {
-        address: TOKEN_ADDRESS,
-        chainId: CHAIN_ID,
-      };
-      const response = await fetch('/api/usecases/contracts/getOne', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filter }),
-      })
-      const { contract: innerContract } = await response.json()
-      setContract(innerContract)
-      setLoadingContract(false)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const updateContract = async () => {
-    try {
-      setLoadingContract(true)
-
-      const params = {
-        address: TOKEN_ADDRESS,
-        abi: TOKEN_ABI,
-        chainId: CHAIN_ID,
-      }
-  
-      const response = await fetch('/api/usecases/contracts/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      })
-      const { contract: innerContract } = await response.json()
-      setContract(innerContract)
-      setLoadingContract(false)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    if (!contract) {
-      loadContract()
-    }
-  }, [contract])
-
-  const getBalance = async () => {
-    const response = await fetch('/api/usecases/tokens/getTokenBalance', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chainId: CHAIN_ID,
-        token: TOKEN_ADDRESS,
-        address: proxy.address,
-      }),
-    })
-    const { balance: innerBalance } = await response.json()
-    setBalance(innerBalance)
-  }
-
-  useEffect(() => {
-    if (proxy) {
-      getBalance()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proxy, ownerProposals])
-
-  const mint = async () => {
+  const innerMint = async () => {
     setMinting(true)
-    try {
-      const decimals = 18;
-      const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-      await submit({
-        contractId: contract._id,
-        projectId: proxy.projectId,
-        method: 'mint',
-        params: [proxy.address, amountBN],
-        value: 0,
-        user: session,
-      })
-    } catch (error) {
-      console.error(error)
-    }
-    await loadProposals()
+    await mint(amount)
     setMinting(false)
     setAmount('')
   }
@@ -146,7 +44,7 @@ export const Tokens = () => {
                 />
                 <button
                   disabled={!canMint}
-                  onClick={mint}
+                  onClick={innerMint}
                 >
                   {minting ? 'Processing...' : 'Mint'}
                 </button>

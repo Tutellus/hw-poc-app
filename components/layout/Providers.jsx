@@ -3,6 +3,7 @@ import { ModalProvider } from '@/state/modal.context'
 import { ProposalsProvider } from '@/state/proposals.context'
 import { SafeProvider } from '@/state/safe.context'
 import { WalletProvider } from '@/state/wallet.context';
+import { ContractProvider } from '@/state/contract.context';
 
 export const Providers = ({ children }) => {
   return (
@@ -11,7 +12,9 @@ export const Providers = ({ children }) => {
         <SessionProvider>
           <SafeProvider>
             <ProposalsProvider>
-              {children}
+              <ContractProvider>
+                {children}
+              </ContractProvider>
             </ProposalsProvider>
           </SafeProvider>
         </SessionProvider>

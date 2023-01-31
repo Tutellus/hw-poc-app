@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from "next/router";
-import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 
 const chainId = 5;
 const projectId = "63d3c3a83d55158bfb36d502";
@@ -82,7 +82,7 @@ function SessionProvider(props) {
         projectId,
       }
 
-      const response = await fetch('/api/usecases/proxies/getOne', {
+      const response = await fetch('/api/usecases/proxies/getProxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
