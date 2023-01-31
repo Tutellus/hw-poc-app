@@ -3,6 +3,7 @@ import { config } from '../../config';
 import { update as updateProposal } from '../../repositories/proposals';
 import { wrapOwner } from '../../utils/proxy';
 import { create } from '../../utils/safe';
+import { execute as confirm } from './confirm';
 
 export async function execute({
   proxy,
@@ -45,7 +46,6 @@ export async function execute({
       data,
       signer: signer0,
     })  
-    const signatures = [result.signature];
 
     // Adds first signature to the proposal and creates proposal in DB
     const code2fa = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
@@ -56,11 +56,11 @@ export async function execute({
         projectId: project._id,
         chainId,
         proxyId: proxy._id,
-        signatures,
         code2fa,
       },
     })
 
+    confirm({ proposal, signature: result.signature })
     return proposal;
 
   } catch (error) {
