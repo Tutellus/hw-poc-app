@@ -15,7 +15,7 @@ export const Tokens = () => {
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState('0.0')
   const [amount, setAmount] = useState('')
-  const { transactions, loadProposals, submit } = useProposals()
+  const { ownerProposals, loadProposals, submit } = useProposals()
 
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
@@ -97,7 +97,7 @@ export const Tokens = () => {
       getBalance()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proxy, transactions])
+  }, [proxy, ownerProposals])
 
   const mint = async () => {
     setMinting(true)

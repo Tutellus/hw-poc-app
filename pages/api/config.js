@@ -8,7 +8,7 @@ export const config = {
     safeFallbackHandler: '0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4',
   },
   mongo: {
-    local: 'mongodb://localhost:27017/smw',
+    test: 'mongodb://localhost:27017/smw',
     development: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
     production: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
