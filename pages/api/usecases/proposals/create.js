@@ -1,9 +1,11 @@
 import { ethers } from 'ethers';
 import { config } from '../../config';
 import { update as updateProposal } from '../../repositories/proposals';
-import { wrapOwner } from '../../utils/proxy';
+import { wrapMaster, wrapOwner } from '../../utils/proxy';
 import { create } from '../../utils/safe';
 import { execute as confirm } from './confirm';
+
+import ProxyForwardPolicies from '../../abi/ProxyForwardPoliciesMock.json';
 
 export async function execute({
   proxy,
@@ -14,21 +16,31 @@ export async function execute({
     
     const { chainId } = proxy;
     const { masterKeys, ownerKeys } = project;
+    const { rpc, forwardPolicies } = config[chainId];
 
-    // TODO: Implement forward policies here if OWNER or MASTER (only owner now)
-    const safe = proxy.ownerSafe;
-    let signers;
-    if (safe === proxy.ownerSafe) {
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const forwardPoliciesContract = new ethers.Contract(forwardPolicies, ProxyForwardPolicies.abi, provider);
+
+    const forwardCheckOwner = await forwardPoliciesContract
+      .forwardCheckOwner(
+        submital.to,
+        submital.data,
+        submital.value,
+        submital.gas,
+      );
+    
+      let safe, signers, wrappedData;
+
+    if (forwardCheckOwner) {
+      safe = proxy.ownerSafe;
       signers = ownerKeys;
-    } else if (safe === proxy.masterSafe) {
-      signers = masterKeys;
+      wrappedData = wrapOwner(submital);
     } else {
-      throw new Error('Invalid proposal');
+      safe = proxy.masterSafe;
+      signers = masterKeys;
+      wrappedData = wrapMaster(submital);
     }
-    /////////////////////////////////////////////////////////////////////////////
 
-    // Wraps data of submital
-    const wrappedData = wrapOwner(submital); // TODO: Implement forward policies here if OWNER or MASTER (only owner now)
     const data = {
       to: proxy.address,
       data: wrappedData,
@@ -36,9 +48,6 @@ export async function execute({
       operation: 0,
     };
   
-    // Creates and signs the proposal once
-    const { rpc } = config[chainId];  
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
     const signer0 = new ethers.Wallet(signers[0], provider)
     const result = await create({
       chainId,
