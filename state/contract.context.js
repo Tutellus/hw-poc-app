@@ -161,7 +161,8 @@ function ContractProvider(props) {
 
   const updateAddressStatus = async (status) => {
     try {
-      const result = await fetch('/api/usecases/policies/updateAddressStatus', {
+      setUpdatingPolicies(true)
+      await fetch('/api/usecases/policies/updateAddressStatus', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,6 +174,7 @@ function ContractProvider(props) {
           status,
         }),
       })
+      setUpdatingPolicies(false)
     } catch (error) {
       console.error(error)
     }
@@ -180,7 +182,6 @@ function ContractProvider(props) {
 
   const updateMask = async () => {
     try {
-
       const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
       const mask = ethers.utils.solidityPack(
         ['uint32', 'uint256'],
@@ -204,28 +205,33 @@ function ContractProvider(props) {
       console.error(error)
     }
   }
-  
+
   const updateFunctionStatus = async (status) => {
     setUpdatingPolicies(true)
     await updateMask();
+
+    const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
+    const selectorAndParams = ethers.utils.solidityPack(['bytes4', 'address'], [selector, proxy.address])
+
+    try {
+      await fetch('/api/usecases/policies/updateFunctionStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: proxy.projectId,
+          chainId: CHAIN_ID,
+          address: TOKEN_ADDRESS,
+          selectorAndParams,
+          status,
+        }),
+      })
+    } catch (error) {
+      console.error(error)
+    }
     setUpdatingPolicies(false)
-    // try {
-    //   const result = await fetch('/api/usecases/policies/updateFunctionStatus', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       projectId: proxy.projectId,
-    //       chainId: CHAIN_ID,
-    //       address: TOKEN_ADDRESS,
-    //       method: 'mint',
-    //       status,
-    //     }),
-    //   })
-    // } catch (error) {
-    //   console.error(error)
-    // }
+
   }
 
   useEffect(() => {
