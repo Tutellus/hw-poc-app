@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRouter } from "next/router";
+import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useProposals } from "./proposals.context";
 import { useSession } from "./session.context";
@@ -14,8 +14,13 @@ const CHAIN_ID = 5
 const ContractContext = createContext({
   loadingContract: false,
   contract: null,
-  executableByOwner: false,
+  balance: '0.0',
+  updatingPolicies: false,
+  fullApprovedOwner: false,
+  functionApprovedOwner: false,
   updateContract: async () => {},
+  updateAddressStatus: async (status) => {},
+  updateFunctionStatus: async (status) => {},
   mint: async (amount) => {},
 });
 
@@ -26,7 +31,10 @@ function ContractProvider(props) {
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState('0.0');
-  const [executableByOwner, setExecutableByOwner] = useState(false);
+
+  const [updatingPolicies, setUpdatingPolicies] = useState(false);
+  const [fullApprovedOwner, setFullApprovedOwner] = useState(false);
+  const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getBalance = async () => {
     const response = await fetch('/api/usecases/tokens/getTokenBalance', {
@@ -108,60 +116,149 @@ function ContractProvider(props) {
     }
   }
 
-  const forwardCheckOwner = async () => {
+  const checkContractAddress = async () => {
     try {
-      const method = 'mint';
-      const params = [proxy.address, 100];
-      const value = 0;
-
-      const result = await fetch('/api/usecases/policies/forwardCheckOwner', {
+      const result = await fetch('/api/usecases/policies/checkContractAddress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           contractId: contract._id,
-          proxyId: proxy._id,
-          method,
-          params,
-          value,
         }),
       })
       const { response } = await result.json()
-      setExecutableByOwner(response)
+      setFullApprovedOwner(response)
     } catch (error) {
       console.error(error)
-      setExecutableByOwner(false)
+      setFullApprovedOwner(false)
     }
   }
 
-  useEffect(() => {
-    if (proxy) {
-      getContract();
+  const checkContractData = async () => {
+    try {
+      const method = 'mint';
+      const params = [proxy.address, ethers.constants.One];
+
+      const result = await fetch('/api/usecases/policies/checkContractData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contractId: contract._id,
+          method,
+          params,
+        }),
+      })
+      const { response } = await result.json()
+      setFunctionApprovedOwner(response)
+    } catch (error) {
+      console.error(error)
+      setFunctionApprovedOwner(false)
     }
+  }
+
+  const updateAddressStatus = async (status) => {
+    try {
+      const result = await fetch('/api/usecases/policies/updateAddressStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: proxy.projectId,
+          chainId: CHAIN_ID,
+          address: TOKEN_ADDRESS,
+          status,
+        }),
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const updateMask = async () => {
+    try {
+
+      const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
+      const mask = ethers.utils.solidityPack(
+        ['uint32', 'uint256'],
+        ['0xffffffff', ethers.constants.MaxUint256]
+      );
+
+      await fetch('/api/usecases/policies/updateMask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: proxy.projectId,
+          chainId: CHAIN_ID,
+          address: TOKEN_ADDRESS,
+          selector,
+          mask,
+        }),
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
+  const updateFunctionStatus = async (status) => {
+    setUpdatingPolicies(true)
+    await updateMask();
+    setUpdatingPolicies(false)
+    // try {
+    //   const result = await fetch('/api/usecases/policies/updateFunctionStatus', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       projectId: proxy.projectId,
+    //       chainId: CHAIN_ID,
+    //       address: TOKEN_ADDRESS,
+    //       method: 'mint',
+    //       status,
+    //     }),
+    //   })
+    // } catch (error) {
+    //   console.error(error)
+    // }
+  }
+
+  useEffect(() => {
+    if (!fullApprovedOwner) {
+      checkContractData();
+    }
+  }, [fullApprovedOwner])
+
+  useEffect(() => {
+    getContract();
   }, [proxy])
   
   useEffect(() => {
-    if (!contract) {
-      getContract();
-    } else {
+    if (proxy && contract) {
       getBalance();
-      forwardCheckOwner();
+      checkContractAddress();
     }
   }, [contract, ownerProposals, masterProposals])
-
-  console.log('forwardCheckOwner', executableByOwner)
 
   const memoizedData = useMemo(
     () => ({
       loadingContract,
       contract,
       balance,
-      executableByOwner,
+      updatingPolicies,
+      fullApprovedOwner,
+      functionApprovedOwner,
       updateContract,
+      updateAddressStatus,
+      updateFunctionStatus,
       mint,
     }),
-    [loadingContract, contract, balance, executableByOwner]
+    [loadingContract, contract, balance, updatingPolicies, fullApprovedOwner, functionApprovedOwner]
   );
 
   return <ContractContext.Provider value={memoizedData} {...props} />;

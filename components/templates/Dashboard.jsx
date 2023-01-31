@@ -3,6 +3,7 @@ import { Tokens } from "../modules/dashboard/tokens/Tokens";
 import { Proxy } from "../modules/dashboard/proxy/Proxy";
 import { Account } from "../modules/dashboard/account/Account";
 import { Proposals } from "../modules/dashboard/proposals/Proposals";
+import { Contract } from "../modules/dashboard/contract/Contract";
 
 export const Dashboard = () => {
   return (
@@ -18,6 +19,9 @@ export const Dashboard = () => {
 
         {/* my external wallet */}
         <Web3/>
+
+        {/* your contract */}
+        <Contract/>
     
         {/* owner proposals list */}
         {<Proposals/>}

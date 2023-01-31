@@ -5,7 +5,13 @@ import { execute as executeTransaction } from '../../infrastructure/executor';
 
 import ProxyForwardPolicies from "../../abi/ProxyForwardPoliciesMock.json"; 
 
-export default async function execute ({
+export default async function handler (req, res) {
+  const { projectId, chainId, address, selector, mask } = req.body;
+  const response = await execute({ projectId, chainId, address, selector, mask });
+  res.status(200).json({response});
+}
+
+export async function execute ({
   projectId,
   chainId,
   address,
@@ -13,7 +19,6 @@ export default async function execute ({
   mask,
 }) {
   try {
-
     const project = await getProject({ _id: projectId });
 
     if (!project) {
