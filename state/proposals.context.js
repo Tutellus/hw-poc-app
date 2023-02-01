@@ -48,7 +48,9 @@ function ProposalsProvider(props) {
           body: JSON.stringify({ safe: proxy?.ownerSafe }),
         })
         const { proposals: items } = await response.json()
-        setOwnerProposals(items.reverse());
+        if (proxy && session) {
+          setOwnerProposals(items.reverse());
+        }
       }, 2000)
       setLoadingOwnerProposals(false);
     }
@@ -66,7 +68,9 @@ function ProposalsProvider(props) {
           body: JSON.stringify({ safe: proxy?.masterSafe }),
         })
         const { proposals: items } = await response.json()
-        setMasterProposals(items.reverse());
+        if (proxy && session) {
+          setMasterProposals(items.reverse());
+        }
       }, 2000)
       setLoadingMasterProposals(false);
     }
@@ -136,7 +140,8 @@ function ProposalsProvider(props) {
   useEffect(() => {
     if (proxy) {
       loadProposals();
-    } else {
+    }
+    if (!proxy || !session) {
       setOwnerProposals([]);
       setMasterProposals([]);
     }
