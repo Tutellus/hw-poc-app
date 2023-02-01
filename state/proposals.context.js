@@ -19,6 +19,7 @@ const ProposalsContext = createContext({
 function ProposalsProvider(props) {
 
   const { session, proxy } = useSession();
+  const { ownerSafeData, masterSafeData } = useSafe();
   
   const [ownerProposals, setOwnerProposals] = useState([]);
   const [masterProposals, setMasterProposals] = useState([]);
@@ -111,6 +112,7 @@ function ProposalsProvider(props) {
   }
 
   const submit = async ({
+    chainId,
     contractId,
     projectId,
     method,
@@ -125,6 +127,7 @@ function ProposalsProvider(props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        chainId,
         contractId,
         projectId,
         method,
@@ -148,23 +151,23 @@ function ProposalsProvider(props) {
   }, [proxy]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (ownerSafeData) {
       loadOwnerProposals();
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [ownerProposals]);
+    }
+    if (!ownerSafeData) {
+      setOwnerProposals([]);
+    }
+  }, [ownerSafeData]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (masterSafeData) {
       loadMasterProposals();
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [masterProposals]);
-
+    }
+    if (!masterSafeData) {
+      setMasterProposals([]);
+    }
+  }, [masterSafeData]);
+  
   const memoizedData = useMemo(
     () => ({
       ownerProposals,

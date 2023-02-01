@@ -68,6 +68,7 @@ export async function execute({
       operation: 0,
     };
   
+    const provider = new ethers.providers.JsonRpcProvider(config[chainId].rpc);
     const signer0 = new ethers.Wallet(signers[0], provider)
     const result = await create({
       chainId,

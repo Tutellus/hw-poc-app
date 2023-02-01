@@ -8,6 +8,7 @@ import { execute as process } from '../contracts/process';
 export default async function handler(req, res) {
   try {
     const {
+      chainId,
       contractId,
       projectId,
       method,
@@ -16,6 +17,7 @@ export default async function handler(req, res) {
       user,
     } = req.body;
     const response = await execute({
+      chainId,
       contractId,
       projectId,
       method,
@@ -32,6 +34,7 @@ export default async function handler(req, res) {
 }
 
 export async function execute({
+  chainId,
   contractId,
   method,
   params,
@@ -63,8 +66,6 @@ export async function execute({
 
     const { _id: proxyId, address: proxyAddress } = proxy;
 
-    let commonChainId;
-
     const contractDataBatch = await Promise.all(contractId.map(async (innerContractId, index) => {
       const contract = await getContract({ _id: innerContractId });
 
@@ -72,13 +73,11 @@ export async function execute({
         throw new Error('Contract not found');
       }
 
-      const { chainId } = contract;
+      const { chainId: innerChainId } = contract;
 
       // Check chainId is common
-      if (!commonChainId) {
-        commonChainId = chainId;
-      } else if (commonChainId !== chainId) {
-        throw new Error('All contracts must be on the same chain');
+      if (chainId !== innerChainId) {
+        throw new Error('All contracts must match the proxy chain');
       }
 
       const contractData = await process({
