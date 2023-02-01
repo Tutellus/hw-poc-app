@@ -9,7 +9,7 @@ function wrapOwner ({
 }) {
   return new utils.Interface(Proxy.abi)
   .encodeFunctionData(
-    'forwardOwner',
+    'forwardOwnerBatch',
     [
       to,
       data,
@@ -27,7 +27,7 @@ function wrapMaster ({
 }) {
   return new utils.Interface(Proxy.abi)
   .encodeFunctionData(
-    'forwardMaster',
+    'forwardMasterBatch',
     [
       to,
       data,

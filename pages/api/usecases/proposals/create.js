@@ -7,6 +7,36 @@ import { execute as confirm } from './confirm';
 
 import ProxyForwardPolicies from '../../abi/ProxyForwardPoliciesMock.json';
 
+async function checkForward (
+  submital,
+) {
+
+  const { chainId } = submital;
+  const { rpc, forwardPolicies } = config[chainId];
+
+  const provider = new ethers.providers.JsonRpcProvider(rpc);
+  const forwardPoliciesContract = new ethers.Contract(forwardPolicies, ProxyForwardPolicies.abi, provider);
+
+  const checks = await Promise.all(submital.to.map(async (to, index) => {
+    const data = submital.data[index];
+    const value = submital.value[index];
+    const gas = submital.gas[index];
+    
+    const forwardCheckOwner = await forwardPoliciesContract
+      .forwardCheckOwner(
+        to,
+        data,
+        value,
+        gas,
+      );
+    return forwardCheckOwner;
+  }))
+
+  const state = checks.every(check => check);
+  return state;
+}
+
+
 export async function execute({
   proxy,
   project,
@@ -16,20 +46,10 @@ export async function execute({
     
     const { chainId } = proxy;
     const { masterKeys, ownerKeys } = project;
-    const { rpc, forwardPolicies } = config[chainId];
 
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
-    const forwardPoliciesContract = new ethers.Contract(forwardPolicies, ProxyForwardPolicies.abi, provider);
-
-    const forwardCheckOwner = await forwardPoliciesContract
-      .forwardCheckOwner(
-        submital.to,
-        submital.data,
-        submital.value,
-        submital.gas,
-      );
+    const forwardCheckOwner = await checkForward(submital);
     
-      let safe, signers, wrappedData;
+    let safe, signers, wrappedData;
 
     if (forwardCheckOwner) {
       safe = proxy.ownerSafe;
@@ -61,6 +81,7 @@ export async function execute({
     const proposal = await updateProposal({
       fields: {
         ...result,
+        userId: submital.userId,
         submitalId: submital._id,
         projectId: project._id,
         chainId,

@@ -33,10 +33,10 @@ export default async function handler(req, res) {
 
 export async function execute({
   contractId,
-  projectId,
   method,
   params,
   value,
+  projectId,
   user,
 }) {
   try {
@@ -44,20 +44,11 @@ export async function execute({
     const { _id: userId } = user;
 
     // Gets contract
-    const [contract, project] = await Promise.all([
-      getContract({ _id: contractId }),
-      getProject({ _id: projectId }),
-    ]);
+    const project = await getProject({ _id: projectId });
 
-    if (!contract) {
-      throw new Error('Contract not found');
+    if (!project) {
+      throw new Error('Project not found');
     }
-
-    if (contract.status === 'LOCKED') {
-      throw new Error('Contract locked');
-    }
-
-    const { chainId } = contract;
 
     // Gets proxy depending on user and chainId
     const proxy = await getProxy({
@@ -72,22 +63,68 @@ export async function execute({
 
     const { _id: proxyId, address: proxyAddress } = proxy;
 
-    // Processes data
-    const contractData = await process({
-      contract,
-      method,
-      params,
-      value,
-      proxyAddress,
-    })
+    let commonChainId;
 
-    if(!contractData) {
-      throw new Error('Cannot process contract data');
-    }
+    const contractDataBatch = await Promise.all(contractId.map(async (innerContractId, index) => {
+      const contract = await getContract({ _id: innerContractId });
 
-    const { to, value: innerValue, gas, data } = contractData;
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+
+      const { chainId } = contract;
+
+      // Check chainId is common
+      if (!commonChainId) {
+        commonChainId = chainId;
+      } else if (commonChainId !== chainId) {
+        throw new Error('All contracts must be on the same chain');
+      }
+
+      const contractData = await process({
+        contract,
+        method: method[index],
+        params: params[index],
+        value: value[index],
+        proxyAddress,
+      })
+
+      if(!contractData) {
+        throw new Error('Cannot process contract data');
+      }
+
+      const { to, value: innerValue, gas, data } = contractData;
+
+      return {
+        contractId,
+        chainId,
+        to,
+        data,
+        value: innerValue,
+        gas,
+      }
+
+    }));
 
     // Creates a submital
+    const {
+      to,
+      data,
+      value: innerValue,
+      gas,
+    } = contractDataBatch.reduce((acc, data) => {
+      acc.to.push(data.to);
+      acc.data.push(data.data);
+      acc.value.push(data.value);
+      acc.gas.push(data.gas);
+      return acc;
+    }, {
+      to: [],
+      data: [],
+      value: [],
+      gas: [],
+    });
+    
     const submital = await updateSubmital({
       fields: {
         proxyId,

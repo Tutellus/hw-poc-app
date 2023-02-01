@@ -106,11 +106,11 @@ function ContractProvider(props) {
       const decimals = 18;
       const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
       await submit({
-        contractId: contract._id,
+        contractId: [contract._id],
+        method: ['mint'],
+        params: [[proxy.address, amountBN]],
+        value: [0],
         projectId: proxy.projectId,
-        method: 'mint',
-        params: [proxy.address, amountBN],
-        value: 0,
         user: session,
       })
     } catch (error) {
