@@ -190,6 +190,21 @@ function ContractProvider(props) {
         ['0xffffffff', ethers.constants.MaxUint256]
       );
 
+      const { mask: checkMask } = await fetch('/api/usecases/policies/getMask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contractId: contract._id,
+          method: 'mint',
+        }),
+      }).then((res) => res.json())
+    
+      if (checkMask === mask) {
+        return;
+      }
+
       await fetch('/api/usecases/policies/updateMask', {
         method: 'POST',
         headers: {
@@ -209,7 +224,7 @@ function ContractProvider(props) {
   }
 
   const updateFunctionStatus = async (status) => {
-    setUpdatingPolicies(true)
+    setUpdatingPolicies(true);
     await updateMask();
     const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
     const selectorAndParams = ethers.utils.solidityPack(['bytes4', 'uint256'], [selector, proxy.address])
