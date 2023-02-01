@@ -152,7 +152,6 @@ function ContractProvider(props) {
         }),
       })
       const { response } = await result.json()
-      console.log('response', response)
       setFunctionApprovedOwner(response)
     } catch (error) {
       console.error(error)
