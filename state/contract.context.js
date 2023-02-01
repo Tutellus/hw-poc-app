@@ -3,13 +3,15 @@ import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useProposals } from "./proposals.context";
 import { useSession } from "./session.context";
+import { DEFAULT_CHAIN_ID } from "./wallet.context";
 
 const TOKEN_ADDRESS = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 const TOKEN_ABI = [
   "function mint(address to, uint256 amount) public returns (bool)",
   "function decimals() public view returns (uint8)",
 ];
-const CHAIN_ID = 5
+
+const CHAIN_ID = DEFAULT_CHAIN_ID
 
 const ContractContext = createContext({
   loadingContract: false,

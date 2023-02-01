@@ -6,7 +6,7 @@ import { execute as confirmProposal } from '../proposals/confirm'
 import { getOne as getProject } from '../../repositories/projects'
 import { create, getSafeData, sign } from '../../utils/safe.js'
 
-import Safe from '../../abi/GnosisSafe.json'
+import Safe from '../../abi/Safe.json'
 
 export default async function handler(req, res) {
   const { proxyId, code, user } = req.body

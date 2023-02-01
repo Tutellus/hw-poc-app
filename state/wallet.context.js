@@ -8,11 +8,25 @@ const ethereumGoerli = {
   token: 'gETH',
   label: 'Ethereum Goerli',
   rpcUrl: 'https://rpc.ankr.com/eth_goerli',
-}
+};
+
+const bscTestnet = {
+  id: '0x61',
+  token: 'BNB',
+  label: 'Binance Smart Chain Testnet',
+  rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+};
+
+// Set this to the chain you want to use by default in the app
+const DEFAULT_CHAIN = ethereumGoerli;
+
+export const DEFAULT_CHAIN_ID = DEFAULT_CHAIN.id;
 
 const onboard = init({
   wallets: [injectedModule()],
-  chains: [ethereumGoerli],
+  chains: [
+    DEFAULT_CHAIN
+  ],
   appMetadata: {
     name: 'SMW',
     icon: 'https://smw.finance/favicon.ico',
@@ -45,7 +59,7 @@ function WalletProvider(props) {
   const refresh = () => {
     const { wallets } = onboard.state.get();
     setWallet(wallets[0]);
-    setCorrectChain(wallets[0].chains[0].id === ethereumGoerli.id);
+    setCorrectChain(wallets[0].chains[0].id === DEFAULT_CHAIN_ID.id);
     setSettingChain(false);
   };
 
@@ -57,7 +71,7 @@ function WalletProvider(props) {
   const handleSwitch = async () => {
     if (!correctChain) {
       setSettingChain(true);
-      await onboard.setChain({ chainId: ethereumGoerli.id });
+      await onboard.setChain({ chainId: DEFAULT_CHAIN_ID.id });
       refresh();
       setSettingChain(false);
     }

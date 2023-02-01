@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from "next/router";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { DEFAULT_CHAIN_ID } from "./wallet.context";
 
-const chainId = 5;
-const projectId = "63d3c3a83d55158bfb36d502";
+const PROJECT_ID = "63d3c3a83d55158bfb36d502";
 
 const SessionContext = createContext({
   verifying: false,
@@ -54,8 +54,8 @@ function SessionProvider(props) {
       setAssigningProxy(true);
       const params = {
         userId: session._id,
-        chainId,
-        projectId,
+        chainId: DEFAULT_CHAIN_ID,
+        projectId: PROJECT_ID,
       }
       const response = await fetch('/api/usecases/users/assignProxy', {
         method: 'POST',
@@ -78,8 +78,8 @@ function SessionProvider(props) {
 
       const filter = {
         userId: session._id,
-        chainId,
-        projectId,
+        chainId: DEFAULT_CHAIN_ID,
+        projectId: PROJECT_ID,
       }
 
       const response = await fetch('/api/usecases/proxies/getProxy', {
@@ -110,8 +110,8 @@ function SessionProvider(props) {
         body: JSON.stringify({
           user: session,
           code,
-          projectId,
-          chainId,
+          projectId: PROJECT_ID,
+          chainId: DEFAULT_CHAIN_ID,
         }),
       })
       const { user } = await response.json()

@@ -1,7 +1,7 @@
 import { utils, constants, ethers } from 'ethers';
 import { config } from '../config';
 import { get as getProposals } from '../repositories/proposals';
-import GnosisSafe from '../abi/GnosisSafe.json';
+import Safe from '../abi/Safe.json';
 
 async function estimateGas ({
   chainId,
@@ -41,7 +41,7 @@ async function getNextNonce (safe) {
 async function getSafeData ({ safe, chainId }) {
   const { rpc } = config[chainId];
   const provider = new ethers.providers.JsonRpcProvider(rpc);
-  const safeContract = new ethers.Contract(safe, GnosisSafe.abi, provider);
+  const safeContract = new ethers.Contract(safe, Safe.abi, provider);
   const [owners, thresholdBN, nonceBN, nextNonce] = await Promise.all([
     safeContract.getOwners(),
     safeContract.getThreshold(),

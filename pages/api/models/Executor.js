@@ -51,17 +51,21 @@ export class Executor {
 
       const provider = signer.provider;
       const chainId = await provider.getNetwork().then((network) => network.chainId);
+      const hexChainId = ethers.utils.hexValue(chainId);
+
       const transaction = {
         from: signer.address,
         to,
         data,
         value,
-        chainId,
+        chainId: hexChainId,
       };
 
+      const { gasPriceMultiplier, gasLimitMultiplier } = config;
+
       const gasCalculator = new GasCalculator({
-        gasLimitMultiplier: 2, // config var
-        gasPriceMultiplier: 2, // config var
+        gasLimitMultiplier,
+        gasPriceMultiplier,
       });
 
       const [gasPrice, gasLimit] = await Promise.all([
@@ -69,13 +73,13 @@ export class Executor {
         gasCalculator.getGasLimit(provider, transaction),
       ]);
 
-      await this.syncNonce(chainId, signer.address);
+      await this.syncNonce(hexChainId, signer.address);
 
-      transaction.nonce = this.getNonce(chainId, signer.address);
+      transaction.nonce = this.getNonce(hexChainId, signer.address);
       transaction.gasPrice = gasPrice;
       transaction.gasLimit = gasLimit;
 
-      this.addNonce(chainId, signer.address);
+      this.addNonce(hexChainId, signer.address);
 
       const executableTransaction = {
         to: transaction.to,

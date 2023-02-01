@@ -4,7 +4,7 @@ import { getOne as getProposal, update as updateProposal, markAsExecuted, markAs
 import { getOne as getProject } from '../../repositories/projects';
 import { execute as executeTransaction } from '../../infrastructure/executor';
 
-import Safe from '../../abi/GnosisSafe.json'
+import Safe from '../../abi/Safe.json'
 
 export async function execute({ proposalId }) {
   try {
