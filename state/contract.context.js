@@ -27,7 +27,7 @@ const ContractContext = createContext({
 function ContractProvider(props) {
   
   const { session, proxy } = useSession();
-  const { ownerProposals, masterProposals } = useProposals();
+  const { ownerProposals, masterProposals, submit } = useProposals();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState('0.0');
@@ -152,6 +152,7 @@ function ContractProvider(props) {
         }),
       })
       const { response } = await result.json()
+      console.log('response', response)
       setFunctionApprovedOwner(response)
     } catch (error) {
       console.error(error)
@@ -174,6 +175,7 @@ function ContractProvider(props) {
           status,
         }),
       })
+      checkContractAddress()
       setUpdatingPolicies(false)
     } catch (error) {
       console.error(error)
@@ -209,9 +211,8 @@ function ContractProvider(props) {
   const updateFunctionStatus = async (status) => {
     setUpdatingPolicies(true)
     await updateMask();
-
     const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
-    const selectorAndParams = ethers.utils.solidityPack(['bytes4', 'address'], [selector, proxy.address])
+    const selectorAndParams = ethers.utils.solidityPack(['bytes4', 'uint256'], [selector, proxy.address])
 
     try {
       await fetch('/api/usecases/policies/updateFunctionStatus', {
@@ -230,6 +231,8 @@ function ContractProvider(props) {
     } catch (error) {
       console.error(error)
     }
+
+    checkContractAddress();
     setUpdatingPolicies(false)
 
   }
@@ -248,6 +251,7 @@ function ContractProvider(props) {
     if (proxy && contract) {
       getBalance();
       checkContractAddress();
+      checkContractData();
     }
   }, [contract, ownerProposals, masterProposals])
 

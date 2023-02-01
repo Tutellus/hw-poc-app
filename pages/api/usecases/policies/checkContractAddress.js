@@ -34,6 +34,7 @@ export async function execute({ contractId }) {
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const forwardPoliciesContract = new ethers.Contract(forwardPolicies, ProxyForwardPolicies.abi, provider);
     const result = await forwardPoliciesContract.checkContractAddress(contract.address);
+    
     return result;
   } catch (error) {
     console.error(error)

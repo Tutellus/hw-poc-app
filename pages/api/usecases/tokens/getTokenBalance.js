@@ -13,13 +13,18 @@ export async function execute({
   token,
   address,
 }) {
-  const { rpc } = config[chainId]
-  const provider = new ethers.providers.JsonRpcProvider(rpc)
-  const tokenContract = new ethers.Contract(token, ERC20Upgradeable.abi, provider)
-  const [balance, decimals] = await Promise.all([
-    tokenContract.balanceOf(address),
-    tokenContract.decimals(),
-  ]);
-  
-  return ethers.utils.formatUnits(balance, decimals);
+  try {
+    const { rpc } = config[chainId]
+    const provider = new ethers.providers.JsonRpcProvider(rpc)
+    const tokenContract = new ethers.Contract(token, ERC20Upgradeable.abi, provider)
+    const [balance, decimals] = await Promise.all([
+      tokenContract.balanceOf(address),
+      tokenContract.decimals(),
+    ]);
+    
+    return ethers.utils.formatUnits(balance, decimals);
+  } catch (error) {
+    console.error(error)
+    throw error;
+  }
 }

@@ -42,12 +42,15 @@ export async function execute({
     const forwardPoliciesContract = new ethers.Contract(forwardPolicies, ProxyForwardPolicies.abi, provider);
 
     const contractInstance = new ethers.Contract(contract.address, contract.abi, provider);
+    const address = contractInstance.address;
+    const data = contractInstance.interface.encodeFunctionData(method, params)
 
     const result = await forwardPoliciesContract
       .checkContractData(
-        contract.address,
-        contractInstance.interface.encodeFunctionData(method, params),
+        address,
+        data,
       );
+  
     return result;
   } catch (error) {
     console.error(error)

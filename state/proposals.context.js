@@ -37,7 +37,7 @@ function ProposalsProvider(props) {
   }
 
   const loadOwnerProposals = async () => {
-    if (proxy?.ownerSafe) {
+    if (proxy?.ownerSafe && !loadingOwnerProposals) {
       setLoadingOwnerProposals(true);
       setTimeout(async () => {
         const response = await fetch('/api/usecases/proposals/getBySafe', {
@@ -55,7 +55,7 @@ function ProposalsProvider(props) {
   }
 
   const loadMasterProposals = async () => {
-    if (proxy?.masterSafe) {
+    if (proxy?.masterSafe && !loadingMasterProposals) {
       setLoadingMasterProposals(true);
       setTimeout(async () => {
         const response = await fetch('/api/usecases/proposals/getBySafe', {
@@ -145,7 +145,7 @@ function ProposalsProvider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       loadOwnerProposals();
-    }, 2000);
+    }, 5000);
     return () => {
       clearInterval(interval);
     };
@@ -154,7 +154,7 @@ function ProposalsProvider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       loadMasterProposals();
-    }, 2000);
+    }, 5000);
     return () => {
       clearInterval(interval);
     };

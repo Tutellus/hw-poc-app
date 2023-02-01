@@ -15,7 +15,7 @@ export async function execute ({
   projectId,
   chainId,
   address,
-  selectorAndParams, // encoded function data
+  selectorAndParams,
   status,
 }) {
   try {

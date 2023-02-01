@@ -32,10 +32,11 @@ export const Contract = () => {
             ? <div style={{
                 display: 'flex',
                 gap: '8px',
+                alignItems: 'center',
             }}>
-              {fullApprovedOwner ? <div>FULL APROVED</div>
-              : functionApprovedOwner ? <div>FUNCTION APROVED</div>
-              : <div>NOT APROVED</div>
+              {fullApprovedOwner ? <div>FULL APPROVED</div>
+              : functionApprovedOwner ? <div>FUNCTION APPROVED</div>
+              : <div>NOT APPROVED</div>
               }
               {fullApprovedOwner ?
                 <button
@@ -53,6 +54,7 @@ export const Contract = () => {
                     disabled={updatingPolicies}
                     onClick={() => updateAddressStatus(true)}
                   >Set full approve TRUE</button>
+                  <> </>
                   <button
                     disabled={updatingPolicies}
                     onClick={() => updateFunctionStatus(true)}
