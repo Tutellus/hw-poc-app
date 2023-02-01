@@ -21,11 +21,11 @@ export class GasCalculator {
   
   async getGasPrice(provider) {
     const gasPrice = await provider.getGasPrice();
-    return gasPrice * this.gasPriceMultiplier;
+    return parseInt(gasPrice.toNumber() * this.gasPriceMultiplier, 10);
   }
 
   async getGasLimit(provider, transaction) {
     const gasLimit = await provider.estimateGas(transaction);
-    return gasLimit * this.gasLimitMultiplier;
+    return parseInt(gasLimit.toNumber() * this.gasLimitMultiplier, 10);
   }
 }
