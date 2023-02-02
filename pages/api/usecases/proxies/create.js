@@ -114,7 +114,7 @@ export async function execute({ chainId, projectId }) {
       },
     });
 
-    configSafes({
+    await configSafes({
       proxy,
       receipt,
       ownerAddresses,

@@ -51,9 +51,11 @@ const ContractContext = createContext({
 function ContractProvider(props) {
   
   const { session, proxy } = useSession();
-  const { ownerProposals, submit } = useProposals();
+  const { submit } = useProposals();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
+
+  const [loadingBalance, setLoadingBalance] = useState(false);
   const [balance, setBalance] = useState('0.0');
 
   const [updatingPolicies, setUpdatingPolicies] = useState(false);
@@ -312,15 +314,20 @@ function ContractProvider(props) {
   }, [proxy])
   
   useEffect(() => {
-    if (proxy && contract) {
+    if (contract) {
       checkContractAddress();
       checkContractData();
     }
   }, [contract])
 
   useEffect(() => {
-    getBalance();
-  }, [ownerProposals])
+    if (!loadingBalance) {
+      setTimeout(() => {
+        getBalance();
+      }
+      , 5000)
+    }
+  }, [balance])
 
   const memoizedData = useMemo(
     () => ({

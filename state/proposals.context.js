@@ -8,7 +8,6 @@ const ProposalsContext = createContext({
   masterProposals: [],
   consfirmingProposal: false,
   submitting: false,
-  loadProposals: async () => {},
   loadOwnerProposals: async () => {},
   loadMasterProposals: async () => {},
   confirmByCode: async () => {},
@@ -19,8 +18,7 @@ const ProposalsContext = createContext({
 function ProposalsProvider(props) {
 
   const { session, proxy } = useSession();
-  const { ownerSafeData, masterSafeData } = useSafe();
-  
+
   const [ownerProposals, setOwnerProposals] = useState([]);
   const [masterProposals, setMasterProposals] = useState([]);
 
@@ -30,51 +28,40 @@ function ProposalsProvider(props) {
   const [loadingOwnerProposals, setLoadingOwnerProposals] = useState(false);
   const [loadingMasterProposals, setLoadingMasterProposals] = useState(false);
 
-  const loadProposals = async () => {
-    await Promise.all([
-      loadOwnerProposals(),
-      loadMasterProposals(),
-    ])
-  }
-
   const loadOwnerProposals = async () => {
-    if (proxy?.ownerSafe && !loadingOwnerProposals) {
-      setLoadingOwnerProposals(true);
-      setTimeout(async () => {
-        const response = await fetch('/api/usecases/proposals/getBySafe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ safe: proxy?.ownerSafe }),
-        })
-        const { proposals: items } = await response.json()
-        if (proxy && session) {
-          setOwnerProposals(items.reverse());
-        }
-      }, 2000)
-      setLoadingOwnerProposals(false);
+    setLoadingOwnerProposals(true);
+    if (proxy?.ownerSafe) {
+      const response = await fetch('/api/usecases/proposals/getBySafe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ safe: proxy?.ownerSafe }),
+      })
+      const { proposals: items } = await response.json()
+      if (proxy && session) {
+        setOwnerProposals(items.reverse());
+      }
     }
+    setLoadingOwnerProposals(false);
   }
 
   const loadMasterProposals = async () => {
-    if (proxy?.masterSafe && !loadingMasterProposals) {
-      setLoadingMasterProposals(true);
-      setTimeout(async () => {
-        const response = await fetch('/api/usecases/proposals/getBySafe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ safe: proxy?.masterSafe }),
-        })
-        const { proposals: items } = await response.json()
-        if (proxy && session) {
-          setMasterProposals(items.reverse());
-        }
-      }, 2000)
-      setLoadingMasterProposals(false);
+    setLoadingMasterProposals(true);
+    if (proxy?.masterSafe) {
+      const response = await fetch('/api/usecases/proposals/getBySafe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ safe: proxy?.masterSafe }),
+      })
+      const { proposals: items } = await response.json()
+      if (proxy && session) {
+        setMasterProposals(items.reverse());
+      }
     }
+    setLoadingMasterProposals(false);
   }
 
   const confirmByCode = async (proposal, code) => {
@@ -90,7 +77,6 @@ function ProposalsProvider(props) {
         user: session,
       }),
     })
-    await loadProposals()
     setConfirmingProposal(false);
   }
 
@@ -107,7 +93,6 @@ function ProposalsProvider(props) {
         user: session,
       }),
     })
-    await loadProposals()
     setConfirmingProposal(false);
   }
 
@@ -141,9 +126,6 @@ function ProposalsProvider(props) {
   }
 
   useEffect(() => {
-    if (proxy) {
-      loadProposals();
-    }
     if (!proxy || !session) {
       setOwnerProposals([]);
       setMasterProposals([]);
@@ -151,35 +133,21 @@ function ProposalsProvider(props) {
   }, [proxy]);
 
   useEffect(() => {
-    if (ownerSafeData) {
-      loadOwnerProposals();
+    if (!loadingMasterProposals) {
+      setTimeout(() => {
+        loadOwnerProposals();
+      }
+      , 5000)
     }
-    if (!ownerSafeData) {
-      setOwnerProposals([]);
-    }
-  }, [ownerSafeData]);
-
-  useEffect(() => {
-    if (masterSafeData) {
-      loadMasterProposals();
-    }
-    if (!masterSafeData) {
-      setMasterProposals([]);
-    }
-  }, [masterSafeData]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      loadOwnerProposals();
-    }
-    , 5000)
   }, [ownerProposals]);
 
   useEffect(() => {
-    setTimeout(() => {
-      loadMasterProposals();
+    if (!loadingOwnerProposals) {
+      setTimeout(() => {
+        loadMasterProposals();
+      }
+      , 5000)
     }
-    , 5000)
   }, [masterProposals]);
   
   const memoizedData = useMemo(
@@ -188,7 +156,6 @@ function ProposalsProvider(props) {
       masterProposals,
       confirmingProposal,
       submitting,
-      loadProposals,
       loadOwnerProposals,
       loadMasterProposals,
       confirmByCode,

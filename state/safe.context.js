@@ -58,24 +58,6 @@ function SafeProvider(props) {
     }
   }, [proxy])
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     loadOwnerSafeData();
-  //   }, 2000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [ownerSafeData]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     loadMasterSafeData();
-  //   }, 2000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [masterSafeData]);
-
   const memoizedData = useMemo(
     () => ({
       ownerSafeData,
