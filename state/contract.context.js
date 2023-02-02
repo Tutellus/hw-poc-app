@@ -7,14 +7,32 @@ import { DEFAULT_CHAIN_ID } from "./wallet.context";
 
 const AMOUNT = 10;
 const EXTERNAL_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-const TOKEN_ADDRESS = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
-const TOKEN_ABI = [
-  "function mint(address to, uint256 amount) public returns (bool)",
-  "function transfer(address to, uint256 amount) public returns (bool)",
-  "function decimals() public view returns (uint8)",
-];
 
 const CHAIN_ID = DEFAULT_CHAIN_ID
+
+const CONTRACT_GOERLI = {
+  chainId: '0x5',
+  address: '0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2',
+  abi: [
+    "function mint(address to, uint256 amount) public returns (bool)",
+    "function transfer(address to, uint256 amount) public returns (bool)",
+    "function decimals() public view returns (uint8)",
+  ],
+};
+
+const CONTRACT_BSCTESTNET = {
+  chainId: '0x61',
+  address: '0x9E09fA248ed2067764F438c8C49421a73F538596',
+  abi: [
+    "function mint(address to, uint256 amount) public returns (bool)",
+    "function transfer(address to, uint256 amount) public returns (bool)",
+    "function decimals() public view returns (uint8)",
+  ],
+};
+
+const CONTRACT = CHAIN_ID === '0x5' ? CONTRACT_GOERLI : CONTRACT_BSCTESTNET;
+const TOKEN_ADDRESS = CONTRACT.address;
+const TOKEN_ABI = CONTRACT.abi;
 
 const ContractContext = createContext({
   loadingContract: false,
@@ -33,7 +51,7 @@ const ContractContext = createContext({
 function ContractProvider(props) {
   
   const { session, proxy } = useSession();
-  const { ownerProposals, masterProposals, submit } = useProposals();
+  const { ownerProposals, submit } = useProposals();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState('0.0');

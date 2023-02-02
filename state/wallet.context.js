@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { init } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 const ethereumGoerli = {
   id: '0x5',
