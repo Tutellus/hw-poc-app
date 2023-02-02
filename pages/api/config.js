@@ -11,9 +11,9 @@ export const config = {
     rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
     forwardPolicies: '0xC1785E3E399890808EAd24dfF82C09136eC43e10',
     proxyFactory: '0xb1D187EcdC3FCc818aaB942625f4137a4A96E9c9',
-    safeProxyFactory: '0x4F6791BeCE9dF85A32fFA13b41c1EB2DC2Ee25A5',
-    safeSingleton: '0x14Bc0Da61b53DEce71961258e91637e80ac91737',
-    safeFallbackHandler: '0xf90A9fB2062aEc72eb7A26DB9251323971d595c4',
+    safeProxyFactory: '0x8fFE1D761154941835D1f29B604Db25Ed7dC30B7',
+    safeSingleton: '0x3a1701e1182C300Eb3aC6d35fa606B587c189C05',
+    safeFallbackHandler: '0xb47b0DE7fC1d9a162EA6366b1252fe32CFdf7372',
   },
   mongo: {
     test: 'mongodb://localhost:27017/smw',

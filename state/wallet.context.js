@@ -18,7 +18,7 @@ const bscTestnet = {
 };
 
 // Set this to the chain you want to use by default in the app
-const DEFAULT_CHAIN = ethereumGoerli;
+const DEFAULT_CHAIN = bscTestnet;
 
 export const DEFAULT_CHAIN_ID = DEFAULT_CHAIN.id;
 

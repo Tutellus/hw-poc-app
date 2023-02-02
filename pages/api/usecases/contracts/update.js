@@ -24,13 +24,17 @@ export async function execute({
 
     const provider = new ethers.providers.JsonRpcProvider(rpc);
 
-    const isABIVerified = await verifyContract({
+    const {
+      verified,
+      isProxy,
+      implementationAddress,
+    } = await verifyContract({
       provider,
       abi,
       address,
     })
 
-    if (!isABIVerified) {
+    if (!verified) {
       throw new Error('Contract ABI not verified');
     }
 
@@ -40,6 +44,8 @@ export async function execute({
         abi,
         address,
         chainId,
+        isProxy,
+        implementationAddress,
       }
     });
     return contract;

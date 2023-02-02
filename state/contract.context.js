@@ -14,7 +14,7 @@ const CONTRACT_GOERLI = {
   chainId: '0x5',
   address: '0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2',
   abi: [
-    "function mint(address to, uint256 amount) public returns (bool)",
+    "function mint(address to, uint256 amount) public",
     "function transfer(address to, uint256 amount) public returns (bool)",
     "function decimals() public view returns (uint8)",
   ],
@@ -24,7 +24,7 @@ const CONTRACT_BSCTESTNET = {
   chainId: '0x61',
   address: '0x9E09fA248ed2067764F438c8C49421a73F538596',
   abi: [
-    "function mint(address to, uint256 amount) public returns (bool)",
+    "function mint(address to, uint256 amount) public",
     "function transfer(address to, uint256 amount) public returns (bool)",
     "function decimals() public view returns (uint8)",
   ],
@@ -118,10 +118,10 @@ function ContractProvider(props) {
       })
       const { contract: innerContract } = await response.json()
       setContract(innerContract)
-      setLoadingContract(false)
     } catch (error) {
       console.error(error)
     }
+    setLoadingContract(false)
   }
 
   const mint = async (amount = AMOUNT) => {

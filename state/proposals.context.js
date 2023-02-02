@@ -172,14 +172,14 @@ function ProposalsProvider(props) {
     setTimeout(() => {
       loadOwnerProposals();
     }
-    , 15000)
+    , 5000)
   }, [ownerProposals]);
 
   useEffect(() => {
     setTimeout(() => {
       loadMasterProposals();
     }
-    , 15000)
+    , 5000)
   }, [masterProposals]);
   
   const memoizedData = useMemo(

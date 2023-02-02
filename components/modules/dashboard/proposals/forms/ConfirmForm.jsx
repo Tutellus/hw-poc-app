@@ -72,7 +72,7 @@ export const ConfirmForm = ({
           }}
           disabled={settingChain}
           onClick={handleSwitch}
-        >{settingChain ? 'Switching...' : 'Switch to Goerli'}
+        >{settingChain ? 'Switching...' : 'Switch chain'}
         </button>}
         {connectedWallet && correctChain && <button
           disabled={!canConfirmBySignature}
