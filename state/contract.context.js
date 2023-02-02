@@ -325,7 +325,7 @@ function ContractProvider(props) {
       setTimeout(() => {
         getBalance();
       }
-      , 5000)
+      , 3000)
     }
   }, [balance])
 

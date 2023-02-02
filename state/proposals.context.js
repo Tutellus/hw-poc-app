@@ -133,20 +133,20 @@ function ProposalsProvider(props) {
   }, [proxy]);
 
   useEffect(() => {
-    if (!loadingMasterProposals) {
+    if (!loadingOwnerProposals) {
       setTimeout(() => {
         loadOwnerProposals();
       }
-      , 5000)
+      , 3000)
     }
   }, [ownerProposals]);
 
   useEffect(() => {
-    if (!loadingOwnerProposals) {
+    if (!loadingMasterProposals) {
       setTimeout(() => {
         loadMasterProposals();
       }
-      , 5000)
+      , 3000)
     }
   }, [masterProposals]);
   
