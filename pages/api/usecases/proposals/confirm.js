@@ -27,7 +27,7 @@ export async function execute({ proposal, signature, awaitExecution = false }) {
     if (signatures.length >= threshold && nonce === proposal.nonce) {
       proposal = await markAsExecuting(proposal._id)
       if (awaitExecution) {
-        await executeProposal({ proposalId: proposal._id })
+        proposal = await executeProposal({ proposalId: proposal._id })
       } else {
         executeProposal({ proposalId: proposal._id })
       }

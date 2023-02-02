@@ -1,28 +1,34 @@
 import { useState } from "react"
 import { useContract } from "@/state/contract.context";
+import ShieldCheckIcon from "@heroicons/react/24/outline/ShieldCheckIcon";
+import ExclamationTriangleIcon from "@heroicons/react/24/outline/ExclamationTriangleIcon";
 
 export const Tokens = () => {
 
-  const { loadingContract, contract, balance, updateContract, mint } = useContract();
+  const { loadingContract, contract, balance, updateContract, mint, mintAndTransfer } = useContract();
 
-  const [amount, setAmount] = useState('')
   const [minting, setMinting] = useState(false)
 
-  const amountFloat = parseFloat(amount)
-  const canMint = !minting && amountFloat !== NaN && amountFloat > 0
+  const canMint = !minting;
 
-  const innerMint = async () => {
+  const executeMint = async () => {
     setMinting(true)
-    await mint(amount)
+    await mint()
     setMinting(false)
-    setAmount('')
+
+  }
+
+  const executeMintAndTransfer = async () => {
+    setMinting(true)
+    await mintAndTransfer()
+    setMinting(false)
   }
 
   return (
     <div className="box">
-      <div className="title">My tokens</div>
+      <div className="title">Token Interaction</div>
       <div className="data">
-        <div>{balance}</div>
+        <div>My balance: {balance}</div>
         <div
           style={{
             display: 'flex',
@@ -36,17 +42,37 @@ export const Tokens = () => {
                 display: 'flex',
                 gap: '8px',
             }}>
-                <input
-                  type="text"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Amount"
-                />
                 <button
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                   disabled={!canMint}
-                  onClick={innerMint}
+                  onClick={executeMint}
                 >
                   {minting ? 'Processing...' : 'Mint'}
+                  <ShieldCheckIcon style={{
+                    marginLeft: '8px',
+                    height: '20px',
+                    width: '20px',
+                  }} />
+                  
+                </button>
+                <button
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'red',
+                  }}
+                  disabled={!canMint}
+                  onClick={executeMintAndTransfer}
+                >
+                  {minting ? 'Processing...' : 'Mint and transfer'}
+                  <ExclamationTriangleIcon style={{
+                    marginLeft: '8px',
+                    height: '20px',
+                    width: '20px',
+                  }} />
                 </button>
               </div>
             : <button

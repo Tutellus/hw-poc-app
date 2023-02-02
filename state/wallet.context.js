@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { init } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const ethereumGoerli = {
   id: '0x5',
@@ -59,7 +59,7 @@ function WalletProvider(props) {
   const refresh = () => {
     const { wallets } = onboard.state.get();
     setWallet(wallets[0]);
-    setCorrectChain(wallets[0].chains[0].id === DEFAULT_CHAIN_ID.id);
+    setCorrectChain(wallets[0].chains[0].id === DEFAULT_CHAIN_ID);
     setSettingChain(false);
   };
 
@@ -71,7 +71,7 @@ function WalletProvider(props) {
   const handleSwitch = async () => {
     if (!correctChain) {
       setSettingChain(true);
-      await onboard.setChain({ chainId: DEFAULT_CHAIN_ID.id });
+      await onboard.setChain({ chainId: DEFAULT_CHAIN_ID });
       refresh();
       setSettingChain(false);
     }

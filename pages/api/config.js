@@ -1,6 +1,6 @@
 export const config = {
   "0x5": {
-    rpc: 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06',
+    rpc: 'https://goerli.infura.io/v3/2adb60007af7447b8e76552303197a66',
     forwardPolicies: '0xf87915387adedCD5A03180891374beB0D0F3717E',
     proxyFactory: '0x8c91E759dFE1DEa10156974b523C737702c9900E',
     safeProxyFactory: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',

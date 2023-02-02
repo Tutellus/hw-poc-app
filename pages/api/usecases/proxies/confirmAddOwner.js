@@ -2,9 +2,9 @@ import { config } from '../../config.js'
 import { ethers } from 'ethers'
 import { update as updateProposal } from '../../repositories/proposals.js'
 import { getOne as getProxy, update as updateProxy } from '../../repositories/proxies'
-import { execute as confirmProposal } from '../proposals/confirm'
+import { execute as confirm } from '../proposals/confirm'
 import { getOne as getProject } from '../../repositories/projects'
-import { create, getSafeData, sign } from '../../utils/safe.js'
+import { create, sign } from '../../utils/safe.js'
 
 import Safe from '../../abi/Safe.json'
 
@@ -26,7 +26,7 @@ export async function execute({
       throw new Error('Proxy not found')
     }
 
-    const { chainId, ownerSafe: safe, externalWallet, userId, projectId } = proxy;
+    const { chainId, masterSafe: safe, externalWallet, userId, projectId } = proxy;
 
     // Check if the user is the owner of the Proxy
     if (userId !== user._id) {
@@ -51,24 +51,19 @@ export async function execute({
     
     // Create tx
 
-    const { ownerKeys } = project;
+    const { masterKeys } = project;
     const { rpc } = config[chainId];
 
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    const owner0Wallet = new ethers.Wallet(ownerKeys[0], provider);
-    const owner1Wallet = new ethers.Wallet(ownerKeys[1], provider);
+    const master0Wallet = new ethers.Wallet(masterKeys[0], provider);
+    const master1Wallet = new ethers.Wallet(masterKeys[1], provider);
 
     const safeInterface = new ethers.utils.Interface(Safe.abi);
-    const { threshold, nonce } = await getSafeData({
-      safe,
-      chainId,
-    });
-
     const originalData = safeInterface.encodeFunctionData(
       'addOwnerWithThreshold',
       [
         externalWallet.address,
-        threshold,
+        2, // threshold (previously using getSafeData)
       ]
     );
 
@@ -83,21 +78,21 @@ export async function execute({
       chainId,
       safe,
       data,
-      signer: owner0Wallet,
+      signer: master0Wallet,
     });
 
     const { signature: signature0 } = sign({
       safe,
       chainId,
       ...tx,
-      signer: owner0Wallet,
+      signer: master0Wallet,
     })
 
     const { signature: signature1 } = sign({
       safe,
       chainId,
       ...tx,
-      signer: owner1Wallet,
+      signer: master1Wallet,
     })
 
     const signatures = [signature0];
@@ -113,24 +108,24 @@ export async function execute({
       }
     });
 
-    if (nonce === proposal.nonce) {
-      proposal = await confirmProposal({
-        proposal,
-        signature: signature1,
-        awaitExecution: true,
-      });
-    };
+    proposal = await confirm({
+      proposal,
+      signature: signature1,
+      awaitExecution: true,
+    })
 
-    await updateProxy({
-      id: proxyId,
-      fields: {
-        externalWallet: {
-          ...externalWallet,
-          status: 'CONFIRMED',
-          proposalId: proposal._id,
+    if (proposal.status === 'EXECUTED') {
+      await updateProxy({
+        id: proxyId,
+        fields: {
+          externalWallet: {
+            ...externalWallet,
+            status: 'CONFIRMED',
+            proposalId: proposal._id,
+          }
         }
-      }
-    });
+      });
+    }
   
     return proposal;
   } catch (error) {

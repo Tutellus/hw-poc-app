@@ -11,7 +11,7 @@ export async function execute({
       {
         $match: {
           status: 'PENDING',
-          chainId: parseInt(chainId, 10),
+          chainId,
           projectId,
         },
       },

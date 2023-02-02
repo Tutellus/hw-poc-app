@@ -167,6 +167,20 @@ function ProposalsProvider(props) {
       setMasterProposals([]);
     }
   }, [masterSafeData]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      loadOwnerProposals();
+    }
+    , 15000)
+  }, [ownerProposals]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      loadMasterProposals();
+    }
+    , 15000)
+  }, [masterProposals]);
   
   const memoizedData = useMemo(
     () => ({

@@ -10,7 +10,7 @@ export const ConfirmForm = ({
   onConfirmed,
 }) => {
 
-  const { ownerSafeData } = useSafe()
+  const { masterSafeData } = useSafe()
   const { confirmingTransaction, confirmByCode, confirmBySignature } = useProposals()
   const { wallet, correctChain, settingChain, connect, handleSwitch } = useWallet();
   const [code, setCode] = useState(proposal?.code2fa || '');
@@ -21,7 +21,7 @@ export const ConfirmForm = ({
   const connectedWallet = wallet?.accounts[0]?.address;
 
   const canConfirmByCode = !confirmingByCode && !confirmingBySignature
-  const canConfirmBySignature = !confirmingByCode && !confirmingBySignature && ownerSafeData?.owners?.map(owner => owner.toLowerCase()).includes(connectedWallet?.toLowerCase())
+  const canConfirmBySignature = !confirmingByCode && !confirmingBySignature && masterSafeData?.owners?.map(owner => owner.toLowerCase()).includes(connectedWallet?.toLowerCase())
 
   const handleConfirmByCode = async () => {
     setConfirmingByCode(true)

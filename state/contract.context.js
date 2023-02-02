@@ -5,9 +5,12 @@ import { useProposals } from "./proposals.context";
 import { useSession } from "./session.context";
 import { DEFAULT_CHAIN_ID } from "./wallet.context";
 
+const AMOUNT = 10;
+const EXTERNAL_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const TOKEN_ADDRESS = "0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2"
 const TOKEN_ABI = [
   "function mint(address to, uint256 amount) public returns (bool)",
+  "function transfer(address to, uint256 amount) public returns (bool)",
   "function decimals() public view returns (uint8)",
 ];
 
@@ -24,6 +27,7 @@ const ContractContext = createContext({
   updateAddressStatus: async (status) => {},
   updateFunctionStatus: async (status) => {},
   mint: async (amount) => {},
+  mintAndTransfer: async (amount, to) => {},
 });
 
 function ContractProvider(props) {
@@ -39,6 +43,7 @@ function ContractProvider(props) {
   const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getBalance = async () => {
+    if (!proxy) return
     const response = await fetch('/api/usecases/tokens/getTokenBalance', {
       method: 'POST',
       headers: {
@@ -101,7 +106,7 @@ function ContractProvider(props) {
     }
   }
 
-  const mint = async (amount) => {
+  const mint = async (amount = AMOUNT) => {
     try {
       const decimals = 18;
       const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
@@ -114,6 +119,36 @@ function ContractProvider(props) {
         projectId: proxy.projectId,
         user: session,
       })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const mintAndTransfer = async (amount = AMOUNT) => {
+    try {
+        const decimals = 18;
+        const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
+        await submit({
+          chainId: CHAIN_ID,
+          contractId: [
+            contract._id,
+            contract._id,
+          ],
+          method: [
+            'mint',
+            'transfer'
+          ],
+          params: [
+            [proxy.address, amountBN],
+            [EXTERNAL_ADDRESS, amountBN],
+          ],
+          value: [
+            0,
+            0,
+          ],
+          projectId: proxy.projectId,
+          user: session,
+        })
     } catch (error) {
       console.error(error)
     }
@@ -255,22 +290,19 @@ function ContractProvider(props) {
   }
 
   useEffect(() => {
-    if (!fullApprovedOwner) {
-      checkContractData();
-    }
-  }, [fullApprovedOwner])
-
-  useEffect(() => {
     getContract();
   }, [proxy])
   
   useEffect(() => {
     if (proxy && contract) {
-      getBalance();
       checkContractAddress();
       checkContractData();
     }
-  }, [contract, ownerProposals, masterProposals])
+  }, [contract])
+
+  useEffect(() => {
+    getBalance();
+  }, [ownerProposals])
 
   const memoizedData = useMemo(
     () => ({
@@ -284,6 +316,7 @@ function ContractProvider(props) {
       updateAddressStatus,
       updateFunctionStatus,
       mint,
+      mintAndTransfer,
     }),
     [loadingContract, contract, balance, updatingPolicies, fullApprovedOwner, functionApprovedOwner]
   );

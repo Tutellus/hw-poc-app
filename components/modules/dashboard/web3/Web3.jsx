@@ -83,7 +83,10 @@ export const Web3 = () => {
       <div className="data">
 
         {/* if there is an external wallet on Proxy or connected show it */}
-        {externalWallet && <div> {truncateAddress(externalWallet)}</div>}
+        {externalWallet
+          ? <div> {truncateAddress(externalWallet)}</div>
+          : <div> No external wallet </div>
+        }
         
         {/* if there is an external wallet pending */}
         {existsExternalWallet && externalWalletIsPending &&

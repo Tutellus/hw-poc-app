@@ -21,7 +21,7 @@ export const Dashboard = () => {
         <Web3/>
 
         {/* your contract */}
-        <Contract/>
+        {/* <Contract/> */}
     
         {/* owner proposals list */}
         {<Proposals/>}
