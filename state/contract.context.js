@@ -51,12 +51,12 @@ const ContractContext = createContext({
 function ContractProvider(props) {
   
   const { session, proxy } = useSession();
-  const { submit } = useProposals();
+  const { ownerProposals, submit } = useProposals();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
 
   const [loadingBalance, setLoadingBalance] = useState(false);
-  const [balance, setBalance] = useState('0.0');
+  const [balance, setBalance] = useState('---');
 
   const [updatingPolicies, setUpdatingPolicies] = useState(false);
   const [fullApprovedOwner, setFullApprovedOwner] = useState(false);
@@ -243,8 +243,8 @@ function ContractProvider(props) {
     try {
       const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
       const mask = ethers.utils.solidityPack(
-        ['uint32', 'uint256'],
-        ['0xffffffff', ethers.constants.MaxUint256]
+        ['uint32'],
+        ['0xffffffff']
       );
 
       const { mask: checkMask } = await fetch('/api/usecases/policies/getMask', {
@@ -284,7 +284,7 @@ function ContractProvider(props) {
     setUpdatingPolicies(true);
     await updateMask();
     const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
-    const selectorAndParams = ethers.utils.solidityPack(['bytes4', 'uint256'], [selector, proxy.address])
+    const selectorAndParams = ethers.utils.solidityPack(['bytes4'], [selector])
 
     try {
       await fetch('/api/usecases/policies/updateFunctionStatus', {
@@ -327,7 +327,7 @@ function ContractProvider(props) {
       }
       , 3000)
     }
-  }, [balance])
+  }, [ownerProposals])
 
   const memoizedData = useMemo(
     () => ({

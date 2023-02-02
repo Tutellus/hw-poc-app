@@ -17,7 +17,7 @@ export const Proxy = () => {
                   cursor: 'pointer',
                 }}
                 className="data"
-                onClick={() => window.open(getExplorerUrl(process.env.CHAIN_ID || 5, 'address', proxy.address), '_blank')}
+                onClick={() => window.open(getExplorerUrl(proxy.chainId, 'address', proxy.address), '_blank')}
               >{truncateAddress(proxy.address)}</div>
             : <button disabled={loadingProxy} onClick={() => loadProxy()}>Connect</button>
         }

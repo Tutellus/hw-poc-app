@@ -130,7 +130,7 @@ function ProposalsProvider(props) {
       setOwnerProposals([]);
       setMasterProposals([]);
     }
-  }, [proxy]);
+  }, [proxy, session]);
 
   useEffect(() => {
     if (!loadingOwnerProposals) {
@@ -139,7 +139,7 @@ function ProposalsProvider(props) {
       }
       , 3000)
     }
-  }, [ownerProposals]);
+  }, [proxy, ownerProposals]);
 
   useEffect(() => {
     if (!loadingMasterProposals) {
@@ -148,7 +148,7 @@ function ProposalsProvider(props) {
       }
       , 3000)
     }
-  }, [masterProposals]);
+  }, [proxy, masterProposals]);
   
   const memoizedData = useMemo(
     () => ({

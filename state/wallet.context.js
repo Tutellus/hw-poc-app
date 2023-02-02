@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { init } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+const WALLETS_STORAGE_KEY = "connectedWallets"
 
 const ethereumGoerli = {
   id: '0x5',
@@ -56,18 +58,6 @@ function WalletProvider(props) {
   const [correctChain, setCorrectChain] = useState(false);
   const [settingChain, setSettingChain] = useState(false);
 
-  const refresh = () => {
-    const { wallets } = onboard.state.get();
-    setWallet(wallets[0]);
-    setCorrectChain(wallets[0].chains[0].id === DEFAULT_CHAIN_ID);
-    setSettingChain(false);
-  };
-
-  const connect = async () => {
-    await onboard.connectWallet();
-    refresh();
-  };
-
   const handleSwitch = async () => {
     if (!correctChain) {
       setSettingChain(true);
@@ -76,6 +66,34 @@ function WalletProvider(props) {
       setSettingChain(false);
     }
   };
+
+  const autoConnect = async () => {
+    const previouslyConnectedWallets = JSON.parse(window.localStorage.getItem(WALLETS_STORAGE_KEY))
+    if (previouslyConnectedWallets) {
+      const prevWallet = previouslyConnectedWallets?.[0]
+      const params = prevWallet ? { autoSelect: { label: prevWallet, disableModals: true } } : null
+      connect(params);
+    }
+  }
+
+  const connect = async (params) => {
+    try {
+      const wallets = await onboard.connectWallet(params)
+      const connectedWallets = wallets.map(({ label }) => label)
+      window.localStorage.setItem(WALLETS_STORAGE_KEY, JSON.stringify(connectedWallets))
+      const innerWallet = wallets[0]
+      setWallet(innerWallet)
+      setCorrectChain(innerWallet.chains[0].id === DEFAULT_CHAIN_ID);
+    } catch (error) {
+      console.error(error)
+      setWallet(null)
+      setCorrectChain(false);
+    }
+  }
+
+  useEffect(() => {
+    autoConnect();
+  }, []);
 
   const memoizedData = useMemo(
     () => ({

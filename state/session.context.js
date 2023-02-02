@@ -43,9 +43,9 @@ function SessionProvider(props) {
   }
 
   const logOut = () => {
-    localStorage.removeItem('session');
     setSession(null);
     setProxy(null);
+    localStorage.removeItem('session');
     router.push('/login');
   };
 
