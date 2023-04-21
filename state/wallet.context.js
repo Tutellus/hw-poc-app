@@ -54,59 +54,59 @@ const WalletContext = createContext({
 
 function WalletProvider(props) {
 
-  const [wallet, setWallet] = useState(null);
-  const [correctChain, setCorrectChain] = useState(false);
-  const [settingChain, setSettingChain] = useState(false);
+  // const [wallet, setWallet] = useState(null);
+  // const [correctChain, setCorrectChain] = useState(false);
+  // const [settingChain, setSettingChain] = useState(false);
 
-  const handleSwitch = async () => {
-    if (!correctChain) {
-      setSettingChain(true);
-      await onboard.setChain({ chainId: DEFAULT_CHAIN_ID });
-      refresh();
-      setSettingChain(false);
-    }
-  };
+  // const handleSwitch = async () => {
+  //   if (!correctChain) {
+  //     setSettingChain(true);
+  //     await onboard.setChain({ chainId: DEFAULT_CHAIN_ID });
+  //     refresh();
+  //     setSettingChain(false);
+  //   }
+  // };
 
-  const autoConnect = async () => {
-    const previouslyConnectedWallets = JSON.parse(window.localStorage.getItem(WALLETS_STORAGE_KEY))
-    if (previouslyConnectedWallets) {
-      const prevWallet = previouslyConnectedWallets?.[0]
-      const params = prevWallet ? { autoSelect: { label: prevWallet, disableModals: true } } : null
-      connect(params);
-    }
-  }
+  // const autoConnect = async () => {
+  //   const previouslyConnectedWallets = JSON.parse(window.localStorage.getItem(WALLETS_STORAGE_KEY))
+  //   if (previouslyConnectedWallets) {
+  //     const prevWallet = previouslyConnectedWallets?.[0]
+  //     const params = prevWallet ? { autoSelect: { label: prevWallet, disableModals: true } } : null
+  //     connect(params);
+  //   }
+  // }
 
-  const connect = async (params) => {
-    try {
-      const wallets = await onboard.connectWallet(params)
-      const connectedWallets = wallets.map(({ label }) => label)
-      window.localStorage.setItem(WALLETS_STORAGE_KEY, JSON.stringify(connectedWallets))
-      const innerWallet = wallets[0]
-      setWallet(innerWallet)
-      setCorrectChain(innerWallet.chains[0].id === DEFAULT_CHAIN_ID);
-    } catch (error) {
-      console.error(error)
-      setWallet(null)
-      setCorrectChain(false);
-    }
-  }
+  // const connect = async (params) => {
+  //   try {
+  //     const wallets = await onboard.connectWallet(params)
+  //     const connectedWallets = wallets.map(({ label }) => label)
+  //     window.localStorage.setItem(WALLETS_STORAGE_KEY, JSON.stringify(connectedWallets))
+  //     const innerWallet = wallets[0]
+  //     setWallet(innerWallet)
+  //     setCorrectChain(innerWallet.chains[0].id === DEFAULT_CHAIN_ID);
+  //   } catch (error) {
+  //     console.error(error)
+  //     setWallet(null)
+  //     setCorrectChain(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    autoConnect();
-  }, []);
+  // useEffect(() => {
+  //   autoConnect();
+  // }, []);
 
-  const memoizedData = useMemo(
-    () => ({
-      wallet,
-      correctChain,
-      settingChain,
-      connect,
-      handleSwitch,
-    }),
-    [wallet, correctChain, settingChain]
-  );
+  // const memoizedData = useMemo(
+  //   () => ({
+  //     wallet,
+  //     correctChain,
+  //     settingChain,
+  //     connect,
+  //     handleSwitch,
+  //   }),
+  //   [wallet, correctChain, settingChain]
+  // );
 
-  return <WalletContext.Provider value={memoizedData} {...props} />;
+  return <WalletContext.Provider value={{}} {...props} />;
 }
 
 function useWallet() {

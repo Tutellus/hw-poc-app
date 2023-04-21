@@ -1,19 +1,19 @@
-import { useSession } from "@/state/session.context";
-import { useState } from "react";
-import { LoginForm } from "../modules/LoginForm"
+import { useWeb3Auth } from "@/state/web3auth.context";
 
 export const Login = () => {
-  const { logIn, loggingIn } = useSession();
-  const [email, setEmail] = useState("");
-
-  const emailChangeFn = (e) => {
-    setEmail(e.target.value)
-  };
-
-  return <LoginForm
-    loggingIn={loggingIn}
-    email={email}
-    emailChangeFn={emailChangeFn}
-    submitFn={() => logIn(email)}
-  />
+  const { logIn, logOut, web3Auth, loggingIn } = useWeb3Auth();
+  return (
+    <div className="login">
+      <button
+        type="submit"
+        onClick={logIn}
+        disabled={loggingIn}
+      >{loggingIn ? 'Logging in...' : 'Log in'}</button>
+      <button
+        type="submit"
+        onClick={logOut}
+        disabled={!web3Auth}
+      >{'Log Out'}</button>
+    </div>
+  )
 }

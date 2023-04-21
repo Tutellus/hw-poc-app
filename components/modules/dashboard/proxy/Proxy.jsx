@@ -1,10 +1,10 @@
-import { useSession } from "@/state/session.context"
+import { useWeb3Auth } from "@/state/web3auth.context";
 import { truncateAddress } from "@/utils/address";
 import { getExplorerUrl } from "@/utils/explorer";
 
 export const Proxy = () => {
 
-  const { assigningProxy, proxy, loadingProxy, loadProxy } = useSession()
+  const { assigningProxy, proxy, loadingProxy, loadProxy } = useWeb3Auth()
 
   return (
     <div className="box">

@@ -2,8 +2,8 @@
 import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useProposals } from "./proposals.context";
-import { useSession } from "./session.context";
 import { DEFAULT_CHAIN_ID } from "./wallet.context";
+import { useWeb3Auth } from "./web3auth.context";
 
 const AMOUNT = 10;
 const EXTERNAL_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -50,7 +50,7 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   
-  const { session, proxy } = useSession();
+  const { user, proxy } = useWeb3Auth();
   const { ownerProposals, submit } = useProposals();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
@@ -137,7 +137,7 @@ function ContractProvider(props) {
         params: [[proxy.address, amountBN]],
         value: [0],
         projectId: proxy.projectId,
-        user: session,
+        user: user,
       })
     } catch (error) {
       console.error(error)
@@ -167,7 +167,7 @@ function ContractProvider(props) {
             0,
           ],
           projectId: proxy.projectId,
-          user: session,
+          user: user,
         })
     } catch (error) {
       console.error(error)

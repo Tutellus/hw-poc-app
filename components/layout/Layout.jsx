@@ -7,7 +7,7 @@ export const Layout = ({ children }) => {
     <>
       <Modal/>
       <div className="layout">
-        <TopBar></TopBar>
+        {/* <TopBar></TopBar> */}
         {children}
       </div>
     </>

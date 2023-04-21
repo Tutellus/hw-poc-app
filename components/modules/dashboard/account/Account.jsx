@@ -1,16 +1,16 @@
-import { useSession } from "@/state/session.context"
+import { useWeb3Auth } from "@/state/web3auth.context"
 
 export const Account = () => {
 
-  const { session, logOut } = useSession()
+  const { user, logOut } = useWeb3Auth()
 
-  if (!session) return null
+  if (!user) return null
 
   return (
     <div className="box">
       <div className="title">My account</div>
       <div className="data">
-        {session.email}
+        {user.email}
         <button onClick={logOut}>Logout</button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react";
-import { useSession } from "./session.context";
+import { useWeb3Auth } from "./web3auth.context";
 
 const SafeContext = createContext({
   masterSafeData: null,
@@ -12,7 +12,7 @@ const SafeContext = createContext({
 function SafeProvider(props) {
   const [masterSafeData, setMasterSafeData] = useState(null);
   const [ownerSafeData, setOwnerSafeData] = useState(null);
-  const { proxy } = useSession()
+  const { proxy } = useWeb3Auth()
 
   const loadOwnerSafeData = async () => {
     if (proxy) {

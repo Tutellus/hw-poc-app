@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useSafe } from "./safe.context";
-import { useSession } from "./session.context";
+import { useWeb3Auth } from "./web3auth.context";
 
 const ProposalsContext = createContext({
   ownerProposals: [],
@@ -17,7 +16,7 @@ const ProposalsContext = createContext({
 
 function ProposalsProvider(props) {
 
-  const { session, proxy } = useSession();
+  const { user, proxy } = useWeb3Auth();
 
   const [ownerProposals, setOwnerProposals] = useState([]);
   const [masterProposals, setMasterProposals] = useState([]);
@@ -39,7 +38,7 @@ function ProposalsProvider(props) {
         body: JSON.stringify({ safe: proxy?.ownerSafe }),
       })
       const { proposals: items } = await response.json()
-      if (proxy && session) {
+      if (proxy && user) {
         setOwnerProposals(items.reverse());
       }
     }
@@ -57,7 +56,7 @@ function ProposalsProvider(props) {
         body: JSON.stringify({ safe: proxy?.masterSafe }),
       })
       const { proposals: items } = await response.json()
-      if (proxy && session) {
+      if (proxy && user) {
         setMasterProposals(items.reverse());
       }
     }
@@ -74,7 +73,7 @@ function ProposalsProvider(props) {
       body: JSON.stringify({
         proposalId: proposal._id,
         code,
-        user: session,
+        user: user,
       }),
     })
     setConfirmingProposal(false);
@@ -90,7 +89,7 @@ function ProposalsProvider(props) {
       body: JSON.stringify({
         proposalId: proposal._id,
         signature,
-        user: session,
+        user: user,
       }),
     })
     setConfirmingProposal(false);
@@ -126,11 +125,11 @@ function ProposalsProvider(props) {
   }
 
   useEffect(() => {
-    if (!proxy || !session) {
+    if (!proxy || !user) {
       setOwnerProposals([]);
       setMasterProposals([]);
     }
-  }, [proxy, session]);
+  }, [proxy, user]);
 
   useEffect(() => {
     if (!loadingOwnerProposals) {
