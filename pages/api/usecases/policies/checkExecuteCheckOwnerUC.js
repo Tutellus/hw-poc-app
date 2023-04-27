@@ -5,8 +5,12 @@ const HumanExecutePolicies = require( '../../abi/HumanExecutePolicies.json');
 
 export default async function handler(req, res) {
   try {
-    const { contractId } = req.body;
-    const response = await execute({ contractId });
+    const { contractId, method, params } = req.body;
+    const response = await execute({
+      contractId,
+      method,
+      params,
+    });
     res.status(200).json({ response })
   } catch (error) {
     console.error(error)
@@ -14,7 +18,12 @@ export default async function handler(req, res) {
   }
 }
 
-export async function execute({ contractId }) {
+export async function execute({
+  contractId,
+  method,
+  params,
+  value,
+}) {
   try {
     
     const contract = await getContract({ _id: contractId });
@@ -27,13 +36,22 @@ export async function execute({ contractId }) {
       throw new Error('Contract locked');
     }
 
-    const { chainId } = contract;
+    const { rpc, forwardPolicies } = config[contract.chainId];
 
-    const { rpc, forwardPolicies } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const forwardPoliciesContract = new ethers.Contract(forwardPolicies, HumanExecutePolicies.abi, provider);
-    const result = await forwardPoliciesContract.checkContractAddress(contract.address);
-    
+
+    const contractInstance = new ethers.Contract(contract.address, contract.abi, provider);
+    const address = contractInstance.address;
+    const data = contractInstance.interface.encodeFunctionData(method, params)
+
+    const result = await forwardPoliciesContract
+      .executeCheckOwner(
+        address,
+        data,
+        value,
+      );
+  
     return result;
   } catch (error) {
     console.error(error)

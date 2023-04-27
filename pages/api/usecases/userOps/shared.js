@@ -1,14 +1,7 @@
 const { ethers } = require("ethers")
+const { abi: HumanAbi } = require("../../abi/Human.json")
 
-function getUserOpHash(op, entryPoint, chainId) {
-    const userOpHash = ethers.utils.id(packUserOp(op, true))
-    const enc = ethers.utils.defaultAbiCoder.encode(
-        ["bytes32", "address", "uint256"],
-        [userOpHash, entryPoint, chainId])
-    return ethers.utils.id(enc)
-}
-
-function packUserOp(op) {
+const packUserOp = (userOpData) => {
     // lighter signature scheme (must match UserOperation#pack): do encode a zero-length signature, but strip afterwards the appended zero-length value
     const userOpType = {
         components: [
@@ -27,11 +20,23 @@ function packUserOp(op) {
         name: "userOp",
         type: "tuple"
     }
-    let encoded = ethers.utils.defaultAbiCoder.encode([userOpType], [{ ...op, signature: "0x" }])
+    let encoded = ethers.utils.defaultAbiCoder.encode([userOpType], [userOpData])
     // remove leading word (total length) and trailing word (zero-length signature)
     encoded = "0x" + encoded.slice(66, encoded.length - 64)
     return encoded
-}
+};
+
+const getUserOpHash = ({
+    userOpData,
+    entryPoint,
+    chainId,
+}) => {
+    const userOpHash = ethers.utils.id(packUserOp(userOpData));
+    const enc = ethers.utils.defaultAbiCoder.encode(
+        ["bytes32", "address", "uint256"],
+        [userOpHash, entryPoint, chainId]);
+    return ethers.utils.id(enc);
+};
 
 const getEmptyUserOperation = () => ({
     sender: ethers.constants.AddressZero,
@@ -45,10 +50,42 @@ const getEmptyUserOperation = () => ({
     maxPriorityFeePerGas: "0",
     paymasterAndData: "0x",
     signature: "0x",
-})
+});
+
+const encodeFunctionData = ({
+    abi,
+    method = "",
+    params = [],
+}) => new ethers.utils.Interface(abi).encodeFunctionData(method, params);
+
+const getExecuteData = ({
+    operationType = "0", // v1 only allows operationType = 0
+    target,
+    value = "0",
+    data = "0x",
+    signature = "0x",
+}) => {
+    const executeData = ethers.utils.defaultAbiCoder.encode(["bytes", "bytes"], [data, signature]);
+    return encodeFunctionData({
+        abi: HumanAbi,
+        method: "execute",
+        params: [operationType, target, value, executeData]
+    });
+};
+
+const estimateGas = async ({
+    provider,
+    abi,
+    from,
+    to,
+    data,
+    value = "0",
+}) => new ethers.Contract(to, abi, provider).estimateGas({ from, data, value });
 
 module.exports = {
     getUserOpHash,
     packUserOp,
     getEmptyUserOperation,
+    getExecuteData,
+    estimateGas,
 }

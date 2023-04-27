@@ -4,6 +4,7 @@ const config = {
     executePolicies: '0x62481f08285803FEaF94E2b66EbAEa6FCf781c0f',
     humanFactory: '0x1Fe4Bc538C29A52dFC8B2982a218746C3837ca55',
     beacon: '0xc2d9750c31eb53ec842c7b7604451eb544fab2b9',
+    entryPoint: '0x6e24E57CC85B62d53b92097FAaa37A89C26a596D',
     factorySigner: {
       address: '0x46121e79942deF3008b1823cf990c262dad5b393',
       kPriv: '0xf917e4965fb7b827cfb50224859679ac43209a3a150ae05885632f1271608dc2',

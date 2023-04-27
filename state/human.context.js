@@ -44,7 +44,7 @@ function HumanProvider(props) {
     if (user) {
       setLoadingHuman(true)
       try {
-        const response = await fetch('/api/usecases/humans/getHumanUC', {
+        const response = await fetch('/api/usecases/humans/getHumanByUserUC', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

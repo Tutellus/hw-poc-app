@@ -1,4 +1,4 @@
-// getHumanUC.js
+// getHumanByUserUC.js
 
 const subgraphServices = require("../../gateway/subgraph/services");
 const shared = require("./shared");
