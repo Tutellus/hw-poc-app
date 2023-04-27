@@ -1,5 +1,5 @@
-import { config } from '../config';
-import mongoDB from '../infrastructure/mongo';
+const { config } = require('../config');
+const mongoDB = require('../infrastructure/mongo');
 
 const mongoUri = config['mongo'][process.env.ENV_NAME];
 

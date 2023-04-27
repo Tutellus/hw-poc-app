@@ -17,12 +17,6 @@ function getFunctionName (item) {
   }
 }
 
-// function checkIfProxy (bytecode) {
-//   return bytecode.includes('360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc');
-// }
-
-// function getConstructorParams
-
 // TODO: verify contract implementation if proxy
 export async function verifyContract ({
   provider,
@@ -55,7 +49,6 @@ export async function verifyContract ({
       const encodedFunctionName = contract.interface.getSighash(functionName).slice(2, 10);
 
       if (!bytecode.includes(encodedFunctionName)) {
-        console.log('not verified', functionName)
         verified = false;
         break
       }

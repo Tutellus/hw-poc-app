@@ -1,5 +1,5 @@
-import { updateOne, search, getOne as sharedGetOne } from './shared';
-import { v4 as uuidv4 } from 'uuid';
+const { updateOne, search, getOne: sharedGetOne } = require('./shared');
+const { v4: uuidv4 } = require('uuid');
 
 const COLLECTION = 'projects';
 

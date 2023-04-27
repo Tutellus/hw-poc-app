@@ -1,18 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useProposals } from "./proposals.context";
-import { DEFAULT_CHAIN_ID } from "./wallet.context";
 import { useWeb3Auth } from "./web3auth.context";
 
-const AMOUNT = 10;
-const EXTERNAL_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
-const CHAIN_ID = DEFAULT_CHAIN_ID
-
-const CONTRACT_GOERLI = {
-  chainId: '0x5',
-  address: '0xdC588c35a53B81d6B9DeB0995A5582236f89B7a2',
+const CHAIN_ID = '0x13881';
+const PROJECT_ID = "63d3c3a83d55158bfb36d502";
+const CONTRACT = {
+  chainId: '0x13881',
+  address: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F',
   abi: [
     "function mint(address to, uint256 amount) public",
     "function transfer(address to, uint256 amount) public returns (bool)",
@@ -20,17 +15,6 @@ const CONTRACT_GOERLI = {
   ],
 };
 
-const CONTRACT_BSCTESTNET = {
-  chainId: '0x61',
-  address: '0x9E09fA248ed2067764F438c8C49421a73F538596',
-  abi: [
-    "function mint(address to, uint256 amount) public",
-    "function transfer(address to, uint256 amount) public returns (bool)",
-    "function decimals() public view returns (uint8)",
-  ],
-};
-
-const CONTRACT = CHAIN_ID === '0x5' ? CONTRACT_GOERLI : CONTRACT_BSCTESTNET;
 const TOKEN_ADDRESS = CONTRACT.address;
 const TOKEN_ABI = CONTRACT.abi;
 
@@ -50,8 +34,7 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   
-  const { user, proxy } = useWeb3Auth();
-  const { ownerProposals, submit } = useProposals();
+  const { externalAccount } = useWeb3Auth();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
 
@@ -63,8 +46,9 @@ function ContractProvider(props) {
   const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getBalance = async () => {
-    if (!proxy) return
-    const response = await fetch('/api/usecases/tokens/getTokenBalance', {
+    if (!externalAccount) return
+    setLoadingBalance(true)
+    const response = await fetch('/api/usecases/tokens/getTokenBalanceUC', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,11 +56,12 @@ function ContractProvider(props) {
       body: JSON.stringify({
         chainId: CHAIN_ID,
         token: TOKEN_ADDRESS,
-        address: proxy.address,
+        address: externalAccount,
       }),
     })
     const { balance: innerBalance } = await response.json()
     setBalance(innerBalance)
+    setLoadingBalance(false)
   }
 
   const getContract = async () => {
@@ -86,7 +71,7 @@ function ContractProvider(props) {
         address: TOKEN_ADDRESS,
         chainId: CHAIN_ID,
       };
-      const response = await fetch('/api/usecases/contracts/getContract', {
+      const response = await fetch('/api/usecases/contracts/getContractUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +96,7 @@ function ContractProvider(props) {
         chainId: CHAIN_ID,
       }
   
-      const response = await fetch('/api/usecases/contracts/update', {
+      const response = await fetch('/api/usecases/contracts/updateContractUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,57 +111,9 @@ function ContractProvider(props) {
     setLoadingContract(false)
   }
 
-  const mint = async (amount = AMOUNT) => {
-    try {
-      const decimals = 18;
-      const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-      await submit({
-        chainId: CHAIN_ID,
-        contractId: [contract._id],
-        method: ['mint'],
-        params: [[proxy.address, amountBN]],
-        value: [0],
-        projectId: proxy.projectId,
-        user: user,
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const mintAndTransfer = async (amount = AMOUNT) => {
-    try {
-        const decimals = 18;
-        const amountBN = ethers.utils.parseUnits(amount.toString(), decimals);
-        await submit({
-          chainId: CHAIN_ID,
-          contractId: [
-            contract._id,
-            contract._id,
-          ],
-          method: [
-            'mint',
-            'transfer'
-          ],
-          params: [
-            [proxy.address, amountBN],
-            [EXTERNAL_ADDRESS, amountBN],
-          ],
-          value: [
-            0,
-            0,
-          ],
-          projectId: proxy.projectId,
-          user: user,
-        })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   const checkContractAddress = async () => {
     try {
-      const result = await fetch('/api/usecases/policies/checkContractAddress', {
+      const result = await fetch('/api/usecases/policies/checkContractAddressUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,9 +133,9 @@ function ContractProvider(props) {
   const checkContractData = async () => {
     try {
       const method = 'mint';
-      const params = [proxy.address, ethers.constants.One];
+      const params = [externalAccount, ethers.constants.One];
 
-      const result = await fetch('/api/usecases/policies/checkContractData', {
+      const result = await fetch('/api/usecases/policies/checkContractDataUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,13 +157,13 @@ function ContractProvider(props) {
   const updateAddressStatus = async (status) => {
     try {
       setUpdatingPolicies(true)
-      await fetch('/api/usecases/policies/updateAddressStatus', {
+      await fetch('/api/usecases/policies/updateAddressStatusUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: proxy.projectId,
+          projectId: PROJECT_ID,
           chainId: CHAIN_ID,
           address: TOKEN_ADDRESS,
           status,
@@ -247,7 +184,7 @@ function ContractProvider(props) {
         ['0xffffffff']
       );
 
-      const { mask: checkMask } = await fetch('/api/usecases/policies/getMask', {
+      const { mask: checkMask } = await fetch('/api/usecases/policies/getMaskUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -262,13 +199,13 @@ function ContractProvider(props) {
         return;
       }
 
-      await fetch('/api/usecases/policies/updateMask', {
+      await fetch('/api/usecases/policies/updateMaskUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: proxy.projectId,
+          projectId: PROJECT_ID,
           chainId: CHAIN_ID,
           address: TOKEN_ADDRESS,
           selector,
@@ -287,13 +224,13 @@ function ContractProvider(props) {
     const selectorAndParams = ethers.utils.solidityPack(['bytes4'], [selector])
 
     try {
-      await fetch('/api/usecases/policies/updateFunctionStatus', {
+      await fetch('/api/usecases/policies/updateFunctionStatusUC', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: proxy.projectId,
+          projectId: PROJECT_ID,
           chainId: CHAIN_ID,
           address: TOKEN_ADDRESS,
           selectorAndParams,
@@ -308,10 +245,6 @@ function ContractProvider(props) {
     setUpdatingPolicies(false)
 
   }
-
-  useEffect(() => {
-    getContract();
-  }, [proxy])
   
   useEffect(() => {
     if (contract) {
@@ -321,16 +254,12 @@ function ContractProvider(props) {
   }, [contract])
 
   useEffect(() => {
-    if (!loadingBalance) {
-      setTimeout(() => {
-        getBalance();
-      }
-      , 3000)
-    }
-  }, [ownerProposals])
+    getContract()
+  }, [])
 
   const memoizedData = useMemo(
     () => ({
+      loadingBalance,
       loadingContract,
       contract,
       balance,
@@ -340,8 +269,7 @@ function ContractProvider(props) {
       updateContract,
       updateAddressStatus,
       updateFunctionStatus,
-      mint,
-      mintAndTransfer,
+      getBalance,
     }),
     [loadingContract, contract, balance, updatingPolicies, fullApprovedOwner, functionApprovedOwner]
   );

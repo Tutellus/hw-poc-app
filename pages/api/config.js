@@ -1,19 +1,25 @@
-export const config = {
-  "0x5": {
-    rpc: 'https://goerli.infura.io/v3/2adb60007af7447b8e76552303197a66',
-    forwardPolicies: '0xf87915387adedCD5A03180891374beB0D0F3717E',
-    proxyFactory: '0x8c91E759dFE1DEa10156974b523C737702c9900E',
-    safeProxyFactory: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
-    safeSingleton: '0xd9db270c1b5e3bd161e8c8503c55ceabee709552',
-    safeFallbackHandler: '0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4',
-  },
-  "0x61": {
-    rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-    forwardPolicies: '0xC1785E3E399890808EAd24dfF82C09136eC43e10',
-    proxyFactory: '0xb1D187EcdC3FCc818aaB942625f4137a4A96E9c9',
-    safeProxyFactory: '0x8fFE1D761154941835D1f29B604Db25Ed7dC30B7',
-    safeSingleton: '0x3a1701e1182C300Eb3aC6d35fa606B587c189C05',
-    safeFallbackHandler: '0xb47b0DE7fC1d9a162EA6366b1252fe32CFdf7372',
+const config = {
+  "0x13881": {
+    rpc: 'https://rpc.ankr.com/polygon_mumbai',
+    executePolicies: '0x62481f08285803FEaF94E2b66EbAEa6FCf781c0f',
+    humanFactory: '0x1Fe4Bc538C29A52dFC8B2982a218746C3837ca55',
+    beacon: '0xc2d9750c31eb53ec842c7b7604451eb544fab2b9',
+    factorySigner: {
+      address: '0x46121e79942deF3008b1823cf990c262dad5b393',
+      kPriv: '0xf917e4965fb7b827cfb50224859679ac43209a3a150ae05885632f1271608dc2',
+    },
+    serverSigner: {
+      address: '0x44eEdBEE931A5dc22a5f4Ad441679FD5C0e38D38',
+      kPriv: 'efd44239bde79731d052d6e19e07ac3a739dcd1f473be0cfed38182c63b77d86',
+    }, // 2FA, per project??
+    federationOwners: [
+      "0xCD7669AAFffB7F683995E6eD9b53d1E5FE72c142",
+      "0x30729B6910757042024304E56BEB015821462691",
+      "0xDB970fD8Ed083D0Dc6000fa1e4973F27d8eDA2A9",
+    ],
+    defaultTimelock: 3600,
+    defaultInactivityTime: 7200,
+    projectId: '63d3c3a83d55158bfb36d502sd1',
   },
   mongo: {
     test: 'mongodb://localhost:27017/smw',
@@ -23,3 +29,5 @@ export const config = {
   gasPriceMultiplier: 2.5,
   gasLimitMultiplier: 1.5,
 }
+
+module.exports = { config }

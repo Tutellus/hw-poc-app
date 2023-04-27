@@ -1,8 +1,6 @@
-import { Web3 } from "../modules/dashboard/web3/Web3";
-import { Tokens } from "../modules/dashboard/tokens/Tokens";
-import { Proxy } from "../modules/dashboard/proxy/Proxy";
+import { Human } from "../modules/dashboard/human/Human";
 import { Account } from "../modules/dashboard/account/Account";
-import { Proposals } from "../modules/dashboard/proposals/Proposals";
+import { Tokens } from "../modules/dashboard/tokens/Tokens";
 import { Contract } from "../modules/dashboard/contract/Contract";
 
 export const Dashboard = () => {
@@ -12,19 +10,19 @@ export const Dashboard = () => {
         {<Account/>}
 
         {/* my wallet */}
-        <Proxy/>
+        <Human/>
+
+        {/* your contract */}
+        <Contract/>
 
         {/* your tokens */}
         <Tokens/>
 
         {/* my external wallet */}
-        <Web3/>
-
-        {/* your contract */}
-        {/* <Contract/> */}
+        {/* <Web3/> */}
     
         {/* owner proposals list */}
-        {<Proposals/>}
+        {/* {<Proposals/>} */}
         
   </div>
   );
