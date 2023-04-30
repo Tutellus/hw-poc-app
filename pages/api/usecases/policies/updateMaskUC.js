@@ -26,14 +26,14 @@ export async function execute ({
     }
     
     const { executorKey } = project;
-    const { rpc, forwardPolicies } = config[chainId];
+    const { rpc, executePolicies } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const executor = new ethers.Wallet(executorKey, provider);
-    const forwardPoliciesInterface = new ethers.utils.Interface(HumanExecutePolicies.abi);
+    const executePoliciesInterface = new ethers.utils.Interface(HumanExecutePolicies.abi);
 
     const receipt = await executeTransaction({
-      to: forwardPolicies,
-      data: forwardPoliciesInterface
+      to: executePolicies,
+      data: executePoliciesInterface
         .encodeFunctionData(
           'updateContractFunctionMask',
           [address, selector, mask]

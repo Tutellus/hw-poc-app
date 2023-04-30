@@ -35,16 +35,16 @@ export async function execute({
       throw new Error('Contract locked');
     }
 
-    const { rpc, forwardPolicies } = config[contract.chainId];
+    const { rpc, executePolicies } = config[contract.chainId];
 
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    const forwardPoliciesContract = new ethers.Contract(forwardPolicies, HumanExecutePolicies.abi, provider);
+    const executePoliciesContract = new ethers.Contract(executePolicies, HumanExecutePolicies.abi, provider);
 
     const contractInstance = new ethers.Contract(contract.address, contract.abi, provider);
     const address = contractInstance.address;
     const data = contractInstance.interface.encodeFunctionData(method, params)
 
-    const result = await forwardPoliciesContract
+    const result = await executePoliciesContract
       .checkContractData(
         address,
         data,

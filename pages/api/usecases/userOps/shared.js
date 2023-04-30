@@ -68,7 +68,7 @@ const getExecuteData = ({
     const executeData = ethers.utils.defaultAbiCoder.encode(["bytes", "bytes"], [data, signature]);
     return encodeFunctionData({
         abi: HumanAbi,
-        method: "execute",
+        method: "execute(uint256,address,uint256,bytes)",
         params: [operationType, target, value, executeData]
     });
 };

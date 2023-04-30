@@ -2,6 +2,7 @@ const gql = require('graphql-tag');
 
 const humanFields = `
   id
+  nonce
   address
   owner
   salt

@@ -2,27 +2,56 @@ import { useState } from "react"
 import { useContract } from "@/state/contract.context";
 import ShieldCheckIcon from "@heroicons/react/24/outline/ShieldCheckIcon";
 import ExclamationTriangleIcon from "@heroicons/react/24/outline/ExclamationTriangleIcon";
+import { useHuman } from "@/state/human.context";
+import { ethers } from "ethers";
 
 export const Tokens = () => {
 
-  const { loadingContract, contract, balance, updateContract, mint, mintAndTransfer } = useContract();
+  const { loadingContract, contract, balance, updateContract } = useContract();
+  const { address, requestPreUserOp, requestPreUserOpHash, submitUserOp, signMessageFromOwner } = useHuman();
 
   const [minting, setMinting] = useState(false)
 
   const canMint = !minting;
 
-  const executeMint = async () => {
+  const requestMint = async () => {
     setMinting(true)
-    await mint()
+    console.log('minting', {
+      contractId: contract._id,
+      method: 'mint',
+      params: [address, ethers.utils.parseEther('5')],
+      value: ethers.utils.parseEther('0'),
+    })
+    // 1. creates preUserOp which evaluates if master signature is required
+    const preUserOp = await requestPreUserOp({
+      contractId: contract._id,
+      method: 'mint',
+      params: [address, ethers.utils.parseEther('5')],
+      value: ethers.utils.parseEther('0'),
+    })
+    console.log('preUserOp', preUserOp)
+    // 2. gets hash of preUserOp if is valid
+    const hash = await requestPreUserOpHash({
+      preUserOpId: preUserOp._id
+    })
+    console.log('hash', hash)
+    // 3. signs hash with owner account (includes master signature if required)
+    const signature = await signMessageFromOwner(hash)
+    console.log('signature', signature)
+    // 4. submits preUserOp with signature
+    const userOp = await submitUserOp({
+      preUserOpId: preUserOp._id,
+      signature,
+    })
+    console.log('userOp', userOp)
     setMinting(false)
-
   }
 
-  const executeMintAndTransfer = async () => {
-    setMinting(true)
-    await mintAndTransfer()
-    setMinting(false)
-  }
+  // const executeMintAndTransfer = async () => {
+  //   setMinting(true)
+  //   await mintAndTransfer()
+  //   setMinting(false)
+  // }
 
   return (
     <div className="box">
@@ -48,7 +77,7 @@ export const Tokens = () => {
                     alignItems: 'center',
                   }}
                   disabled={!canMint}
-                  onClick={executeMint}
+                  onClick={requestMint}
                 >
                   {minting ? 'Processing...' : 'Mint'}
                   <ShieldCheckIcon style={{
@@ -58,7 +87,7 @@ export const Tokens = () => {
                   }} />
                   
                 </button>
-                <button
+                {/* <button
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -73,7 +102,7 @@ export const Tokens = () => {
                     height: '20px',
                     width: '20px',
                   }} />
-                </button>
+                </button> */}
               </div>
             : <button
                 disabled={loadingContract}

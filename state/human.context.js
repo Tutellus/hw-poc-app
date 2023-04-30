@@ -8,17 +8,90 @@ const HumanContext = createContext({
   loadingHuman: false,
   loadingAddress: false,
   loadingDeployment: false,
-  deployHuman: () => {},
+  deployHuman: async () => {},
+  signMessageFromOwner: async (message) => {},
+  requestPreUserOp: async ({
+    contractId,
+    method,
+    params,
+    value,
+  }) => {}, 
+  requestPreUserOpHash: async ({
+    preUserOpId,
+  }) => {},
+  submitUserOp: async ({
+    preUserOpId,
+    signature,
+  }) => {},
 });
 
 function HumanProvider(props) {
-  const { user, externalAccount } = useWeb3Auth();
-
+  const { user, externalAccount, web3Provider } = useWeb3Auth();
   const [address, setAddress] = useState(null);
   const [human, setHuman] = useState(null);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [loadingHuman, setLoadingHuman] = useState(false);
   const [loadingDeployment, setLoadingDeployment] = useState(false);
+
+  const signMessageFromOwner = async (message) => await web3Provider.getSigner().signMessage(message);
+
+  const requestPreUserOp = async ({
+    contractId,
+    method,
+    params,
+    value,
+  }) => {
+    const response = await fetch('/api/usecases/userOps/requestPreUserOpUC', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contractId,
+        method,
+        params,
+        value,
+        user,
+      }),
+    })
+    const { preUserOp } = await response.json()
+    return preUserOp
+  }
+
+  const requestPreUserOpHash = async ({
+    preUserOpId,
+  }) => {
+    const response = await fetch('/api/usecases/userOps/requestPreUserOpHashUC', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        preUserOpId,
+      }),
+    })
+    const { hash } = await response.json()
+    return hash
+  }
+
+  const submitUserOp = async ({
+    preUserOpId,
+    signature,
+  }) => {
+    const response = await fetch('/api/usecases/userOps/submitUserOpUC', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        preUserOpId,
+        signature,
+        user,
+      }),
+    })
+    const { userOp } = await response.json()
+    return userOp
+  }
 
   const loadHumanAddress = async () => {
     if (user) {
@@ -93,6 +166,10 @@ function HumanProvider(props) {
       loadingHuman,
       loadingDeployment,
       deployHuman,
+      signMessageFromOwner,
+      requestPreUserOp,
+      requestPreUserOpHash,
+      submitUserOp,
     }),
     [address, human, loadingAddress, loadingHuman, loadingDeployment]
   );

@@ -1,6 +1,7 @@
 // requestPreUserOpUC.js
 
-const getHumanByUserUC = require('../humans/getHumanUC');
+const { ethers } = require('ethers');
+const getHumanByUserUC = require('../humans/getHumanByUserUC');
 const checkExecuteCheckOwnerUC = require('../policies/checkExecuteCheckOwnerUC');
 const assert = require('assert');
 const contractsRepository = require('../../repositories/contracts');
@@ -46,6 +47,7 @@ export async function execute({
     const preUserOp = await preUserOpsRepository.update({
       fields: {
         humanId: human._id,
+        user: user,
         target: contract.address,
         data,
         value,

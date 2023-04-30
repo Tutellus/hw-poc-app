@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useWeb3Auth } from "./web3auth.context";
+import { useHuman } from "./human.context";
 
 const CHAIN_ID = '0x13881';
 const PROJECT_ID = "63d3c3a83d55158bfb36d502";
@@ -25,16 +25,19 @@ const ContractContext = createContext({
   updatingPolicies: false,
   fullApprovedOwner: false,
   functionApprovedOwner: false,
+  getBalance: async () => {},
+  getContract: async () => {},
   updateContract: async () => {},
+  checkContractAddress: async () => {},
+  checkContractData: async () => {},
   updateAddressStatus: async (status) => {},
+  updateMask: async () => {},
   updateFunctionStatus: async (status) => {},
-  mint: async (amount) => {},
-  mintAndTransfer: async (amount, to) => {},
 });
 
 function ContractProvider(props) {
   
-  const { externalAccount } = useWeb3Auth();
+  const { address, signMessageFromOwner } = useHuman();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
 
@@ -46,7 +49,7 @@ function ContractProvider(props) {
   const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getBalance = async () => {
-    if (!externalAccount) return
+    if (!address) return
     setLoadingBalance(true)
     const response = await fetch('/api/usecases/tokens/getTokenBalanceUC', {
       method: 'POST',
@@ -56,7 +59,7 @@ function ContractProvider(props) {
       body: JSON.stringify({
         chainId: CHAIN_ID,
         token: TOKEN_ADDRESS,
-        address: externalAccount,
+        address: address,
       }),
     })
     const { balance: innerBalance } = await response.json()
@@ -133,7 +136,7 @@ function ContractProvider(props) {
   const checkContractData = async () => {
     try {
       const method = 'mint';
-      const params = [externalAccount, ethers.constants.One];
+      const params = [address, ethers.constants.One];
 
       const result = await fetch('/api/usecases/policies/checkContractDataUC', {
         method: 'POST',
@@ -266,10 +269,14 @@ function ContractProvider(props) {
       updatingPolicies,
       fullApprovedOwner,
       functionApprovedOwner,
-      updateContract,
-      updateAddressStatus,
-      updateFunctionStatus,
       getBalance,
+      getContract,
+      updateContract,
+      checkContractAddress,
+      checkContractData,
+      updateAddressStatus,
+      updateMask,
+      updateFunctionStatus,
     }),
     [loadingContract, contract, balance, updatingPolicies, fullApprovedOwner, functionApprovedOwner]
   );
@@ -281,7 +288,7 @@ function useContract() {
   const context = useContext(ContractContext);
   if (context === undefined) {
     throw new Error(
-      `useContractContext must be used within a ContractContextProvider`
+      `useContract must be used within a ContractProvider`
     );
   }
   return context;

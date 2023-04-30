@@ -29,10 +29,10 @@ export async function execute({ contractId }) {
 
     const { chainId } = contract;
 
-    const { rpc, forwardPolicies } = config[chainId];
+    const { rpc, executePolicies } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    const forwardPoliciesContract = new ethers.Contract(forwardPolicies, HumanExecutePolicies.abi, provider);
-    const result = await forwardPoliciesContract.checkContractAddress(contract.address);
+    const executePoliciesContract = new ethers.Contract(executePolicies, HumanExecutePolicies.abi, provider);
+    const result = await executePoliciesContract.checkContractAddress(contract.address);
     
     return result;
   } catch (error) {
