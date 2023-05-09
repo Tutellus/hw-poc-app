@@ -16,7 +16,6 @@ export default async function handler(req, res) {
 
 export async function execute({ address }) {
   try {
-    console.log('address', address)
     const [humans, humanDB] = await Promise.all([
       subgraphServices.getHumans({
         where: {
@@ -26,9 +25,6 @@ export async function execute({ address }) {
       humansRepository.getOne({ _id: address })
     ]);
     
-    console.log('humans', humans)
-    console.log('humanDB', humanDB)
-
     const human = {
       status: 'NOT_CREATED',
       ...humanDB,

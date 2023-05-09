@@ -16,6 +16,7 @@ export async function execute({ preUserOpId, user }) {
   try {
     const preUserOp = await preUserOpsRepository.getOne({ _id: preUserOpId });
     const {
+      user: innerUser,
       humanId,
       target,
       data,
@@ -24,7 +25,7 @@ export async function execute({ preUserOpId, user }) {
       masterSignature,
     } = preUserOp;
     
-    // assert(userId === user._id, 'User not allowed');
+    assert(user === innerUser, 'User not allowed');
     assert(!isMasterRequired || masterSignature !== '0x', 'Master signature required');
 
     const executeData = shared.getExecuteData({
@@ -34,18 +35,13 @@ export async function execute({ preUserOpId, user }) {
       signature: masterSignature,
     });
 
-    console.log('executeData', executeData);
-
     const human = await getHumanByAddressUC.execute({ address: humanId });
-    console.log('human', human);
     assert(human, 'Human not found');
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
-
-    console.log('userOpData', userOpData);
 
     const chainId = "0x13881";
     const { entryPoint } = config[chainId];

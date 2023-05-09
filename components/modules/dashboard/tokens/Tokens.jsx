@@ -16,12 +16,6 @@ export const Tokens = () => {
 
   const requestMint = async () => {
     setMinting(true)
-    console.log('minting', {
-      contractId: contract._id,
-      method: 'mint',
-      params: [address, ethers.utils.parseEther('5')],
-      value: ethers.utils.parseEther('0'),
-    })
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
       contractId: contract._id,
@@ -29,21 +23,18 @@ export const Tokens = () => {
       params: [address, ethers.utils.parseEther('5')],
       value: ethers.utils.parseEther('0'),
     })
-    console.log('preUserOp', preUserOp)
     // 2. gets hash of preUserOp if is valid
     const hash = await requestPreUserOpHash({
       preUserOpId: preUserOp._id
     })
-    console.log('hash', hash)
     // 3. signs hash with owner account (includes master signature if required)
     const signature = await signMessageFromOwner(hash)
-    console.log('signature', signature)
     // 4. submits preUserOp with signature
     const userOp = await submitUserOp({
       preUserOpId: preUserOp._id,
       signature,
     })
-    console.log('userOp', userOp)
+    console.log({userOp})
     setMinting(false)
   }
 
@@ -54,7 +45,9 @@ export const Tokens = () => {
   // }
 
   return (
-    <div className="box">
+    <div className="box" style={{
+      gridColumn: '1 / 3',
+    }}>
       <div className="title">Token Interaction</div>
       <div className="data">
         <div>My balance: {balance}</div>

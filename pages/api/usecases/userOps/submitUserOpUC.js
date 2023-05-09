@@ -18,6 +18,7 @@ export async function execute({ preUserOpId, signature, user }) {
   try {
     const preUserOp = await preUserOpsRepository.getOne({ _id: preUserOpId });
     const {
+      user: innerUser,
       humanId,
       target,
       data,
@@ -26,7 +27,7 @@ export async function execute({ preUserOpId, signature, user }) {
       masterSignature,
     } = preUserOp;
     
-    // assert(userId === user._id, 'User not allowed');
+    assert(user === innerUser, 'User not allowed');
     assert(!isMasterRequired || masterSignature !== '0x', 'Master signature required');
 
     const executeData = shared.getExecuteData({
@@ -36,18 +37,13 @@ export async function execute({ preUserOpId, signature, user }) {
       signature: masterSignature,
     });
 
-    console.log('executeData', executeData);
-
     const human = await getHumanByAddressUC.execute({ address: humanId });
-    console.log('human', human);
     assert(human, 'Human not found');
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
-
-    console.log('userOpData', userOpData);
 
     const chainId = "0x13881";
     const { entryPoint } = config[chainId];
@@ -61,9 +57,6 @@ export async function execute({ preUserOpId, signature, user }) {
     // verify signature
     const { owner } = human;
     const recoveredAddress = ethers.utils.verifyMessage(hash, signature);
-
-    console.log('recoveredAddress', recoveredAddress);
-    console.log('owner', owner);
 
     assert(recoveredAddress.toLowerCase() === owner.toLowerCase(), 'Invalid signature');
 
