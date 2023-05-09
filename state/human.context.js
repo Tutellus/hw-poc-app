@@ -16,7 +16,7 @@ const HumanContext = createContext({
     params,
     value,
   }) => {}, 
-  requestPreUserOpHash: async ({
+  getPreUserOpHash: async ({
     preUserOpId,
   }) => {},
   submitUserOp: async ({
@@ -58,10 +58,10 @@ function HumanProvider(props) {
     return preUserOp
   }
 
-  const requestPreUserOpHash = async ({
+  const getPreUserOpHash = async ({
     preUserOpId,
   }) => {
-    const response = await fetch('/api/usecases/userOps/requestPreUserOpHashUC', {
+    const response = await fetch('/api/usecases/userOps/getPreUserOpHashUC', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ function HumanProvider(props) {
       deployHuman,
       signMessageFromOwner,
       requestPreUserOp,
-      requestPreUserOpHash,
+      getPreUserOpHash,
       submitUserOp,
     }),
     [address, human, loadingAddress, loadingHuman, loadingDeployment]

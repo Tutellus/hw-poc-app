@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 export const Tokens = () => {
 
   const { loadingContract, contract, balance, updateContract } = useContract();
-  const { address, requestPreUserOp, requestPreUserOpHash, submitUserOp, signMessageFromOwner } = useHuman();
+  const { address, requestPreUserOp, getPreUserOpHash, submitUserOp, signMessageFromOwner } = useHuman();
 
   const [minting, setMinting] = useState(false)
 
@@ -24,7 +24,7 @@ export const Tokens = () => {
       value: ethers.utils.parseEther('0'),
     })
     // 2. gets hash of preUserOp if is valid
-    const hash = await requestPreUserOpHash({
+    const hash = await getPreUserOpHash({
       preUserOpId: preUserOp._id
     })
     // 3. signs hash with owner account (includes master signature if required)

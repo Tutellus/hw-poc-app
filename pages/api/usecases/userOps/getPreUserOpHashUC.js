@@ -1,4 +1,4 @@
-// requestPreUserOpHashUC.js
+// getPreUserOpHashUC.js
 
 const getHumanByAddressUC = require('../humans/getHumanByAddressUC');
 const assert = require('assert');
