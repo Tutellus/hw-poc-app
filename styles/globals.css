@@ -214,3 +214,19 @@ input::placeholder {
   gap: 16px;
   width: 100%;
 }
+
+.proposal {
+  border: 2px solid var(--color-border);
+  padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
+}
+
+.userOp {
+  border: 2px solid var(--color-border);
+  padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
+}

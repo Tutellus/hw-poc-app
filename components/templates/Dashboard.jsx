@@ -2,6 +2,8 @@ import { Human } from "../modules/dashboard/human/Human";
 import { Account } from "../modules/dashboard/account/Account";
 import { Tokens } from "../modules/dashboard/tokens/Tokens";
 import { Contract } from "../modules/dashboard/contract/Contract";
+import { PreUserOps } from "../modules/dashboard/preUserOps/PreUserOps";
+import { UserOps } from "../modules/dashboard/userOps/UserOps";
 
 export const Dashboard = () => {
   return (
@@ -19,10 +21,10 @@ export const Dashboard = () => {
         <Tokens/>
 
         {/* my external wallet */}
-        {/* <Web3/> */}
+        <PreUserOps/>
     
         {/* owner proposals list */}
-        {/* {<Proposals/>} */}
+        {<UserOps/>}
         
   </div>
   );

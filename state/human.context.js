@@ -5,8 +5,12 @@ import { useWeb3Auth } from "./web3auth.context";
 const HumanContext = createContext({
   address: null,
   human: null,
+  preUserOps: [],
+  userOps: [],
   loadingHuman: false,
   loadingAddress: false,
+  loadingPreUserOps: false,
+  loadingUserOps: false,
   loadingDeployment: false,
   deployHuman: async () => {},
   signMessageFromOwner: async (message) => {},
@@ -23,15 +27,27 @@ const HumanContext = createContext({
     preUserOpId,
     signature,
   }) => {},
+  confirmPreUserOp: async({
+    preUserOpId,
+    code,
+  }) => {}
 });
 
 function HumanProvider(props) {
   const { user, externalAccount, web3Provider } = useWeb3Auth();
+
+  // state
   const [address, setAddress] = useState(null);
   const [human, setHuman] = useState(null);
+  const [preUserOps, setPreUserOps] = useState([]);
+  const [userOps, setUserOps] = useState([]);
+
+  // loadings
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [loadingHuman, setLoadingHuman] = useState(false);
   const [loadingDeployment, setLoadingDeployment] = useState(false);
+  const [loadingPreUserOps, setLoadingPreUserOps] = useState(false);
+  const [loadingUserOps, setLoadingUserOps] = useState(false);
 
   const signMessageFromOwner = async (message) => await web3Provider.getSigner().signMessage(message);
 
@@ -55,6 +71,7 @@ function HumanProvider(props) {
       }),
     })
     const { preUserOp } = await response.json()
+    loadPreUserOps();
     return preUserOp
   }
 
@@ -73,6 +90,27 @@ function HumanProvider(props) {
     })
     const { hash } = await response.json()
     return hash
+  }
+
+  const confirmPreUserOp = async ({
+    preUserOpId,
+    code,
+  }) => {
+    const response = await fetch('/api/usecases/userOps/confirmPreUserOpUC', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        preUserOpId,
+        code,
+        user,
+      }),
+    })
+    const { preUserOp } = await response.json()
+    console.log({ preUserOp })
+    loadPreUserOps();
+    return preUserOp
   }
 
   const submitUserOp = async ({
@@ -134,6 +172,62 @@ function HumanProvider(props) {
     }
   }
 
+  const loadPreUserOps = async () => {
+    if (address) {
+      setLoadingPreUserOps(true)
+      try {
+        const response = await fetch('/api/usecases/userOps/getPreUserOpsUC', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            params: {
+              first: 1000,
+              where: {
+                humanId: address,
+              },
+            },
+            user
+          }),
+        })
+        const { preUserOps: innerPreUserOps } = await response.json()
+        setPreUserOps(innerPreUserOps)
+      } catch (error) {
+        console.error(error)
+      }
+      setLoadingPreUserOps(false)
+    }
+  }
+
+  const loadUserOps = async () => {
+    if (address) {
+      setLoadingUserOps(true)
+      try {
+        const response = await fetch('/api/usecases/userOps/getUserOpsUC', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            params: {
+              first: 1000,
+              where: {
+                humanId: address,
+              },
+            },
+            user
+          }),
+        })
+        const { userOps: innerUserOps } = await response.json()
+        setUserOps(innerUserOps)
+      } catch (error) {
+        console.error(error)
+      }
+      setLoadingUserOps(false)
+    }
+  }
+
   const deployHuman = async () => {
     if (user && externalAccount) {
       setLoadingDeployment(true)
@@ -159,20 +253,30 @@ function HumanProvider(props) {
     loadHuman();
   }, [user]);
 
+  useEffect(() => {
+    loadPreUserOps();
+    loadUserOps();
+  }, [address]);
+
   const memoizedData = useMemo(
     () => ({
       address,
       human,
+      preUserOps,
+      userOps,
       loadingAddress,
       loadingHuman,
       loadingDeployment,
+      loadingPreUserOps,
+      loadingUserOps,
       deployHuman,
       signMessageFromOwner,
       requestPreUserOp,
       getPreUserOpHash,
       submitUserOp,
+      confirmPreUserOp,
     }),
-    [address, human, loadingAddress, loadingHuman, loadingDeployment]
+    [address, human, preUserOps, userOps, loadingAddress, loadingHuman, loadingDeployment, loadingPreUserOps, loadingUserOps]
   );
 
   return <HumanContext.Provider value={memoizedData} {...props} />;

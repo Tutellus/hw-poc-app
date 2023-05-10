@@ -23,18 +23,22 @@ export const Tokens = () => {
       params: [address, ethers.utils.parseEther('5')],
       value: ethers.utils.parseEther('0'),
     })
-    // 2. gets hash of preUserOp if is valid
-    const hash = await getPreUserOpHash({
-      preUserOpId: preUserOp._id
-    })
-    // 3. signs hash with owner account (includes master signature if required)
-    const signature = await signMessageFromOwner(hash)
-    // 4. submits preUserOp with signature
-    const userOp = await submitUserOp({
-      preUserOpId: preUserOp._id,
-      signature,
-    })
-    console.log({userOp})
+
+    if (!preUserOp.isMasterRequired) {
+      // 2. gets hash of preUserOp if is valid
+      const hash = await getPreUserOpHash({
+        preUserOpId: preUserOp._id
+      })
+      // 3. signs hash with owner account (includes master signature if required)
+      const signature = await signMessageFromOwner(hash)
+      // 4. submits preUserOp with signature
+      const userOp = await submitUserOp({
+        preUserOpId: preUserOp._id,
+        signature,
+      })
+      console.log({userOp})
+    }
+
     setMinting(false)
   }
 

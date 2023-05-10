@@ -19,6 +19,32 @@ async function update ({
   return updateOne(COLLECTION, filter, data)
 };
 
+async function getWithParams({
+  first = 10,
+  skip = 0,
+  where = {},
+  orderBy = 'createdAt',
+  orderDir = 'desc',
+}) {
+  const pipeline = [
+    {
+      $match: where,
+    },
+    {
+      $sort: {
+        [orderBy]: orderDir === 'desc' ? -1 : 1,
+      },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: first,
+    },
+  ];
+  return search(COLLECTION, pipeline);
+}
+
 async function get(pipeline = []) {
   return search(COLLECTION, pipeline);
 }
@@ -29,6 +55,7 @@ async function getOne(filter) {
 
 export {
   update,
+  getWithParams,
   get,
   getOne,
 };

@@ -1,7 +1,6 @@
-// getPreUserOpHashUC.js
+// confirmPreUserOpUC.js
 
-import { ethers } from 'ethers';
-
+const { ethers } = require('ethers');
 const assert = require('assert');
 const preUserOpsRepository = require('../../repositories/preUserOps');
 const shared = require('./shared');
@@ -9,8 +8,8 @@ const { config } = require('../../config');
 
 export default async function handler(req, res) {
   const { preUserOpId, code, user } = req.body;
-  const hash = await execute({ preUserOpId, code, user });
-  res.status(200).json({ hash });  
+  const preUserOp = await execute({ preUserOpId, code, user });
+  res.status(200).json({ preUserOp });  
 }
 
 export async function execute({ preUserOpId, code, user }) {
@@ -38,7 +37,11 @@ export async function execute({ preUserOpId, code, user }) {
       masterSigner,
     });
 
-    return masterSignature;
+    const preUserOpResult = await preUserOpsRepository.update({ id: preUserOpId, fields: {
+      masterSignature,
+    }});
+
+    return preUserOpResult;
   } catch (error) {
     console.error(error)
     throw error;

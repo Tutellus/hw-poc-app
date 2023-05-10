@@ -53,6 +53,9 @@ export async function execute({
     const preUserOp = await preUserOpsRepository.update({
       fields: {
         humanId: human._id,
+        contractId,
+        method,
+        params,
         user,
         target: contract.address,
         data,
