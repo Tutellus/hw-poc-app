@@ -82,10 +82,28 @@ const estimateGas = async ({
     value = "0",
 }) => new ethers.Contract(to, abi, provider).estimateGas({ from, data, value });
 
+const masterSign = async ({
+    humanAddress,
+    operationType = "0", // v1 only allows operationType = 0
+    target,
+    value = "0",
+    data = "0x",
+    masterSigner,
+}) => {
+    const encoded = ethers.utils.defaultAbiCoder.encode(
+        ["address", "uint256", "address", "uint256", "bytes32"],
+        [humanAddress, operationType, target, value, ethers.utils.keccak256(data)]
+    );
+    const hash = ethers.utils.keccak256(encoded);
+    const signature = await masterSigner.signMessage(ethers.utils.arrayify(hash));
+    return signature;
+};
+
 module.exports = {
     getUserOpHash,
     packUserOp,
     getEmptyUserOperation,
     getExecuteData,
     estimateGas,
+    masterSign,
 }

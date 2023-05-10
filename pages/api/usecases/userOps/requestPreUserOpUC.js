@@ -44,6 +44,12 @@ export async function execute({
       value,
     }));
 
+    let code2fa = null;
+    if (isMasterRequired) {
+      // create code and send email
+      code2fa = '123456';
+    }
+
     const preUserOp = await preUserOpsRepository.update({
       fields: {
         humanId: human._id,
@@ -53,6 +59,7 @@ export async function execute({
         value,
         isMasterRequired,
         masterSignature: "0x",
+        code2fa,
       },
     });
 
