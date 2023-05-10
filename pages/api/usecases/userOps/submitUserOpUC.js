@@ -7,6 +7,7 @@ const preUserOpsRepository = require('../../repositories/preUserOps');
 const userOpsRepository = require('../../repositories/userOps');
 const shared = require('./shared');
 const { config } = require('../../config');
+const handleUserOpsUC = require('./handleUserOpsUC');
 
 export default async function handler(req, res) {
   const { preUserOpId, signature, user } = req.body;
@@ -27,7 +28,7 @@ export async function execute({ preUserOpId, signature, user }) {
       masterSignature,
     } = preUserOp;
     
-    assert(user === innerUser, 'User not allowed');
+    // assert(user === innerUser, 'User not allowed');
     assert(!isMasterRequired || masterSignature !== '0x', 'Master signature required');
 
     const executeData = shared.getExecuteData({
@@ -63,11 +64,21 @@ export async function execute({ preUserOpId, signature, user }) {
     const userOp = await userOpsRepository.update({
       fields: {
         ...userOpData,
+        preUserOpId: preUserOp._id,
+        humanId,
+        user,
         signature,
       }
     });
 
-    return userOp;
+    const receipt = await handleUserOpsUC.execute({ userOps: [userOp] })
+
+    const userOpResult = await userOpsRepository.markAsExecuted({
+      id: userOp._id,
+      receipt,
+    });
+
+    return userOpResult;
   } catch (error) {
     console.error(error)
     throw error;

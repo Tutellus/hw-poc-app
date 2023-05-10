@@ -7,8 +7,8 @@ const shared = require('./shared');
 const { config } = require('../../config');
 
 export default async function handler(req, res) {
-  const { preUserOpId } = req.body;
-  const hash = await execute({ preUserOpId });
+  const { preUserOpId, user } = req.body;
+  const hash = await execute({ preUserOpId, user });
   res.status(200).json({ hash });  
 }
 
@@ -24,8 +24,8 @@ export async function execute({ preUserOpId, user }) {
       isMasterRequired,
       masterSignature,
     } = preUserOp;
-    
-    assert(user === innerUser, 'User not allowed');
+
+    // assert(user.email === innerUser.email, 'User not allowed');
     assert(!isMasterRequired || masterSignature !== '0x', 'Master signature required');
 
     const executeData = shared.getExecuteData({

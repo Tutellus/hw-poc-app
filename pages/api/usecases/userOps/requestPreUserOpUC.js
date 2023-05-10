@@ -37,17 +37,17 @@ export async function execute({
     const contractInterface = new ethers.utils.Interface(contract.abi);
     const data = contractInterface.encodeFunctionData(method, params);
 
-    const isMasterRequired = await checkExecuteCheckOwnerUC.execute({
+    const isMasterRequired = !(await checkExecuteCheckOwnerUC.execute({
       contractId: contract._id,
       method,
       params,
       value,
-    });
+    }));
 
     const preUserOp = await preUserOpsRepository.update({
       fields: {
         humanId: human._id,
-        user: user,
+        user,
         target: contract.address,
         data,
         value,

@@ -27,8 +27,23 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
+async function markAsExecuted ({
+  id,
+  receipt,
+}) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'EXECUTED',
+      receipt,
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+};
+
 export {
   update,
   get,
   getOne,
+  markAsExecuted
 };

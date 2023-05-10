@@ -68,6 +68,7 @@ function HumanProvider(props) {
       },
       body: JSON.stringify({
         preUserOpId,
+        user,
       }),
     })
     const { hash } = await response.json()
