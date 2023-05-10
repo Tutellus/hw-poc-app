@@ -18,7 +18,12 @@ export const UserOps = () => {
           userOps.map((userOp, index) => (
             <div className="userOp" key={index}>
               <div>{userOp.nonce}</div>
-              <div>{truncateAddress(userOp.receipt?.transactionHash)}</div>
+              <a
+                style={{ color: 'white' }}
+                href={`https://mumbai.polygonscan.com/tx/${userOp.receipt?.transactionHash}`}
+                target="_blank"
+                rel="noreferrer"
+              >{truncateAddress(userOp.receipt?.transactionHash)}</a>
             </div>
           ))
         )}

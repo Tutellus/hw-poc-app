@@ -1,6 +1,6 @@
-import { config } from '../../config.js'
-import { ethers } from 'ethers'
-import ERC20Upgradeable from '../../abi/ERC20Upgradeable.json'
+const { config } = require('../../config.js')
+const { ethers } = require('ethers')
+const ERC20Upgradeable = require('../../abi/ERC20Upgradeable.json')
 
 export default async function handler(req, res) {
   const { chainId, token, address } = req.body;

@@ -20,7 +20,7 @@ const config = {
     ],
     defaultTimelock: 3600,
     defaultInactivityTime: 7200,
-    projectId: '63d3c3a83d5515sad8bfbsda6d502sd1',
+    projectId: '63d3c3a83asfd551asd5sadsdafd8bfbsda6d502sd1',
   },
   mongo: {
     test: 'mongodb://localhost:27017/smw',
@@ -28,7 +28,7 @@ const config = {
     production: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
   gasPriceMultiplier: 2.5,
-  gasLimitMultiplier: 1.5,
+  gasLimitMultiplier: 2,
 }
 
 module.exports = { config }

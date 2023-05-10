@@ -43,6 +43,7 @@ export async function execute({ preUserOpId, signature, user }) {
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
+    console.log('human.nonce', human.nonce)
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
 

@@ -37,7 +37,7 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   
-  const { address, signMessageFromOwner } = useHuman();
+  const { address } = useHuman();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
 
@@ -49,22 +49,25 @@ function ContractProvider(props) {
   const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getBalance = async () => {
-    if (!address) return
-    setLoadingBalance(true)
-    const response = await fetch('/api/usecases/tokens/getTokenBalanceUC', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chainId: CHAIN_ID,
-        token: TOKEN_ADDRESS,
-        address: address,
-      }),
-    })
-    const { balance: innerBalance } = await response.json()
-    setBalance(innerBalance)
-    setLoadingBalance(false)
+    try {
+      setLoadingBalance(true)
+      const response = await fetch('/api/usecases/tokens/getTokenBalanceUC', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chainId: CHAIN_ID,
+          token: TOKEN_ADDRESS,
+          address: address,
+        }),
+      })
+      const { balance: innerBalance } = await response.json()
+      setBalance(innerBalance)
+      setLoadingBalance(false)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const getContract = async () => {
@@ -259,6 +262,15 @@ function ContractProvider(props) {
   useEffect(() => {
     getContract()
   }, [])
+
+  useEffect(() => {
+    if(!address) return
+    getBalance()
+    const interval = setInterval(() => {
+      getBalance()
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [address])
 
   const memoizedData = useMemo(
     () => ({

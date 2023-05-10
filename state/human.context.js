@@ -129,6 +129,7 @@ function HumanProvider(props) {
       }),
     })
     const { userOp } = await response.json()
+    loadUserOps();
     return userOp
   }
 
@@ -249,14 +250,20 @@ function HumanProvider(props) {
   }
 
   useEffect(() => {
-    loadHumanAddress();
-    loadHuman();
-  }, [user]);
-
-  useEffect(() => {
     loadPreUserOps();
     loadUserOps();
   }, [address]);
+
+  useEffect(() => {
+    loadHumanAddress();
+    loadHuman();
+    const interval = setInterval(() => {
+      loadHuman();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  console.log({ human })
 
   const memoizedData = useMemo(
     () => ({

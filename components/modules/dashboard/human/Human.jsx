@@ -5,7 +5,7 @@ export const Human = () => {
   const { address, human, loadingDeployment, deployHuman } = useHuman();
 
   const isDeploying = loadingDeployment;
-  const isReady = human?.address;
+  const isReady = human?._id;
   const isNotReady = !isDeploying && !isReady;
 
   return (
