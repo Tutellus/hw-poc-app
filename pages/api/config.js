@@ -20,7 +20,7 @@ const config = {
     ],
     defaultTimelock: 3600,
     defaultInactivityTime: 7200,
-    projectId: 'asoijfakd',
+    projectId: 'asoijfadsdsdkd',
   },
   mongo: {
     test: 'mongodb://localhost:27017/gql-humanwallet',

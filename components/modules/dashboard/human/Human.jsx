@@ -5,8 +5,8 @@ import { useState } from "react";
 export const Human = () => {
   const { address, human, loadingDeployment, deployHuman } = useHuman();
   const [extendedAddress, setExtendedAddress] = useState(false);
-
-  const isDeploying = loadingDeployment;
+  
+  const isDeploying = loadingDeployment || human?.status === 'EXECUTED';
   const isReady = !loadingDeployment && human?.status === 'CONFIRMED';
   const isNotReady = !isDeploying && !isReady;
 
