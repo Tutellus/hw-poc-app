@@ -20,15 +20,15 @@ const config = {
     ],
     defaultTimelock: 3600,
     defaultInactivityTime: 7200,
-    projectId: 'c3a83asfd55ww1anjddsd5sadsdafd8',
+    projectId: 'asoijfakd',
   },
   mongo: {
-    test: 'mongodb://localhost:27017/smw',
+    test: 'mongodb://localhost:27017/gql-humanwallet',
     development: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
     production: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
   gasPriceMultiplier: 2.5,
-  gasLimitMultiplier: 2,
+  gasLimitMultiplier: 2.5,
 }
 
 module.exports = { config }

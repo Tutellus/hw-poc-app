@@ -37,8 +37,17 @@ export async function execute({
       return param;
     });
 
+    const stringValue = () => {
+      if (typeof value === 'object') {
+        if (value.type === 'BigNumber') {
+          return ethers.BigNumber.from(value.hex).toString();
+        }
+      }
+      return value;
+    }
+
     const human = await getHumanByUserUC.execute({ user });
-    assert(human, 'Human not found');
+    assert(human && human?.status === 'CONFIRMED', 'Human not found');
 
     const contract = await contractsRepository.getOne({ _id: contractId });
     assert(contract, 'Contract not found');
@@ -51,7 +60,7 @@ export async function execute({
       contractId: contract._id,
       method,
       params: unstructuredParams,
-      value,
+      value: stringValue(),
     }));
 
     let code2fa = null;
@@ -69,7 +78,7 @@ export async function execute({
         user,
         target: contract.address,
         data,
-        value,
+        value: stringValue(),
         isMasterRequired,
         masterSignature: "0x",
         code2fa,

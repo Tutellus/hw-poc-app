@@ -7,7 +7,7 @@ export const Human = () => {
   const [extendedAddress, setExtendedAddress] = useState(false);
 
   const isDeploying = loadingDeployment;
-  const isReady = !loadingDeployment && human?._id;
+  const isReady = !loadingDeployment && human?.status === 'CONFIRMED';
   const isNotReady = !isDeploying && !isReady;
 
   return (

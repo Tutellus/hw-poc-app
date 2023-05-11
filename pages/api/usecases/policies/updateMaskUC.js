@@ -1,6 +1,5 @@
 const { ethers } = require("ethers");
 const { config } = require("../../config");
-const projectsRepository = require("../../repositories/projects");
 const executorInfra = require('../../infrastructure/executor');
 
 const HumanExecutePolicies = require("../../abi/HumanExecutePolicies.json");
@@ -12,19 +11,12 @@ export default async function handler (req, res) {
 }
 
 export async function execute ({
-  projectId,
   chainId,
   address,
   selector,
   mask,
 }) {
   try {
-    const project = await projectsRepository.getOne({ _id: projectId });
-
-    if (!project) {
-      throw new Error('Project not found');
-    }
-    
     const { rpc, executePolicies, factorySigner } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const executor = new ethers.Wallet(factorySigner.kPriv, provider);

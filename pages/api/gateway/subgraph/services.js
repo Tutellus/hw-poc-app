@@ -1,6 +1,10 @@
 // services.js
 const { GraphQLClient } = require('graphql-request');
-const { GET_HUMANS } = require('./queries');
+const {
+  GET_HUMANS,
+  GET_EXECUTIONS,
+  GET_USER_OPERATION_REVERTEDS,
+} = require('./queries');
 
 async function fetcher({ query, variables = null }) {
   try {
@@ -20,6 +24,18 @@ const getHumans = async (variables) => {
   return humans;
 };
 
+const getExecutions = async (variables) => {
+  const { executions = [] } = await fetcher({ query: GET_EXECUTIONS, variables });
+  return executions;
+};
+
+const getUserOperationReverteds = async (variables) => {
+  const { userOperationReverteds = [] } = await fetcher({ query: GET_USER_OPERATION_REVERTEDS, variables });
+  return userOperationReverteds;
+};
+
 module.exports = {
   getHumans,
+  getExecutions,
+  getUserOperationReverteds,
 };

@@ -34,9 +34,9 @@ export async function execute({ preUserOpId, user }) {
       value,
       signature: masterSignature,
     });
-
+    
     const human = await getHumanByAddressUC.execute({ address: humanId });
-    assert(human, 'Human not found');
+    assert(human && human.status === 'CONFIRMED', 'Human not found');
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
@@ -51,6 +51,7 @@ export async function execute({ preUserOpId, user }) {
       entryPoint,
       chainId,
     });
+
     return hash;
   } catch (error) {
     console.error(error)

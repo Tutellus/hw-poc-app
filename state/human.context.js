@@ -286,6 +286,7 @@ function HumanProvider(props) {
     loadHumanAddress();
     loadHuman();
     const interval = setInterval(() => {
+      loadHumanAddress();
       loadHuman();
     }, 5000);
     return () => clearInterval(interval);

@@ -25,10 +25,12 @@ export async function execute({ address }) {
       humansRepository.getOne({ _id: address })
     ]);
     
+    const humanSG = humans[0];
+
     const human = {
-      status: 'NOT_CREATED',
       ...humanDB,
-      ...humans[0],
+      ...humanSG,
+      status: humanSG ? "CONFIRMED" : humanDB.status,
     };
 
     return Object.keys(human).length ? human : null;

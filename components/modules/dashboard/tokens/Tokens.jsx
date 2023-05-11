@@ -11,7 +11,7 @@ export const Tokens = () => {
 
   const [minting, setMinting] = useState(false)
 
-  const canMint = human?._id && !minting;
+  const canMint = human?.status === 'CONFIRMED'
 
   const requestMint = async () => {
     setMinting(true)

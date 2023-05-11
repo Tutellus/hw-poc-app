@@ -8,6 +8,7 @@ const userOpsRepository = require('../../repositories/userOps');
 const shared = require('./shared');
 const { config } = require('../../config');
 const handleUserOpsUC = require('./handleUserOpsUC');
+const estimateUserOpGasUC = require('./estimateUserOpGasUC');
 
 export default async function handler(req, res) {
   const { preUserOpId, signature, user } = req.body;
@@ -39,15 +40,19 @@ export async function execute({ preUserOpId, signature, user }) {
     });
 
     const human = await getHumanByAddressUC.execute({ address: humanId });
-    assert(human, 'Human not found');
+    assert(human && human.status === 'CONFIRMED', 'Human not found');
+
+    const chainId = "0x13881";
+    const { entryPoint } = config[chainId];
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
-
-    const chainId = "0x13881";
-    const { entryPoint } = config[chainId];
+    userOpData.humanId = human._id;
+    userOpData.user = user;
+    userOpData.chainId = chainId;
+    userOpData.preUserOpId = preUserOpId;
 
     const hash = shared.getUserOpHash({
       userOpData,
@@ -61,15 +66,11 @@ export async function execute({ preUserOpId, signature, user }) {
 
     assert(recoveredAddress.toLowerCase() === owner.toLowerCase(), 'Invalid signature');
 
+    userOpData.signature = signature;
+    userOpData.callGasLimit = await estimateUserOpGasUC.execute({ userOp: userOpData });
 
     const userOp = await userOpsRepository.update({
-      fields: {
-        ...userOpData,
-        preUserOpId: preUserOp._id,
-        humanId,
-        user,
-        signature,
-      }
+      fields: userOpData,
     });
 
     await preUserOpsRepository.markAsProcessed(preUserOpId);

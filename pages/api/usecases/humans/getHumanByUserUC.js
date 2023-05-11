@@ -31,9 +31,12 @@ export async function execute({ user }) {
       humansRepository.getOne({ email, projectId })
     ]);
     
+    const humanSG = humans[0];
+
     const human = {
       ...humanDB,
-      ...humans[0],
+      ...humanSG,
+      status: humanSG ? "CONFIRMED" : humanDB.status,
     };
 
     return Object.keys(human).length ? human : null;
