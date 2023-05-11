@@ -139,7 +139,7 @@ function ContractProvider(props) {
   const checkContractData = async () => {
     try {
       const method = 'mint';
-      const params = [address, ethers.constants.One];
+      const params = [ethers.constants.AddressZero, ethers.constants.One];
 
       const result = await fetch('/api/usecases/policies/checkContractDataUC', {
         method: 'POST',

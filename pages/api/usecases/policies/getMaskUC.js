@@ -1,8 +1,6 @@
-import { ethers } from 'ethers';
-import { config } from '../../config';
-import { getOne as getContract } from '../../repositories/contracts';
-
-import HumanExecutePolicies from '../../abi/HumanExecutePolicies.json';
+const { ethers } = require("ethers");
+const { config } = require("../../config");
+const HumanExecutePolicies = require("../../abi/HumanExecutePolicies.json");
 
 export default async function handler(req, res) {
   try {

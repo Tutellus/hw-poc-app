@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const { config } = require('../../config');
-const { getOne: getContract } = require('../../repositories/contracts');
+const contractsRepository = require('../../repositories/contracts');
 const HumanExecutePolicies = require( '../../abi/HumanExecutePolicies.json');
 
 export default async function handler(req, res) {
@@ -24,8 +24,8 @@ export async function execute({
   params,
 }) {
   try {
-    
-    const contract = await getContract({ _id: contractId });
+  
+    const contract = await contractsRepository.getOne({ _id: contractId });
 
     if (!contract) {
       throw new Error('Contract not found');
