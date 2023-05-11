@@ -52,8 +52,6 @@ export async function execute({
         value,
       );
 
-      console.log('executeCheckOwner', { result })
-  
     return result;
   } catch (error) {
     console.error(error)

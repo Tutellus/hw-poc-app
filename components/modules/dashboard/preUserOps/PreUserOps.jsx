@@ -3,7 +3,7 @@ import { PreUserOp } from "./PreUserOp";
 
 export const PreUserOps = () => {
 
-  const { preUserOps, confirmPreUserOp, signAndSubmitPreUserOp } = useHuman();
+  const { preUserOps, processing, confirmPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
   const confirmSignAndSubmitFn = async (preUserOp) => {
     try {
@@ -30,6 +30,7 @@ export const PreUserOps = () => {
             <PreUserOp
               key={index}
               preUserOp={preUserOp}
+              canSign={!processing}
               confirmSignAndSubmitFn={confirmSignAndSubmitFn}
               signAndSubmitFn={signAndSubmitPreUserOp}
             />

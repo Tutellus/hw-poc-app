@@ -4,6 +4,7 @@ const { ethers } = require('ethers');
 const { config } = require('../../config');
 const { abi: HumanEntryPointABI } = require('../../abi/HumanEntryPoint.json');
 const executorInfra = require('../../infrastructure/executor');
+const userOpsRepository = require('../../repositories/userOps');
 
 export async function execute({ userOps }) {
   try {
@@ -21,6 +22,11 @@ export async function execute({ userOps }) {
       value: 0,
       signer,
     });
+
+    userOps.forEach(async (userOp) => {
+      userOpsRepository.markAsExecuted({ id: userOp._id, receipt });
+    });
+
     return receipt;
   } catch (error) {
     console.error(error)

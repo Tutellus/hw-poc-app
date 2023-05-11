@@ -80,14 +80,9 @@ export async function execute({ preUserOpId, signature, user }) {
       },
     });
 
-    const receipt = await handleUserOpsUC.execute({ userOps: [userOp] })
+    handleUserOpsUC.execute({ userOps: [userOp] })
 
-    const userOpResult = await userOpsRepository.markAsExecuted({
-      id: userOp._id,
-      receipt,
-    });
-
-    return userOpResult;
+    return userOp;
   } catch (error) {
     console.error(error)
     throw error;

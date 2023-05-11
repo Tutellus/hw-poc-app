@@ -54,17 +54,13 @@ export const Tokens = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    background: 'red',
+                    // background: 'red',
                   }}
                   disabled={!canMint}
                   onClick={requestMint}
                 >
-                  {minting ? 'Processing...' : 'Mint'}
-                  <ExclamationTriangleIcon style={{
-                    marginLeft: '8px',
-                    height: '20px',
-                    width: '20px',
-                  }} />
+                  {minting ? 'Processing...' : 'Mint 5 tokens'}
+
                 </button>
               </div>
             : <button

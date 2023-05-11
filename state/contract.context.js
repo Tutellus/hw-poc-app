@@ -253,15 +253,21 @@ function ContractProvider(props) {
   }
   
   useEffect(() => {
-    if (contract) {
-      checkContractAddress();
-      checkContractData();
-    }
-  }, [contract])
-
-  useEffect(() => {
     getContract()
   }, [])
+
+  useEffect(() => {
+    if(!contract) return
+    checkContractAddress()
+    checkContractData()
+
+    const interval = setInterval(() => {
+      checkContractAddress()
+      checkContractData()
+    }
+    , 5000);
+    return () => clearInterval(interval);
+  }, [contract])
 
   useEffect(() => {
     if(!address) return

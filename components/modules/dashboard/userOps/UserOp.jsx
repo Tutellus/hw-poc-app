@@ -23,15 +23,17 @@ export const UserOp = ({
           <div>{userOp._id}</div>
           <div>{userOp.preUserOpId}</div>
           <div>{userOp.nonce}</div>
-          <a
-            style={{ color: 'white' }}
-            href={explorerLink({
-              type: 'tx',
-              value: userOp.receipt?.transactionHash,
-            })}
-            target="_blank"
-            rel="noreferrer"
-          >{truncateHash(userOp.receipt?.transactionHash)}</a>
+          {userOp.receipt?.transactionHash ? (
+            <a
+              style={{ color: 'white' }}
+              href={explorerLink({
+                type: 'tx',
+                value: userOp.receipt?.transactionHash,
+              })}
+              target="_blank"
+              rel="noreferrer"
+            >{truncateHash(userOp.receipt?.transactionHash)}</a>
+          ) : <div>----</div>}
           <div>{userOp.status}</div>
         </div>
       </div>

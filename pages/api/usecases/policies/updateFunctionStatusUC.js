@@ -1,9 +1,9 @@
-import { ethers } from "ethers";
-import { config } from "../../config";
-import { getOne as getProject } from "../../repositories/projects";
-import { execute as executeTransaction } from '../../infrastructure/executor';
+const { ethers } = require("ethers");
+const { config } = require("../../config");
+const projectsRepository = require("../../repositories/projects");
+const executorInfra = require('../../infrastructure/executor');
 
-import HumanExecutePolicies from "../../abi/HumanExecutePolicies.json"; 
+const HumanExecutePolicies = require("../../abi/HumanExecutePolicies.json");
 
 export default async function handler (req, res) {
   const { projectId, chainId, address, selectorAndParams, status } = req.body;
@@ -19,19 +19,18 @@ export async function execute ({
   status,
 }) {
   try {
-    const project = await getProject({ _id: projectId });
+    const project = await projectsRepository.getOne({ _id: projectId });
 
     if (!project) {
       throw new Error('Project not found');
     }
     
-    const { executorKey } = project;
-    const { rpc, executePolicies } = config[chainId];
+    const { rpc, executePolicies, factorySigner } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    const executor = new ethers.Wallet(executorKey, provider);
+    const executor = new ethers.Wallet(factorySigner.kPriv, provider);
     const executePoliciesInterface = new ethers.utils.Interface(HumanExecutePolicies.abi);
 
-    const receipt = await executeTransaction({
+    const receipt = await executorInfra.execute({
       to: executePolicies,
       data: executePoliciesInterface
         .encodeFunctionData(

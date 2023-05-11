@@ -7,6 +7,7 @@ const HumanContext = createContext({
   human: null,
   preUserOps: [],
   userOps: [],
+  processing: false,
   loadingHuman: false,
   loadingAddress: false,
   loadingPreUserOps: false,
@@ -46,6 +47,7 @@ function HumanProvider(props) {
   const [userOps, setUserOps] = useState([]);
 
   // loadings
+  const [processing, setProcessing] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [loadingHuman, setLoadingHuman] = useState(false);
   const [loadingDeployment, setLoadingDeployment] = useState(false);
@@ -111,7 +113,6 @@ function HumanProvider(props) {
       }),
     })
     const { preUserOp } = await response.json()
-    console.log({ preUserOp })
     loadPreUserOps();
     return preUserOp
   }
@@ -255,6 +256,7 @@ function HumanProvider(props) {
   const signAndSubmitPreUserOp = async ({
     preUserOpId,
   }) => {
+    setProcessing(true)
     // 2. gets hash of preUserOp if is valid
     const hash = await getPreUserOpHash({
       preUserOpId,
@@ -266,6 +268,8 @@ function HumanProvider(props) {
       preUserOpId,
       signature,
     })
+    await loadPreUserOps();
+    setProcessing(false)
   }
 
   useEffect(() => {
@@ -293,6 +297,7 @@ function HumanProvider(props) {
       human,
       preUserOps,
       userOps,
+      processing,
       loadingAddress,
       loadingHuman,
       loadingDeployment,
@@ -306,7 +311,7 @@ function HumanProvider(props) {
       confirmPreUserOp,
       signAndSubmitPreUserOp,
     }),
-    [address, human, preUserOps, userOps, loadingAddress, loadingHuman, loadingDeployment, loadingPreUserOps, loadingUserOps]
+    [address, human, preUserOps, userOps, processing, loadingAddress, loadingHuman, loadingDeployment, loadingPreUserOps, loadingUserOps]
   );
 
   return <HumanContext.Provider value={memoizedData} {...props} />;

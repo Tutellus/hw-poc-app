@@ -18,7 +18,7 @@ export const Contract = () => {
     <div className="box" style={{
       gridColumn: '1 / 5',
     }}>
-      <div className="title">My contract</div>
+      <div className="title">Execution policies</div>
       <div className="data">
         <div
           style={{
@@ -31,12 +31,13 @@ export const Contract = () => {
           {contract
             ? <div style={{
                 display: 'flex',
+                flexDirection: 'column',
                 gap: '8px',
                 alignItems: 'center',
             }}>
-              {fullApprovedOwner ? <div>FULL APPROVED</div>
-              : functionApprovedOwner ? <div>FUNCTION APPROVED</div>
-              : <div>NOT APPROVED</div>
+              {fullApprovedOwner ? <div>Contract completely approved</div>
+              : functionApprovedOwner ? <div>Mint function approved</div>
+              : <div>Contract not approved</div>
               }
               {fullApprovedOwner ?
                 <button
@@ -69,7 +70,6 @@ export const Contract = () => {
                 {loadingContract ? 'Loading...' : 'Load contract'}
               </button>
           }
-          {contract && updatingPolicies ? <div>Updating policies...</div> : null}
         </div>
       </div>
     </div>

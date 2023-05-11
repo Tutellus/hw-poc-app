@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 
 export const PreUserOp = ({
   preUserOp,
+  canSign,
   confirmSignAndSubmitFn,
   signAndSubmitFn,
 }) => {
@@ -73,7 +74,7 @@ export const PreUserOp = ({
 
     {isSignable && 
     <div className="block">
-      <button onClick={() => signAndSubmitFn({
+      <button disabled={!canSign} onClick={() => signAndSubmitFn({
         preUserOpId: preUserOp._id,
       })}
       > Sign </button>

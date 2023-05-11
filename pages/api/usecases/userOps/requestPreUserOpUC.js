@@ -77,7 +77,7 @@ export async function execute({
     });
 
     if (!isMasterRequired) {
-      result = await preUserOpsRepository.markAsSignable(preUserOp._id);
+      result = await preUserOpsRepository.markAsSignable(result._id);
     }
 
     return result;
