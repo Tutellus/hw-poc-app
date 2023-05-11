@@ -53,9 +53,31 @@ async function getOne(filter) {
   return sharedGetOne(COLLECTION, filter);
 };
 
+async function markAsProcessed (preUserOpId) {
+  const filter = { _id: preUserOpId };
+  const data = {
+    $set: {
+      status: 'PROCESSED',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+};
+
+async function markAsSignable(preUserOpId) {
+  const filter = { _id: preUserOpId };
+  const data = {
+    $set: {
+      status: 'SIGNABLE',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+};
+
 export {
   update,
   getWithParams,
   get,
   getOne,
+  markAsProcessed,
+  markAsSignable,
 };

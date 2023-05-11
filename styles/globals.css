@@ -1,28 +1,29 @@
 :root {
-  --color-primary: #0070f3;
-  --color-primary-light: #0090ff;
+  --color-primary: #18b600;
+  --color-primary-light: rgb(30, 225, 0);
   --color-secondary: #ff0070;
   --color-secondary-light: #ff0090;
 
-  --color-background: #232323;
-  --color-background-light: #3d3d3d;
+  --color-background: #000000;
+  --color-background-mid-light: #363636;
+  --color-background-light: #1f1f1f;
   --color-text: rgb(255, 255, 255);
   --color-text-light: rgb(189, 189, 189);
   --color-text-lighter: rgb(182, 182, 182);
 
-  --color-border: #eaeaea;
+  --color-border: #128500;
   --color-border-light: #686868;
 
   --color-white: #fff;
   --color-black: #000;
 
-  --color-success: #28a745;
+  --color-success: #18b600;
   --color-error: #dc3545;
   --color-warning: #ffc107;
   --color-info: #17a2b8;
 
-  --color-link: #0070f3;
-  --color-link-hover: #0050b3;
+  --color-link: #18b600;
+  --color-link-hover: #74b300;
 
   --color-shadow: rgba(0, 0, 0, 0.1);
 
@@ -55,6 +56,7 @@ button {
   cursor: pointer;
   opacity: 1;
   transition: opacity 0.1s ease-in-out;
+  width: fit-content;
 }
 
 button:hover {
@@ -105,18 +107,18 @@ h2 {
 
 .layout {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   align-items: center;
   width: 100vw;
 }
 
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-items: center;
   margin: 5rem;
   width: 100%;
-  max-width: 800px;
+  max-width: 1600px;
   gap: 16px;
 }
 
@@ -149,6 +151,7 @@ h2 {
   gap: 10px;
   margin: 8px;
   font-size: 1.1rem;
+  width: 80%;
 }
 
 table {
@@ -210,17 +213,44 @@ input::placeholder {
 
 .proposals {
   display: flex;
-  grid-column: span 2;
   gap: 16px;
   width: 100%;
 }
 
 .proposal {
+  justify-content: start;
+  background-color: var(--color-background-mid-light);
   border: 2px solid var(--color-border);
   padding: 10px;
   border-radius: 6px;
   gap: 5px;
   margin: 10px;
+  width: 100%;
+}
+
+.proposal .block {
+  display: flex;
+  padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
+  width: 100%;
+}
+
+.proposal .keys {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-primary-light);
+  padding: 10px;
+  gap: 10px;
+}
+
+.proposal .values {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  padding: 10px;
+  gap: 10px;
 }
 
 .userOp {

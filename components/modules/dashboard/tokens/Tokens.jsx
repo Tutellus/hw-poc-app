@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useContract } from "@/state/contract.context";
-import ShieldCheckIcon from "@heroicons/react/24/outline/ShieldCheckIcon";
 import ExclamationTriangleIcon from "@heroicons/react/24/outline/ExclamationTriangleIcon";
 import { useHuman } from "@/state/human.context";
 import { ethers } from "ethers";
@@ -8,7 +7,7 @@ import { ethers } from "ethers";
 export const Tokens = () => {
 
   const { loadingContract, contract, balance, updateContract } = useContract();
-  const { address, requestPreUserOp, getPreUserOpHash, submitUserOp, signMessageFromOwner } = useHuman();
+  const { address, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
   const [minting, setMinting] = useState(false)
 
@@ -24,34 +23,17 @@ export const Tokens = () => {
       value: ethers.utils.parseEther('0'),
     })
 
-    if (!preUserOp.isMasterRequired) {
-      // 2. gets hash of preUserOp if is valid
-      const hash = await getPreUserOpHash({
-        preUserOpId: preUserOp._id
-      })
-      // 3. signs hash with owner account (includes master signature if required)
-      const signature = await signMessageFromOwner(hash)
-      // 4. submits preUserOp with signature
-      const userOp = await submitUserOp({
+    if (preUserOp.status === 'SIGNABLE') {
+      signAndSubmitPreUserOp({
         preUserOpId: preUserOp._id,
-        signature,
       })
-      console.log({userOp})
     }
 
     setMinting(false)
   }
 
-  // const executeMintAndTransfer = async () => {
-  //   setMinting(true)
-  //   await mintAndTransfer()
-  //   setMinting(false)
-  // }
-
   return (
-    <div className="box" style={{
-      gridColumn: '1 / 3',
-    }}>
+    <div className="box">
       <div className="title">Token Interaction</div>
       <div className="data">
         <div>My balance: {balance}</div>
@@ -72,34 +54,18 @@ export const Tokens = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
+                    background: 'red',
                   }}
                   disabled={!canMint}
                   onClick={requestMint}
                 >
                   {minting ? 'Processing...' : 'Mint'}
-                  <ShieldCheckIcon style={{
-                    marginLeft: '8px',
-                    height: '20px',
-                    width: '20px',
-                  }} />
-                  
-                </button>
-                {/* <button
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: 'red',
-                  }}
-                  disabled={!canMint}
-                  onClick={executeMintAndTransfer}
-                >
-                  {minting ? 'Processing...' : 'Mint and transfer'}
                   <ExclamationTriangleIcon style={{
                     marginLeft: '8px',
                     height: '20px',
                     width: '20px',
                   }} />
-                </button> */}
+                </button>
               </div>
             : <button
                 disabled={loadingContract}

@@ -43,7 +43,6 @@ export async function execute({ preUserOpId, signature, user }) {
 
     const userOpData = shared.getEmptyUserOperation();
     userOpData.sender = human.address;
-    console.log('human.nonce', human.nonce)
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
 
@@ -62,6 +61,7 @@ export async function execute({ preUserOpId, signature, user }) {
 
     assert(recoveredAddress.toLowerCase() === owner.toLowerCase(), 'Invalid signature');
 
+
     const userOp = await userOpsRepository.update({
       fields: {
         ...userOpData,
@@ -70,6 +70,14 @@ export async function execute({ preUserOpId, signature, user }) {
         user,
         signature,
       }
+    });
+
+    await preUserOpsRepository.markAsProcessed(preUserOpId);
+    await preUserOpsRepository.update({
+      id: preUserOpId,
+      fields: {
+        userOpId: userOp._id,
+      },
     });
 
     const receipt = await handleUserOpsUC.execute({ userOps: [userOp] })

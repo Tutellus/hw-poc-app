@@ -14,17 +14,17 @@ export const Dashboard = () => {
         {/* my wallet */}
         <Human/>
 
-        {/* your contract */}
-        <Contract/>
-
         {/* your tokens */}
         <Tokens/>
+
+        {/* your contract */}
+        <Contract/>
 
         {/* my external wallet */}
         <PreUserOps/>
     
         {/* owner proposals list */}
-        {<UserOps/>}
+        <UserOps/>
         
   </div>
   );

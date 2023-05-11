@@ -1,9 +1,9 @@
 import { useHuman } from "@/state/human.context";
-import { truncateAddress } from "@/utils/address";
+import { PreUserOp } from "./PreUserOp";
 
 export const PreUserOps = () => {
 
-  const { loadingPreUserOps, preUserOps, confirmPreUserOp, getPreUserOpHash, signMessageFromOwner, submitUserOp } = useHuman();
+  const { preUserOps, confirmPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
   const confirmSignAndSubmitFn = async (preUserOp) => {
     try {
@@ -11,15 +11,9 @@ export const PreUserOps = () => {
         preUserOpId: preUserOp._id,
         code: preUserOp.code2fa,
       });
-      const hash = await getPreUserOpHash({
+      await signAndSubmitPreUserOp({
         preUserOpId: innerPreUserOp._id,
       })
-      const signature = await signMessageFromOwner(hash)
-      const userOp = await submitUserOp({
-        preUserOpId: innerPreUserOp._id,
-        signature,
-      })
-      console.log({ userOp })
     } catch (error) {
       console.error(error)
     }
@@ -31,25 +25,16 @@ export const PreUserOps = () => {
     }}>
       <div className="title">Proposals</div>
       <div className="data">
-
-        {loadingPreUserOps && <div> Loading PreUserOps... </div>}
-
         {preUserOps.length > 0 && (
           preUserOps.map((preUserOp, index) => (
-            <div className="proposal" key={index}>
-              <div className="proposal-data">
-                <div>{truncateAddress(preUserOp.target)}</div>
-                <div>{preUserOp.method}</div>
-                <div>{JSON.stringify(preUserOp.params)}</div>
-              </div>
-              {preUserOp.isMasterRequired && preUserOp.masterSignature === '0x' && 
-                <button onClick={() => confirmSignAndSubmitFn(preUserOp)}
-                > Verify </button>
-              }
-            </div>
+            <PreUserOp
+              key={index}
+              preUserOp={preUserOp}
+              confirmSignAndSubmitFn={confirmSignAndSubmitFn}
+              signAndSubmitFn={signAndSubmitPreUserOp}
+            />
           ))
         )}
-
       </div>
     </div>
   )

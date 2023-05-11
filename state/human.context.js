@@ -30,7 +30,10 @@ const HumanContext = createContext({
   confirmPreUserOp: async({
     preUserOpId,
     code,
-  }) => {}
+  }) => {},
+  signAndSubmitPreUserOp: async ({
+    preUserOpId,
+  }) => {},
 });
 
 function HumanProvider(props) {
@@ -249,9 +252,30 @@ function HumanProvider(props) {
     }
   }
 
+  const signAndSubmitPreUserOp = async ({
+    preUserOpId,
+  }) => {
+    // 2. gets hash of preUserOp if is valid
+    const hash = await getPreUserOpHash({
+      preUserOpId,
+    })
+    // 3. signs hash with owner account (includes master signature if required)
+    const signature = await signMessageFromOwner(hash)
+    // 4. submits preUserOp with signature
+    await submitUserOp({
+      preUserOpId,
+      signature,
+    })
+  }
+
   useEffect(() => {
     loadPreUserOps();
     loadUserOps();
+    const interval = setInterval(() => {
+      loadPreUserOps();
+      loadUserOps();
+    }, 5000);
+    return () => clearInterval(interval);
   }, [address]);
 
   useEffect(() => {
@@ -262,8 +286,6 @@ function HumanProvider(props) {
     }, 5000);
     return () => clearInterval(interval);
   }, [user]);
-
-  console.log({ human })
 
   const memoizedData = useMemo(
     () => ({
@@ -282,6 +304,7 @@ function HumanProvider(props) {
       getPreUserOpHash,
       submitUserOp,
       confirmPreUserOp,
+      signAndSubmitPreUserOp,
     }),
     [address, human, preUserOps, userOps, loadingAddress, loadingHuman, loadingDeployment, loadingPreUserOps, loadingUserOps]
   );

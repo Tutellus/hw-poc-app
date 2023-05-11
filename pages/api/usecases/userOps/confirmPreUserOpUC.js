@@ -37,11 +37,12 @@ export async function execute({ preUserOpId, code, user }) {
       masterSigner,
     });
 
-    const preUserOpResult = await preUserOpsRepository.update({ id: preUserOpId, fields: {
+    await preUserOpsRepository.update({ id: preUserOpId, fields: {
       masterSignature,
     }});
 
-    return preUserOpResult;
+    const result = await preUserOpsRepository.markAsSignable(preUserOpId);
+    return result;
   } catch (error) {
     console.error(error)
     throw error;

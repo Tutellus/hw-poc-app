@@ -27,6 +27,16 @@ export async function execute({
   value = '0',
 }) {
   try {
+
+    const unstructuredParams = params.map((param) => {
+      if (typeof param === 'object') {
+        if (param.type === 'BigNumber') {
+          return ethers.BigNumber.from(param.hex).toString();
+        }
+      }
+      return param;
+    });
+
     const human = await getHumanByUserUC.execute({ user });
     assert(human, 'Human not found');
 
@@ -35,12 +45,12 @@ export async function execute({
     assert(contract.status !== 'LOCKED', 'Contract locked');
 
     const contractInterface = new ethers.utils.Interface(contract.abi);
-    const data = contractInterface.encodeFunctionData(method, params);
+    const data = contractInterface.encodeFunctionData(method, unstructuredParams);
 
     const isMasterRequired = !(await checkExecuteCheckOwnerUC.execute({
       contractId: contract._id,
       method,
-      params,
+      params: unstructuredParams,
       value,
     }));
 
@@ -50,12 +60,12 @@ export async function execute({
       code2fa = '123456';
     }
 
-    const preUserOp = await preUserOpsRepository.update({
+    let result = await preUserOpsRepository.update({
       fields: {
         humanId: human._id,
         contractId,
         method,
-        params,
+        params: unstructuredParams,
         user,
         target: contract.address,
         data,
@@ -66,7 +76,11 @@ export async function execute({
       },
     });
 
-    return preUserOp;
+    if (!isMasterRequired) {
+      result = await preUserOpsRepository.markAsSignable(preUserOp._id);
+    }
+
+    return result;
   } catch (error) {
     console.error(error)
     throw error;

@@ -2,12 +2,33 @@ const compareAddresses = (a, b) => {
   return a.toLowerCase() === b.toLowerCase()
 }
 
-const truncateAddress = (address = '', chars = 6) => {
-  const parsed = address;
-  return parsed.slice(0, chars+2).concat('...').concat(parsed.slice(-chars))
+const explorerLink = ({
+  value,
+  type = 'address',
+}) => {
+  return `https://mumbai.polygonscan.com/${type}/${value}`
+}
+
+const truncateAddress = ({
+  address = '',
+  chars = 8,
+  stringify = false,
+  extend = false,
+}) => {
+  const value = address.slice(2, chars+2).toUpperCase();
+  if (stringify) return value;
+  return (
+    <a
+      style={{ color: 'white' }}
+      href={explorerLink({ value: address })}
+      target="_blank"
+      rel="noopener noreferrer"
+    >{extend ? address : value}</a>
+  )
 }
 
 export {
   compareAddresses,
   truncateAddress,
+  explorerLink,
 }

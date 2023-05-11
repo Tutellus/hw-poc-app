@@ -16,7 +16,7 @@ export const Contract = () => {
 
   return (
     <div className="box" style={{
-      gridColumn: '1 / 3',
+      gridColumn: '1 / 5',
     }}>
       <div className="title">My contract</div>
       <div className="data">
