@@ -5,7 +5,7 @@ export const UserOp = ({
 }) => {
 
   const truncateHash = (hash) => {
-    if (!hash) return ''
+    if (!hash) return '----'
     return hash.slice(0, 10) + '...' + hash.slice(-8)
   }
 

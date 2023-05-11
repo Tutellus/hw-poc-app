@@ -20,7 +20,7 @@ const config = {
     ],
     defaultTimelock: 3600,
     defaultInactivityTime: 7200,
-    projectId: 'c3a83asfd55ww1asd5sadsdafd8bfbsda6d502sd1',
+    projectId: 'c3a83asfd55ww1addsd5sadsdafd8bfbsda6d502sd1',
   },
   mongo: {
     test: 'mongodb://localhost:27017/smw',

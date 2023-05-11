@@ -13,6 +13,7 @@ const Web3AuthContext = createContext({
   web3Authprovider: null,
   web3Provider: null,
   user: null,
+  loading: false,
   loggingIn: false,
   externalAccount: null,
   logIn: () => {},
@@ -26,6 +27,7 @@ function Web3AuthProvider(props) {
   const [web3Authprovider, setWeb3AuthProvider] = useState(null);
   const [web3Provider, setWeb3Provider] = useState(null);
 
+  const [loading, setLoading] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [user, setUser] = useState(null);
   const [externalAccount, setExternalAccount] = useState(null);
@@ -100,6 +102,7 @@ function Web3AuthProvider(props) {
 
   const init = async () => {
     try {
+      setLoading(true);
       const w3a = new Web3Auth({
         clientId: "BFRcGKRLQsiohDLtVSWAtXOdKsk55U8DcEsju4Zv1Wu5-OMrJ6q3lz4HIbPU1CwtcyE-osWAFNxWWooTkxYTDmk",
         chainConfig: {
@@ -110,7 +113,8 @@ function Web3AuthProvider(props) {
       await w3a.initModal();
       setWeb3Auth(w3a);
       setWeb3AuthProvider(w3a.provider);
-      getUserInfo(w3a);
+      await getUserInfo(w3a);
+      setLoading(false);
     } catch (e) {
       console.error(e);
     }
@@ -137,6 +141,7 @@ function Web3AuthProvider(props) {
       web3Auth,
       web3Authprovider,
       web3Provider,
+      loading,
       loggingIn,
       user,
       externalAccount,
@@ -144,7 +149,7 @@ function Web3AuthProvider(props) {
       logOut,
       redirect,
     }),
-    [web3Auth, web3Authprovider, loggingIn, user, externalAccount]
+    [web3Auth, web3Authprovider, loading, loggingIn, user, externalAccount]
   );
 
   return <Web3AuthContext.Provider value={memoizedData} {...props} />;
