@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useContract } from "@/state/contract.context";
-import ExclamationTriangleIcon from "@heroicons/react/24/outline/ExclamationTriangleIcon";
 import { useHuman } from "@/state/human.context";
 import { ethers } from "ethers";
 
