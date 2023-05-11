@@ -18,6 +18,7 @@ export const UserOp = ({
           <div>Nonce</div>
           <div>Hash</div>
           <div>Status</div>
+          <div>Date</div>
         </div>
         <div className="values">
           <div>{userOp._id}</div>
@@ -35,6 +36,7 @@ export const UserOp = ({
             >{truncateHash(userOp.receipt?.transactionHash)}</a>
           ) : <div>----</div>}
           <div>{userOp.status}</div>
+          <div>{userOp.createdAt.toString()}</div>
         </div>
       </div>
   </div>

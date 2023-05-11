@@ -30,6 +30,11 @@ export async function execute({ userOps }) {
     return receipt;
   } catch (error) {
     console.error(error)
+
+    userOps.forEach(async (userOp) => {
+      userOpsRepository.markAsFailed(userOp._id);
+    });
+
     throw error;
   }
 }

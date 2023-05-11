@@ -9,7 +9,7 @@ export const Dashboard = () => {
   return (
     <div className="dashboard">
         {/* my email */}
-        {<Account/>}
+        <Account/>
 
         {/* my wallet */}
         <Human/>

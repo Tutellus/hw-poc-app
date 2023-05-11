@@ -43,23 +43,23 @@ export const Contract = () => {
                 <button
                   disabled={updatingPolicies}
                   onClick={() => updateAddressStatus(false)}
-                >Set full approve FALSE</button>
+                >Revoke</button>
                 :
                 functionApprovedOwner ?
                 <button
                   disabled={updatingPolicies}
                   onClick={() => updateFunctionStatus(false)}
-                >Set function approve FALSE</button>
+                >Revoke</button>
                 : <div>
                   <button
                     disabled={updatingPolicies}
                     onClick={() => updateAddressStatus(true)}
-                  >Set full approve TRUE</button>
+                  >Approve contract</button>
                   <> </>
                   <button
                     disabled={updatingPolicies}
                     onClick={() => updateFunctionStatus(true)}
-                  >Set function approve TRUE</button>
+                  >Approve mint function</button>
                 </div>
               }
               </div>

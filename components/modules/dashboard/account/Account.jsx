@@ -4,13 +4,11 @@ export const Account = () => {
 
   const { user, logOut } = useWeb3Auth()
 
-  if (!user) return null
-
   return (
     <div className="box">
       <div className="title">My account</div>
       <div className="data">
-        {user.email}
+        {user?.email || 'No user'}
         <button onClick={logOut}>Logout</button>
       </div>
     </div>

@@ -7,11 +7,11 @@ import { ethers } from "ethers";
 export const Tokens = () => {
 
   const { loadingContract, contract, balance, updateContract } = useContract();
-  const { address, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
+  const { address, human, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
   const [minting, setMinting] = useState(false)
 
-  const canMint = !minting;
+  const canMint = human?._id && !minting;
 
   const requestMint = async () => {
     setMinting(true)
@@ -54,7 +54,6 @@ export const Tokens = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    // background: 'red',
                   }}
                   disabled={!canMint}
                   onClick={requestMint}

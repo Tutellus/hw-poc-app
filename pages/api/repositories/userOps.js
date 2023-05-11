@@ -67,10 +67,22 @@ async function markAsExecuted ({
   return updateOne(COLLECTION, filter, data)
 };
 
+async function markAsFailed (id) {
+  const filter = { _id: id };
+  const data = {
+    $set: {
+      status: 'FAILED',
+    },
+  };
+  return updateOne(COLLECTION, filter, data)
+};
+
+
 export {
   update,
   getWithParams,
   get,
   getOne,
-  markAsExecuted
+  markAsExecuted,
+  markAsFailed,
 };

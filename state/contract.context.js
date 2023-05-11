@@ -267,7 +267,7 @@ function ContractProvider(props) {
     }
     , 5000);
     return () => clearInterval(interval);
-  }, [contract])
+  }, [contract, updatingPolicies])
 
   useEffect(() => {
     if(!address) return
