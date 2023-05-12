@@ -1,11 +1,13 @@
-import Head from "next/head";
-import { TopBar } from "../modules/TopBar";
+import { Modal } from "../modules/modal/Modal";
 
 export const Layout = ({ children }) => {
   return (
-    <div className="layout">
-      <TopBar></TopBar>
-      {children}
-    </div>
+    <>
+      <Modal/>
+      <div className="layout">
+        {children}
+      </div>
+    </>
+
   )
 };

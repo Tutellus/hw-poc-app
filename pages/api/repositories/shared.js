@@ -1,6 +1,7 @@
-import mongoDB from '../infrastructure/mongo';
+const { config } = require('../config');
+const mongoDB = require('../infrastructure/mongo');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = config['mongo'][process.env.NEXT_PUBLIC_ENV];
 
 const composePaginationPipeline = ({
   offset = 0,
@@ -119,32 +120,44 @@ async function searchPaginated({ collection, pipeline = [], pagination = {} }) {
 }
 
 async function search(collection, pipeline) {
+  try {
+    const result = await mongoDB({
+      mongoUri,
+    }).aggregate(collection, pipeline);
+  
+    return result;
+  } catch (error) {
+    return [];
+  }
 
-  const result = await mongoDB({
-    mongoUri,
-  }).aggregate(collection, pipeline);
-
-  return result;
 }
 
 async function updateOne(collection, filter, data) {
+  try {
+    const result = await mongoDB({
+      mongoUri,
+    }).updateOne(collection, filter, data);
+  
+    return result;
+  } catch (error) {
+    return null;
+  }
 
-  const result = await mongoDB({
-    mongoUri,
-  }).updateOne(collection, filter, data);
-
-  return result;
 }
 
 async function getOne(collection, filter) {
+  try {
+    const pipeline = [
+      { $match: filter },
+    ];
+  
+    const result = await searchFirst(collection, pipeline);
+  
+    return result;
+  } catch (error) {
+    return null;
+  }
 
-  const pipeline = [
-    { $match: filter },
-  ];
-
-  const result = await searchFirst(collection, pipeline);
-
-  return result;
 }
 
 async function deleteOne(collection, filter) {
@@ -189,7 +202,7 @@ const composeBasicOrMatch = ({ fields, search }) => { // eslint-disable-line no-
   ];
 };
 
-export {
+module.exports = {
   search,
   searchFirst,
   searchPaginated,

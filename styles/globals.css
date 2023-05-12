@@ -1,41 +1,48 @@
 :root {
-  --color-primary: #0070f3;
-  --color-primary-light: #0090ff;
+  --color-primary: #18b600;
+  --color-primary-light: rgb(30, 225, 0);
   --color-secondary: #ff0070;
   --color-secondary-light: #ff0090;
 
-  --color-background: #232323;
-  --color-background-light: #3d3d3d;
+  --color-background: #000000;
+  --color-background-mid-light: #363636;
+  --color-background-light: #1f1f1f;
   --color-text: rgb(255, 255, 255);
   --color-text-light: rgb(189, 189, 189);
-  --color-text-lighter: #999;
+  --color-text-lighter: rgb(182, 182, 182);
 
-  --color-border: #eaeaea;
-  --color-border-light: #f5f5f5;
+  --color-border: #128500;
+  --color-border-light: #686868;
 
   --color-white: #fff;
   --color-black: #000;
 
-  --color-success: #28a745;
+  --color-success: #18b600;
   --color-error: #dc3545;
   --color-warning: #ffc107;
   --color-info: #17a2b8;
 
-  --color-link: #0070f3;
-  --color-link-hover: #0050b3;
+  --color-link: #18b600;
+  --color-link-hover: #74b300;
 
   --color-shadow: rgba(0, 0, 0, 0.1);
+
+  --color-orange: #f08035;
+  --color-yellow: #d0cc11;
+  --color-red: #e22929;
+  --color-green: #16c516;
+
+  --account-center-z-index: 200;
 }
 
 body {
   display: flex;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 1px;
   background-color: var(--color-background);
-  color: var(--color-text-light);
-  min-height: 100vh;
+  color: var(--color-text);
 }
 
 button {
@@ -47,10 +54,13 @@ button {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.1s ease-in-out;
+  width: fit-content;
 }
 
 button:hover {
-  background-color: var(--color-primary-light);
+  opacity: 0.8;
 }
 
 button:disabled {
@@ -86,65 +96,50 @@ h2 {
 
 .login {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-top: 5rem;
-  /* height: 100vh; */
+  margin-top: 2rem;
+  width: 100%;
+  min-height: 50vh;
 }
 
-.login .input-email {
-  border-radius: 9999px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  width: 20%;
-  text-align: center;
-  color: var(--color-text-lighter);
-}
-
-.login .input-email::placeholder {
-  color: var(--color-text-light);
-}
-
-.dashboard {
+.layout {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 5rem;
+  width: 100vw;
 }
 
-.dashboard .grid {
+.dashboard {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  margin: 2rem;
   width: 100%;
-  max-width: 800px;
-  padding: 16px;
+  max-width: 1600px;
+  gap: 16px;
 }
 
 .box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: var(--color-background-light);
   box-shadow: 0 0 8px var(--color-shadow);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
+  width: 100%;
 }
 
 .box .title {
   font-size: 1rem;
   font-weight: 500;
-  margin: 0;
-  padding: 0;
   color: var(--color-primary-light);
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 1.2rem;
 }
 
 .box .data {
@@ -152,24 +147,116 @@ h2 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  padding: 8px;
+  gap: 10px;
+  margin: 8px;
+  font-size: 1.1rem;
+  width: 80%;
 }
 
-.transactions {
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table thead {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+table thead th {
+  text-align: start;
+  width: auto;
+  padding: 10px 0;
+}
+
+table .table-body {
   display: flex;
   flex-direction: column;
+  justify-items: space-between;
+}
+
+table .table-body .table-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 10px;
+}
+
+table .table-body .table-row div {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  border-top-width: 0px;
-  border-bottom-width: 2px;
-  border: var(--color-border);
+  padding: 10px 0;
+}
+
+table .table-row:last-child {
+  border-bottom: 0;
+}
+
+table .table-row:first-child {
+  border-top: 0;
+}
+
+input {
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+input::placeholder {
+  color: var(--color-text-lighter);
+}
+
+.proposals {
+  display: flex;
+  gap: 16px;
   width: 100%;
 }
 
-.transaction {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.proposal {
+  justify-content: start;
+  background-color: var(--color-background-mid-light);
+  border: 2px solid var(--color-border);
   padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
   width: 100%;
+}
+
+.proposal .block {
+  display: flex;
+  padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
+  width: 100%;
+}
+
+.proposal .keys {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-primary-light);
+  padding: 10px;
+  gap: 10px;
+}
+
+.proposal .values {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  padding: 10px;
+  gap: 10px;
+}
+
+.userOp {
+  border: 2px solid var(--color-border);
+  padding: 10px;
+  border-radius: 6px;
+  gap: 5px;
+  margin: 10px;
 }

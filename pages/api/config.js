@@ -1,17 +1,33 @@
-export const config = {
-  chainId: 5, // goerli
-  rpcUrl: 'https://goerli.infura.io/v3/34208e804a1947cb9e37992a4de47a06', // goerli
-  serverKey: '0xefd44239bde79731d052d6e19e07ac3a739dcd1f473be0cfed38182c63b77d86', // TBD
-  ownerKeys: [
-    '0x0000000000000000000000000000000000000000000000000000000000000001', // TBD
-    '0x0000000000000000000000000000000000000000000000000000000000000002', // TBD
-  ],
-  masterKeys: [
-    '0x0000000000000000000000000000000000000000000000000000000000000003', // TBD
-    '0x0000000000000000000000000000000000000000000000000000000000000004', // TBD
-  ],
-  didFactory: '0x806cca586df2eee6db4339dff2212752e65c983d',
-  gnosisProxyFactory: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2', // goerli
-  gnosisSingleton: '0xd9db270c1b5e3bd161e8c8503c55ceabee709552', // goerli
-  gnosisFallbackHandler: '0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4', // goerli
+const config = {
+  "0x13881": {
+    rpc: 'https://rpc.ankr.com/polygon_mumbai',
+    executePolicies: '0x62481f08285803FEaF94E2b66EbAEa6FCf781c0f',
+    humanFactory: '0x1Fe4Bc538C29A52dFC8B2982a218746C3837ca55',
+    beacon: '0xc2d9750c31eb53ec842c7b7604451eb544fab2b9',
+    entryPoint: '0x6e24E57CC85B62d53b92097FAaa37A89C26a596D',
+    factorySigner: {
+      address: '0x46121e79942deF3008b1823cf990c262dad5b393',
+      kPriv: '0xf917e4965fb7b827cfb50224859679ac43209a3a150ae05885632f1271608dc2',
+    },
+    serverSigner: {
+      address: '0x44eEdBEE931A5dc22a5f4Ad441679FD5C0e38D38',
+      kPriv: 'efd44239bde79731d052d6e19e07ac3a739dcd1f473be0cfed38182c63b77d86',
+    }, // 2FA, per project??
+    federationOwners: [
+      "0xCD7669AAFffB7F683995E6eD9b53d1E5FE72c142",
+      "0x30729B6910757042024304E56BEB015821462691",
+      "0xDB970fD8Ed083D0Dc6000fa1e4973F27d8eDA2A9",
+    ],
+    defaultTimelock: 3600,
+    defaultInactivityTime: 7200,
+  },
+  mongo: {
+    test: 'mongodb://localhost:27017/gql-humanwallet',
+    dev: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
+    pro: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
+  },
+  gasPriceMultiplier: 2.5,
+  gasLimitMultiplier: 2.5,
 }
+
+module.exports = { config }
