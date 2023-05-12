@@ -23,8 +23,8 @@ const config = {
   },
   mongo: {
     test: 'mongodb://localhost:27017/gql-humanwallet',
-    development: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
-    production: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
+    dev: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
+    pro: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
   gasPriceMultiplier: 2.5,
   gasLimitMultiplier: 2.5,
