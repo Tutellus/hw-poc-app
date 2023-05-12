@@ -5,8 +5,8 @@ const humansRepository = require("../../repositories/humans");
 
 export default async function handler(req, res) {
   try {
-    const { address } = req.body;
-    const human = await execute({ address });
+    const { address, chainId } = req.body;
+    const human = await execute({ address, chainId });
     res.status(200).json({ human })
   } catch (error) {
     console.error(error)
@@ -14,23 +14,24 @@ export default async function handler(req, res) {
   }
 }
 
-export async function execute({ address }) {
+export async function execute({ address, chainId }) {
   try {
     const [humans, humanDB] = await Promise.all([
+      // Review: use chainId for selecting subgraph
       subgraphServices.getHumans({
         where: {
           address: address.toLowerCase(),
         },
       }),
-      humansRepository.getOne({ _id: address })
+      humansRepository.getOne({ address, chainId })
     ]);
     
     const humanSG = humans[0];
 
     const human = {
-      ...humanDB,
       ...humanSG,
-      status: humanSG ? "CONFIRMED" : humanDB.status,
+      ...humanDB,
+      status: humanSG ? "CONFIRMED" : humanDB?.status || "PENDING",
     };
 
     return Object.keys(human).length ? human : null;

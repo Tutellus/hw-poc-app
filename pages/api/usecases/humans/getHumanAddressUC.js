@@ -5,8 +5,8 @@ const shared = require("./shared");
 
 export default async function handler(req, res) {
   try {
-    const { user } = req.body;
-    const response = await execute({ user });
+    const { chainId, projectId, user } = req.body;
+    const response = await execute({ chainId, projectId, user });
     res.status(200).json(response)
   } catch (error) {
     console.error(error)
@@ -14,10 +14,10 @@ export default async function handler(req, res) {
   }
 }
 
-export async function execute({ user }) {
+export async function execute({ chainId, projectId, user }) {
   try {
     const { email } = user;
-    const { humanFactory, beacon, projectId } = config["0x13881"];
+    const { humanFactory, beacon } = config[chainId];
     const stringSalt = shared.getHumanSalt(email, projectId);
     const address = shared.getHumanAddressByStringSalt({
       humanFactory,

@@ -8,7 +8,8 @@ const userOpsRepository = require('../../repositories/userOps');
 
 export async function execute({ userOps }) {
   try {
-    const { serverSigner, entryPoint, rpc } = config["0x13881"];
+    const chainId = userOps[0].chainId;
+    const { serverSigner, entryPoint, rpc } = config[chainId];
 
     const signer = new ethers.Wallet(serverSigner.kPriv, new ethers.providers.JsonRpcProvider(rpc)); 
     const entryPointContract = new ethers.Contract(entryPoint, HumanEntryPointABI, signer);

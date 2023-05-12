@@ -1,16 +1,15 @@
-import { ethers } from 'ethers';
-import { config } from '../../config';
-import { update as updateContract } from '../../repositories/contracts';
-import { verifyContract } from '../../utils/contract';
+const { ethers } = require('ethers');
+const { config } = require('../../config');
+const contractsRepository = require('../../repositories/contracts');
+const shared = require('./shared');
 
 export default async function handler(req, res) {
-  const { contractId, abi, address, chainId } = req.body;
-  const contract = await execute({ contractId, abi, address, chainId });
+  const { abi, address, chainId } = req.body;
+  const contract = await execute({ abi, address, chainId });
   res.status(200).json({ contract })
 }
 
 export async function execute({
-  contractId,
   abi,
   address,
   chainId,
@@ -28,7 +27,7 @@ export async function execute({
       verified,
       isProxy,
       implementationAddress,
-    } = await verifyContract({
+    } = await shared.verifyContract({
       provider,
       abi,
       address,
@@ -38,8 +37,7 @@ export async function execute({
       throw new Error('Contract ABI not verified');
     }
 
-    const contract = await updateContract({
-      id: contractId,
+    const result = await contractsRepository.update({
       fields: {
         abi,
         address,
@@ -48,8 +46,7 @@ export async function execute({
         implementationAddress,
       }
     });
-    return contract;
-  
+    return result;
   } catch (error) {
     console.error(error)
     throw error;

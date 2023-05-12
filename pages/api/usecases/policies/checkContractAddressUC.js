@@ -5,8 +5,8 @@ const HumanExecutePolicies = require( '../../abi/HumanExecutePolicies.json');
 
 export default async function handler(req, res) {
   try {
-    const { contractId } = req.body;
-    const response = await execute({ contractId });
+    const { chainId, address } = req.body;
+    const response = await execute({ chainId, address });
     res.status(200).json({ response })
   } catch (error) {
     console.error(error)
@@ -14,10 +14,10 @@ export default async function handler(req, res) {
   }
 }
 
-export async function execute({ contractId }) {
+export async function execute({ chainId, address }) {
   try {
     
-    const contract = await getContract({ _id: contractId });
+    const contract = await getContract({ chainId, address });
 
     if (!contract) {
       throw new Error('Contract not found');
@@ -26,8 +26,6 @@ export async function execute({ contractId }) {
     if (contract.status === 'LOCKED') {
       throw new Error('Contract locked');
     }
-
-    const { chainId } = contract;
 
     const { rpc, executePolicies } = config[chainId];
     const provider = new ethers.providers.JsonRpcProvider(rpc);

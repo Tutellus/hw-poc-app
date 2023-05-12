@@ -73,7 +73,7 @@ async function markAsSignable(preUserOpId) {
   return updateOne(COLLECTION, filter, data)
 };
 
-export {
+module.exports = {
   update,
   getWithParams,
   get,

@@ -1,17 +1,19 @@
 // requestPreUserOpUC.js
 
 const { ethers } = require('ethers');
-const getHumanByUserUC = require('../humans/getHumanByUserUC');
+const getHumanByEmailUC = require('../humans/getHumanByEmailUC');
 const checkExecuteCheckOwnerUC = require('../policies/checkExecuteCheckOwnerUC');
 const assert = require('assert');
 const contractsRepository = require('../../repositories/contracts');
 const preUserOpsRepository = require('../../repositories/preUserOps');
 
 export default async function handler(req, res) {
-  const { user, contractId, method, params, value } = req.body;
+  const { user, chainId, projectId, address, method, params, value } = req.body;
   const preUserOp = await execute({
     user,
-    contractId,
+    chainId,
+    projectId,
+    address,
     method,
     params,
     value,
@@ -21,13 +23,14 @@ export default async function handler(req, res) {
 
 export async function execute({
   user,
-  contractId,
+  chainId,
+  projectId,
+  address,
   method = '',
   params = [],
   value = '0',
 }) {
   try {
-
     const unstructuredParams = params.map((param) => {
       if (typeof param === 'object') {
         if (param.type === 'BigNumber') {
@@ -46,18 +49,22 @@ export async function execute({
       return value;
     }
 
-    const human = await getHumanByUserUC.execute({ user });
-    assert(human && human?.status === 'CONFIRMED', 'Human not found');
-
-    const contract = await contractsRepository.getOne({ _id: contractId });
+    const contract = await contractsRepository.getOne({
+      address,
+      chainId,
+    });
     assert(contract, 'Contract not found');
     assert(contract.status !== 'LOCKED', 'Contract locked');
+
+    const human = await getHumanByEmailUC.execute({ projectId, chainId, email: user.email });
+    assert(human && human?.status === 'CONFIRMED', 'Human not found');
 
     const contractInterface = new ethers.utils.Interface(contract.abi);
     const data = contractInterface.encodeFunctionData(method, unstructuredParams);
 
     const isMasterRequired = !(await checkExecuteCheckOwnerUC.execute({
-      contractId: contract._id,
+      chainId,
+      address,
       method,
       params: unstructuredParams,
       value: stringValue(),
@@ -71,8 +78,10 @@ export async function execute({
 
     let result = await preUserOpsRepository.update({
       fields: {
+        sender: human.address,
         humanId: human._id,
-        contractId,
+        projectId,
+        chainId,
         method,
         params: unstructuredParams,
         user,

@@ -12,13 +12,13 @@ export default async function handler(req, res) {
 export async function execute({ userOp }) {
   try {
     const { rpc, entryPoint } = config['0x13881'];
-    const { humanId, calldata } = userOp;
-    assert(humanId, 'humanId is required');
+    const { sender, calldata } = userOp;
+    assert(sender, 'humanId is required');
 
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const result = await provider.estimateGas({
       from: entryPoint,
-      to: humanId,
+      to: sender,
       data: calldata,
     });
 

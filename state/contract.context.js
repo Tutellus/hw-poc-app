@@ -2,9 +2,8 @@
 import { ethers } from "ethers";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useHuman } from "./human.context";
+import { useWeb3Auth } from "./web3auth.context";
 
-const CHAIN_ID = '0x13881';
-const PROJECT_ID = "63d3c3a83d55158bfb36d502";
 const CONTRACT = {
   chainId: '0x13881',
   address: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F',
@@ -14,9 +13,6 @@ const CONTRACT = {
     "function decimals() public view returns (uint8)",
   ],
 };
-
-const TOKEN_ADDRESS = CONTRACT.address;
-const TOKEN_ABI = CONTRACT.abi;
 
 const ContractContext = createContext({
   loadingContract: false,
@@ -37,6 +33,7 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   
+  const { projectId, chainId } = useWeb3Auth();
   const { address } = useHuman();
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
@@ -57,8 +54,8 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chainId: CHAIN_ID,
-          token: TOKEN_ADDRESS,
+          chainId: CONTRACT.chainId,
+          token: CONTRACT.address,
           address: address,
         }),
       })
@@ -74,8 +71,8 @@ function ContractProvider(props) {
     try {
       setLoadingContract(true)
       const filter = {
-        address: TOKEN_ADDRESS,
-        chainId: CHAIN_ID,
+        address: CONTRACT.address,
+        chainId: CONTRACT.chainId,
       };
       const response = await fetch('/api/usecases/contracts/getContractUC', {
         method: 'POST',
@@ -97,9 +94,9 @@ function ContractProvider(props) {
       setLoadingContract(true)
 
       const params = {
-        address: TOKEN_ADDRESS,
-        abi: TOKEN_ABI,
-        chainId: CHAIN_ID,
+        address: CONTRACT.address,
+        abi: CONTRACT.abi,
+        chainId: CONTRACT.chainId,
       }
   
       const response = await fetch('/api/usecases/contracts/updateContractUC', {
@@ -125,7 +122,8 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contractId: contract._id,
+          address: CONTRACT.address,
+          chainId: CONTRACT.chainId,
         }),
       })
       const { response } = await result.json()
@@ -147,7 +145,8 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contractId: contract._id,
+          chainId: CONTRACT.chainId,
+          address: CONTRACT.address,
           method,
           params,
         }),
@@ -169,9 +168,9 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: PROJECT_ID,
-          chainId: CHAIN_ID,
-          address: TOKEN_ADDRESS,
+          projectId,
+          chainId: CONTRACT.chainId,
+          address: CONTRACT.address,
           status,
         }),
       })
@@ -196,7 +195,8 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contractId: contract._id,
+          chainId: CONTRACT.chainId,
+          address: CONTRACT.address,
           method: 'mint',
         }),
       }).then((res) => res.json())
@@ -211,9 +211,9 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: PROJECT_ID,
-          chainId: CHAIN_ID,
-          address: TOKEN_ADDRESS,
+          projectId,
+          chainId,
+          address: CONTRACT.address,
           selector,
           mask,
         }),
@@ -226,7 +226,7 @@ function ContractProvider(props) {
   const updateFunctionStatus = async (status) => {
     setUpdatingPolicies(true);
     await updateMask();
-    const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash('mint');
+    const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash('mint');
     const selectorAndParams = ethers.utils.solidityPack(['bytes4'], [selector])
 
     try {
@@ -236,9 +236,8 @@ function ContractProvider(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: PROJECT_ID,
-          chainId: CHAIN_ID,
-          address: TOKEN_ADDRESS,
+          chainId: CONTRACT.chainId,
+          address: CONTRACT.address,
           selectorAndParams,
           status,
         }),
@@ -254,7 +253,7 @@ function ContractProvider(props) {
   
   useEffect(() => {
     getContract()
-  }, [])
+  }, [chainId])
 
   useEffect(() => {
     if(!contract) return

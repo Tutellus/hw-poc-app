@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+const { ethers } = require('ethers');
 
 function getFunctionName (item) {
   switch (typeof item) {
@@ -16,13 +16,11 @@ function getFunctionName (item) {
       return null;
   }
 }
-
-// TODO: verify contract implementation if proxy
-export async function verifyContract ({
+const verifyContract = async ({
   provider,
   address,
   abi,
-}) {
+}) => {
   const contract = new ethers.Contract(address, abi, provider);
   const storageImplementation = await provider.getStorageAt(address, '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc');
 
@@ -63,3 +61,7 @@ export async function verifyContract ({
   };
 
 }
+
+module.exports = {
+    verifyContract,
+};

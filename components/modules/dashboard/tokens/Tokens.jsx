@@ -2,9 +2,11 @@ import { useState } from "react"
 import { useContract } from "@/state/contract.context";
 import { useHuman } from "@/state/human.context";
 import { ethers } from "ethers";
+import { useWeb3Auth } from "@/state/web3auth.context";
 
 export const Tokens = () => {
 
+  const { projectId } = useWeb3Auth();
   const { loadingContract, contract, balance, updateContract } = useContract();
   const { address, human, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
@@ -16,7 +18,9 @@ export const Tokens = () => {
     setMinting(true)
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
-      contractId: contract._id,
+      projectId,
+      chainId: contract.chainId,
+      address: contract.address,
       method: 'mint',
       params: [address, ethers.utils.parseEther('5')],
       value: ethers.utils.parseEther('0'),

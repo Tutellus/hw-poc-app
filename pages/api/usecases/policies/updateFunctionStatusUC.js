@@ -5,8 +5,8 @@ const executorInfra = require('../../infrastructure/executor');
 const HumanExecutePolicies = require("../../abi/HumanExecutePolicies.json");
 
 export default async function handler (req, res) {
-  const { projectId, chainId, address, selectorAndParams, status } = req.body;
-  const response = await execute({ projectId, chainId, address, selectorAndParams, status });
+  const { chainId, address, selectorAndParams, status } = req.body;
+  const response = await execute({ chainId, address, selectorAndParams, status });
   res.status(200).json({response});
 }
 

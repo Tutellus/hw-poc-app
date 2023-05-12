@@ -1,7 +1,7 @@
 const { config } = require('../config');
 const mongoDB = require('../infrastructure/mongo');
 
-const mongoUri = config['mongo'][process.env.ENV_NAME];
+const mongoUri = config['mongo'][process.env.NEXT_PUBLIC_ENV];
 
 const composePaginationPipeline = ({
   offset = 0,
@@ -202,7 +202,7 @@ const composeBasicOrMatch = ({ fields, search }) => { // eslint-disable-line no-
   ];
 };
 
-export {
+module.exports = {
   search,
   searchFirst,
   searchPaginated,

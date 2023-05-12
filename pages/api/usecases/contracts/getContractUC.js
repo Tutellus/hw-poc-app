@@ -1,4 +1,4 @@
-import { getOne as getContract } from '../../repositories/contracts';
+const contractsRepository = require('../../repositories/contracts');
 
 export default async function handler(req, res) {
   try {
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
 export async function execute({ filter }) {
   try {
-    const contract = await getContract(filter);
+    const contract = await contractsRepository.getOne(filter);
     return contract;
   } catch (error) {
     console.error(error)

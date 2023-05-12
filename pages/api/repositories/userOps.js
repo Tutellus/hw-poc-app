@@ -78,7 +78,7 @@ async function markAsFailed (id) {
 };
 
 
-export {
+module.exports = {
   update,
   getWithParams,
   get,

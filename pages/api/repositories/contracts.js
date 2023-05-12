@@ -37,7 +37,7 @@ async function markAsLocked (id) {
   return updateOne(COLLECTION, filter, data)
 };
 
-export {
+module.exports = {
   update,
   get,
   getOne,

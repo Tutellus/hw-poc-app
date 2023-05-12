@@ -4,11 +4,11 @@ import { Web3Auth } from "@web3auth/modal";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 
-const PROJECT_ID = '63d3c3a83d55158bfb36d502';
-const CHAIN_ID = '0x13881';
 const WEB3AUTH_USER_KEY = 'web3auth-user';
 
 const Web3AuthContext = createContext({
+  chainId: null,
+  projectId: null,
   web3Auth: null,
   web3Authprovider: null,
   web3Provider: null,
@@ -23,6 +23,8 @@ const Web3AuthContext = createContext({
 
 function Web3AuthProvider(props) {
 
+  const [chainId, setChainId] = useState(null);
+  const [projectId, setProjectId] = useState(null);
   const [web3Auth, setWeb3Auth] = useState(null);
   const [web3Authprovider, setWeb3AuthProvider] = useState(null);
   const [web3Provider, setWeb3Provider] = useState(null);
@@ -102,17 +104,22 @@ function Web3AuthProvider(props) {
 
   const init = async () => {
     try {
+      const innerChainId = process.env.NEXT_PUBLIC_CHAIN_ID;
+      const innerProjectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+
       setLoading(true);
       const w3a = new Web3Auth({
-        clientId: "BFRcGKRLQsiohDLtVSWAtXOdKsk55U8DcEsju4Zv1Wu5-OMrJ6q3lz4HIbPU1CwtcyE-osWAFNxWWooTkxYTDmk",
+        clientId: innerChainId,
         chainConfig: {
           chainNamespace: "eip155",
-          chainId: CHAIN_ID,
+          chainId: process.env.NEXT_PUBLIC_CHAIN_ID,
         },
       });
       await w3a.initModal();
       setWeb3Auth(w3a);
       setWeb3AuthProvider(w3a.provider);
+      setChainId(innerChainId);
+      setProjectId(innerProjectId);
       await getUserInfo(w3a);
       setLoading(false);
     } catch (e) {
@@ -138,6 +145,8 @@ function Web3AuthProvider(props) {
 
   const memoizedData = useMemo(
     () => ({
+      chainId,
+      projectId,
       web3Auth,
       web3Authprovider,
       web3Provider,
@@ -149,7 +158,7 @@ function Web3AuthProvider(props) {
       logOut,
       redirect,
     }),
-    [web3Auth, web3Authprovider, loading, loggingIn, user, externalAccount]
+    [chainId, projectId, web3Auth, web3Authprovider, loading, loggingIn, user, externalAccount]
   );
 
   return <Web3AuthContext.Provider value={memoizedData} {...props} />;

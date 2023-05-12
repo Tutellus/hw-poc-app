@@ -17,7 +17,8 @@ export async function execute({ preUserOpId, user }) {
     const preUserOp = await preUserOpsRepository.getOne({ _id: preUserOpId });
     const {
       user: innerUser,
-      humanId,
+      chainId,
+      sender,
       target,
       data,
       value,
@@ -35,7 +36,7 @@ export async function execute({ preUserOpId, user }) {
       signature: masterSignature,
     });
     
-    const human = await getHumanByAddressUC.execute({ address: humanId });
+    const human = await getHumanByAddressUC.execute({ address: sender });
     assert(human && human.status === 'CONFIRMED', 'Human not found');
 
     const userOpData = shared.getEmptyUserOperation();
@@ -43,7 +44,6 @@ export async function execute({ preUserOpId, user }) {
     userOpData.nonce = human.nonce;
     userOpData.callData = executeData;
 
-    const chainId = "0x13881";
     const { entryPoint } = config[chainId];
 
     const hash = shared.getUserOpHash({

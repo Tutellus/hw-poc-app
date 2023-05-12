@@ -1,5 +1,5 @@
-import { ethers } from 'ethers';
-import { config } from '../../config';
+const { ethers } = require('ethers');
+const { config } = require('../../config');
 
 export async function execute({
   contract,

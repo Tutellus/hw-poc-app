@@ -38,7 +38,7 @@ const HumanContext = createContext({
 });
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider } = useWeb3Auth();
+  const { chainId, projectId, user, externalAccount, web3Provider } = useWeb3Auth();
 
   // state
   const [address, setAddress] = useState(null);
@@ -57,7 +57,9 @@ function HumanProvider(props) {
   const signMessageFromOwner = async (message) => await web3Provider.getSigner().signMessage(message);
 
   const requestPreUserOp = async ({
-    contractId,
+    projectId,
+    chainId,
+    address,
     method,
     params,
     value,
@@ -68,7 +70,9 @@ function HumanProvider(props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contractId,
+        projectId,
+        chainId,
+        address,
         method,
         params,
         value,
@@ -146,7 +150,7 @@ function HumanProvider(props) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user }),
+          body: JSON.stringify({ projectId, chainId, user }),
         })
         const { address: innerAddress } = await response.json()
         setAddress(innerAddress)
@@ -158,15 +162,17 @@ function HumanProvider(props) {
   }
 
   const loadHuman = async () => {
-    if (user) {
+    const email = user?.email
+    if (email) {
       setLoadingHuman(true)
       try {
-        const response = await fetch('/api/usecases/humans/getHumanByUserUC', {
+        console.log('loadHuman', { email, chainId, projectId })
+        const response = await fetch('/api/usecases/humans/getHumanByEmailUC', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user }),
+          body: JSON.stringify({ email, chainId, projectId }),
         })
         const { human: innerHuman } = await response.json()
         setHuman(innerHuman)
@@ -178,7 +184,7 @@ function HumanProvider(props) {
   }
 
   const loadPreUserOps = async () => {
-    if (address) {
+    if (human?._id) {
       setLoadingPreUserOps(true)
       try {
         const response = await fetch('/api/usecases/userOps/getPreUserOpsUC', {
@@ -190,7 +196,9 @@ function HumanProvider(props) {
             params: {
               first: 1000,
               where: {
-                humanId: address,
+                projectId,
+                chainId,
+                humanId: human._id,
               },
             },
             user
@@ -206,7 +214,7 @@ function HumanProvider(props) {
   }
 
   const loadUserOps = async () => {
-    if (address) {
+    if (human?.address) {
       setLoadingUserOps(true)
       try {
         const response = await fetch('/api/usecases/userOps/getUserOpsUC', {
@@ -218,7 +226,9 @@ function HumanProvider(props) {
             params: {
               first: 1000,
               where: {
-                humanId: address,
+                projectId,
+                chainId,
+                sender: human.address,
               },
             },
             user
@@ -242,9 +252,15 @@ function HumanProvider(props) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user, owner: externalAccount }),
+          body: JSON.stringify({
+            projectId,
+            chainId,
+            user,
+            owner: externalAccount
+          }),
         })
-        await response.json()
+        const { human } = await response.json()
+        setHuman(human)
       } catch (error) {
         console.error(error)
       }
@@ -280,7 +296,7 @@ function HumanProvider(props) {
       loadUserOps();
     }, 5000);
     return () => clearInterval(interval);
-  }, [address]);
+  }, [human]);
 
   useEffect(() => {
     loadHumanAddress();

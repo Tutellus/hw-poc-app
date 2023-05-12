@@ -18,7 +18,7 @@ export async function execute({ preUserOpId, code, user }) {
     const {
       user: innerUser,
       code2fa,
-      humanId,
+      sender,
       target,
       data,
       value,
@@ -30,7 +30,7 @@ export async function execute({ preUserOpId, code, user }) {
 
     const masterSigner = new ethers.Wallet(serverSigner.kPriv);
     const masterSignature = await shared.masterSign({
-      humanAddress: humanId,
+      humanAddress: sender,
       target,
       data,
       value,

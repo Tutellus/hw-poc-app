@@ -13,13 +13,13 @@ export async function execute({ params, user }) {
   try {
     const userOps = await userOpsRepository.getWithParams(params);
 
-    const { humanId } = params.where || {};
-    assert(humanId, 'humanId is required');
+    const { sender } = params.where || {};
+    assert(sender, 'sender is required');
 
     const nonces = userOps.map((userOp) => userOp.nonce);
     const whereFilter = {
       nonce_in: nonces,
-      human: humanId?.toLowerCase(),
+      human: sender?.toLowerCase(),
     };
 
     const [executions, userOperationReverteds] = await Promise.all([

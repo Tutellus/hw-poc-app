@@ -5,9 +5,10 @@ const HumanExecutePolicies = require( '../../abi/HumanExecutePolicies.json');
 
 export default async function handler(req, res) {
   try {
-    const { contractId, method, params } = req.body;
+    const { chainId, address, method, params } = req.body;
     const response = await execute({
-      contractId,
+      chainId,
+      address,
       method,
       params,
     });
@@ -19,13 +20,14 @@ export default async function handler(req, res) {
 }
 
 export async function execute({
-  contractId,
+  chainId,
+  address,
   method,
   params,
 }) {
   try {
   
-    const contract = await contractsRepository.getOne({ _id: contractId });
+    const contract = await contractsRepository.getOne({ chainId, address });
 
     if (!contract) {
       throw new Error('Contract not found');
@@ -41,7 +43,6 @@ export async function execute({
     const executePoliciesContract = new ethers.Contract(executePolicies, HumanExecutePolicies.abi, provider);
 
     const contractInstance = new ethers.Contract(contract.address, contract.abi, provider);
-    const address = contractInstance.address;
     const data = contractInstance.interface.encodeFunctionData(method, params)
 
     const result = await executePoliciesContract
