@@ -1,62 +1,85 @@
 import { Web3Auth } from "@web3auth/modal"
+import { ethers } from "ethers"
 
+let w3a
 let isLoggingIn = false
 let isLoading = false
 let web3AuthProvider
 let user
 let web3Auth
+let web3Provider
+let externalAccount
 
+const WEB3AUTH_USER_KEY = "web3auth-user"
 const innerChainId = process.env.NEXT_PUBLIC_CHAIN_ID
-const innerProjectId = process.env.NEXT_PUBLIC_PROJECT_ID
 
 const init = async () => {
-  try {
-    const w3a = new Web3Auth({
-      clientId: innerChainId,
-      chainConfig: {
-        chainNamespace: "eip155",
-        chainId: innerChainId,
-      },
-    })
-    await w3a.initModal()
-    web3Auth = w3a
-  } catch (e) {
-    console.error(e)
-  }
+  w3a = new Web3Auth({
+    clientId: innerChainId,
+    chainConfig: {
+      chainNamespace: "eip155",
+      chainId: innerChainId,
+    },
+  })
+  await w3a.initModal()
+  web3Auth = w3a
 }
 
 init()
 
 export const web3AuthSDK = {
   logIn: async () => {
-    debugger
-    if (isLoggingIn) {
-      return
-    }
+    if (isLoggingIn) return
     isLoggingIn = true
-    try {
-      const provider = await web3Auth.connect()
-      web3AuthProvider = provider
-      this.getUserInfo(web3Auth)
-    } catch (e) {
-      console.error(e)
-      web3AuthProvider = null
-      user = null
+
+    const provider = await web3Auth?.connect()
+    if (provider) {
+      web3Provider = new ethers.providers.Web3Provider(provider)
     }
+    web3AuthProvider = provider
+    web3AuthSDK.getUserInfo()
+
     isLoggingIn = false
   },
-  getUserInfo: async (w3a) => {
-    try {
-      if (localStorage.getItem(WEB3AUTH_USER_KEY)) {
-        const userInfo = JSON.parse(localStorage.getItem(WEB3AUTH_USER_KEY))
-        user = userInfo
-        return
-      } else {
-        const userInfo = await w3a.getUserInfo()
-        user = userInfo
-      }
-    } catch (e) {
-      console.error(e)
+
+  logOut: async () => {
+    if (isLoggingIn) return
+
+    const provider = await web3Auth?.logout()
+    web3AuthProvider = provider
+    web3Provider = null
+    user = null
+    externalAccount = null
+    localStorage.removeItem(WEB3AUTH_USER_KEY)
+  },
+
+  getUserInfo: async () => {
+    if (localStorage.getItem(WEB3AUTH_USER_KEY)) {
+      const userInfo = JSON.parse(localStorage.getItem(WEB3AUTH_USER_KEY))
+      user = userInfo
+      return
+    } else {
+      const userInfo = await w3a?.getUserInfo()
+      user = userInfo
     }
   },
+  redirect: () => {
+    if (user) {
+      if (window.location.pathname !== "/dashboard") {
+        window.location.href = "/dashboard"
+      }
+    } else {
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login"
+      }
+    }
+  },
+  chainId: process.env.NEXT_PUBLIC_CHAIN_ID,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  web3Auth,
+  web3AuthProvider,
+  web3Provider,
+  user,
+  isLoggingIn,
+  externalAccount,
 }
