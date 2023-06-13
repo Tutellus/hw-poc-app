@@ -1,9 +1,8 @@
 import { web3AuthSDK } from "@/sdk"
+import { useWeb3Auth } from "@/state/web3auth.context"
 
 export const Account = () => {
-  const { user, logOut } = web3AuthSDK
-
-  console.log({ user })
+  const { user, logOut } = useWeb3Auth()
 
   return (
     <div className="box">
