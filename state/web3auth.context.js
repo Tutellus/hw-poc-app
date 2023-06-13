@@ -35,6 +35,51 @@ function Web3AuthProvider(props) {
 
   const router = useRouter()
 
+  const logIn = async () => {
+    if (loggingIn) {
+      return
+    }
+    setLoggingIn(true)
+    try {
+      const provider = await web3Auth.connect()
+      setWeb3AuthProvider(provider)
+      getUserInfo(web3Auth)
+    } catch (e) {
+      console.error(e)
+      setWeb3AuthProvider(null)
+      setUser(null)
+    }
+    setLoggingIn(false)
+  }
+
+  const logOut = async () => {
+    if (loggingIn) {
+      return
+    }
+    try {
+      const provider = await web3Auth.logout()
+      setWeb3AuthProvider(provider)
+      setWeb3Provider(null)
+      setUser(null)
+      setExternalAccount(null)
+      localStorage.removeItem(WEB3AUTH_USER_KEY)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const redirect = () => {
+    if (user) {
+      if (router.pathname !== "/dashboard") {
+        router.push("/dashboard")
+      }
+    } else {
+      if (router.pathname !== "/login") {
+        router.push("/login")
+      }
+    }
+  }
+
   const getExternalAccount = async (provider) => {
     const signer = await provider.getSigner()
     const account = await signer.getAddress()
@@ -93,6 +138,10 @@ function Web3AuthProvider(props) {
     }
   }, [web3Authprovider])
 
+  useEffect(() => {
+    redirect()
+  }, [user])
+
   const memoizedData = useMemo(
     () => ({
       chainId,
@@ -104,6 +153,9 @@ function Web3AuthProvider(props) {
       loggingIn,
       user,
       externalAccount,
+      logIn,
+      logOut,
+      redirect,
     }),
     [
       chainId,
