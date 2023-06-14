@@ -34,6 +34,9 @@ function HumanProvider(props) {
     loadHumanAddress,
     loadUserOps,
     loadHuman,
+    signAndSubmitPreUserOp,
+    getPreUserOpHash,
+    submitUserOp,
   } = humanSDK
 
   // state
@@ -89,7 +92,6 @@ function HumanProvider(props) {
     params,
     value,
   }) => {
-    debugger
     const response = await requestPreUserOp({
       projectId,
       chainId,
@@ -103,19 +105,25 @@ function HumanProvider(props) {
     return response
   }
 
-  const getPreUserOpHash = async ({ preUserOpId }) => {
-    const response = await fetch("/api/usecases/userOps/getPreUserOpHashUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        preUserOpId,
-        user,
-      }),
+  const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
+    setProcessing(true)
+    const response = await signAndSubmitPreUserOp({
+      preUserOpId,
+      user,
     })
-    const { hash } = await response.json()
-    return hash
+    loadPreUserOpsData()
+    setProcessing(false)
+    return response
+  }
+
+  const submitUserOpData = async ({ preUserOpId, signature, user }) => {
+    const response = await submitUserOp({
+      preUserOpId,
+      signature,
+      user,
+    })
+    loadUserOpsData()
+    return response
   }
 
   const confirmPreUserOp = async ({ preUserOpId, code }) => {
@@ -133,23 +141,6 @@ function HumanProvider(props) {
     const { preUserOp } = await response.json()
     loadPreUserOpsData()
     return preUserOp
-  }
-
-  const submitUserOp = async ({ preUserOpId, signature }) => {
-    const response = await fetch("/api/usecases/userOps/submitUserOpUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        preUserOpId,
-        signature,
-        user,
-      }),
-    })
-    const { userOp } = await response.json()
-    loadUserOpsData()
-    return userOp
   }
 
   const deployHuman = async () => {
@@ -176,23 +167,6 @@ function HumanProvider(props) {
       setLoadingDeployment(false)
       loadHumanData()
     }
-  }
-
-  const signAndSubmitPreUserOp = async ({ preUserOpId }) => {
-    setProcessing(true)
-    // 2. gets hash of preUserOp if is valid
-    const hash = await getPreUserOpHash({
-      preUserOpId,
-    })
-    // 3. signs hash with owner account (includes master signature if required)
-    const signature = await signMessageFromOwner(hash)
-    // 4. submits preUserOp with signature
-    await submitUserOp({
-      preUserOpId,
-      signature,
-    })
-    await loadPreUserOpsData()
-    setProcessing(false)
   }
 
   useEffect(() => {
@@ -231,9 +205,9 @@ function HumanProvider(props) {
       signMessageFromOwner,
       requestPreUserOp: getRequestPreUserOpData,
       getPreUserOpHash,
-      submitUserOp,
+      submitUserOp: submitUserOpData,
       confirmPreUserOp,
-      signAndSubmitPreUserOp,
+      signAndSubmitPreUserOp: signAndSubmitPreUserOpData,
     }),
     [
       address,

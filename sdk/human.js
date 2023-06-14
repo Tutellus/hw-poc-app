@@ -123,4 +123,48 @@ export const humanSDK = {
       }
     }
   },
+
+  getPreUserOpHash: async ({ preUserOpId, user }) => {
+    const response = await fetch("/api/usecases/userOps/getPreUserOpHashUC", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        preUserOpId,
+        user,
+      }),
+    })
+    const { hash } = await response.json()
+    return hash
+  },
+
+  signAndSubmitPreUserOp: async ({ preUserOpId, user }) => {
+    const hash = await humanSDK.getPreUserOpHash({
+      preUserOpId,
+      user,
+    })
+    const signature = await signMessageFromOwner(hash)
+    await humanSDK.submitUserOp({
+      preUserOpId,
+      signature,
+      user,
+    })
+  },
+
+  submitUserOp: async ({ preUserOpId, signature, user }) => {
+    const response = await fetch("/api/usecases/userOps/submitUserOpUC", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        preUserOpId,
+        signature,
+        user,
+      }),
+    })
+    const { userOp } = await response.json()
+    return userOp
+  },
 }
