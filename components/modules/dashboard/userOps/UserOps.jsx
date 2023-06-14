@@ -13,7 +13,7 @@ export const UserOps = () => {
     >
       <div className="title">User Operations</div>
       <div className="data">
-        {userOps.length > 0 &&
+        {userOps?.length > 0 &&
           userOps.map((userOp, index) => (
             <UserOp key={index} userOp={userOp} />
           ))}

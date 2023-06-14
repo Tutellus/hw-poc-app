@@ -6,10 +6,10 @@ export const humanSDK = {
     projectId,
     chainId,
     address,
+    user,
     method,
     params,
     value,
-    user,
   }) => {
     const response = await fetch("/api/usecases/userOps/requestPreUserOpUC", {
       method: "POST",
@@ -20,7 +20,7 @@ export const humanSDK = {
         projectId,
         chainId,
         address,
-        method,
+        method: method || "POST",
         params,
         value,
         user,
@@ -104,7 +104,7 @@ export const humanSDK = {
     }
   },
 
-  loadHuman: async () => {
+  loadHuman: async ({ projectId, chainId, user }) => {
     const email = user?.email
     if (email) {
       try {

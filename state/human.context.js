@@ -57,6 +57,7 @@ function HumanProvider(props) {
     setLoadingPreUserOps(true)
     const response = await loadPreUserOps({ projectId, chainId, human, user })
     setPreUserOps(response)
+    setLoadingPreUserOps(false)
   }
 
   const loadHumanData = async () => {
@@ -87,8 +88,8 @@ function HumanProvider(props) {
     method,
     params,
     value,
-    user,
   }) => {
+    debugger
     const response = await requestPreUserOp({
       projectId,
       chainId,
