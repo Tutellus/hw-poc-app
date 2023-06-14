@@ -190,4 +190,27 @@ export const humanSDK = {
     loadPreUserOpsData()
     return preUserOp
   },
+
+  deployHuman: async ({ projectId, chainId, user, externalAccount }) => {
+    if (user && externalAccount) {
+      try {
+        const response = await fetch("/api/usecases/humans/deployHumanUC", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId,
+            chainId,
+            user,
+            owner: externalAccount,
+          }),
+        })
+        const { human } = await response.json()
+        return human
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  },
 }

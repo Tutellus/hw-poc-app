@@ -39,6 +39,7 @@ function HumanProvider(props) {
     submitUserOp,
     signMessageFromOwner,
     confirmPreUserOp,
+    deployHuman,
   } = humanSDK
 
   // state
@@ -139,30 +140,17 @@ function HumanProvider(props) {
     return response
   }
 
-  const deployHuman = async () => {
-    if (user && externalAccount) {
-      setLoadingDeployment(true)
-      try {
-        const response = await fetch("/api/usecases/humans/deployHumanUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            chainId,
-            user,
-            owner: externalAccount,
-          }),
-        })
-        const { human } = await response.json()
-        setHuman(human)
-      } catch (error) {
-        console.error(error)
-      }
-      setLoadingDeployment(false)
-      loadHumanData()
-    }
+  const deployHumanData = async ({ projectId, chainId, user }) => {
+    setLoadingDeployment(true)
+    const response = await deployHuman({
+      projectId,
+      chainId,
+      user,
+      externalAccount,
+    })
+    setLoadingDeployment(false)
+    setHuman(response)
+    loadHumanData()
   }
 
   useEffect(() => {
@@ -197,7 +185,7 @@ function HumanProvider(props) {
       loadingDeployment,
       loadingPreUserOps,
       loadingUserOps,
-      deployHuman,
+      deployHuman: deployHumanData,
       signMessageFromOwner: signMessageFromOwnerData,
       requestPreUserOp: getRequestPreUserOpData,
       getPreUserOpHash,
