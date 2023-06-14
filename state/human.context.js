@@ -28,7 +28,13 @@ function HumanProvider(props) {
   const { chainId, projectId, user, externalAccount, web3Provider } =
     useWeb3Auth()
 
-  const { requestPreUserOp, loadPreUserOps, loadHumanAddress } = humanSDK
+  const {
+    requestPreUserOp,
+    loadPreUserOps,
+    loadHumanAddress,
+    loadUserOps,
+    loadHuman,
+  } = humanSDK
 
   // state
   const [address, setAddress] = useState(null)
@@ -53,11 +59,25 @@ function HumanProvider(props) {
     setPreUserOps(response)
   }
 
+  const loadHumanData = async () => {
+    setLoadingHuman(true)
+    const response = await loadHuman({ projectId, chainId, user })
+    setHuman(response)
+    setLoadingHuman(false)
+  }
+
   const loadHumanAddressData = async () => {
     setLoadingAddress(true)
     const response = await loadHumanAddress({ projectId, chainId, user })
     setAddress(response)
     setLoadingAddress(false)
+  }
+
+  const loadUserOpsData = async () => {
+    setLoadingUserOps(true)
+    const response = await loadUserOps({ projectId, chainId, human, user })
+    setUserOps(response)
+    setLoadingUserOps(false)
   }
 
   const getRequestPreUserOpData = async ({
@@ -127,60 +147,8 @@ function HumanProvider(props) {
       }),
     })
     const { userOp } = await response.json()
-    loadUserOps()
+    loadUserOpsData()
     return userOp
-  }
-
-  const loadHuman = async () => {
-    const email = user?.email
-    if (email) {
-      setLoadingHuman(true)
-      try {
-        console.log("loadHuman", { email, chainId, projectId })
-        const response = await fetch("/api/usecases/humans/getHumanByEmailUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, chainId, projectId }),
-        })
-        const { human: innerHuman } = await response.json()
-        setHuman(innerHuman)
-      } catch (error) {
-        console.error(error)
-      }
-      setLoadingHuman(false)
-    }
-  }
-
-  const loadUserOps = async () => {
-    if (human?.address) {
-      setLoadingUserOps(true)
-      try {
-        const response = await fetch("/api/usecases/userOps/getUserOpsUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            params: {
-              first: 1000,
-              where: {
-                projectId,
-                chainId,
-                sender: human.address,
-              },
-            },
-            user,
-          }),
-        })
-        const { userOps: innerUserOps } = await response.json()
-        setUserOps(innerUserOps)
-      } catch (error) {
-        console.error(error)
-      }
-      setLoadingUserOps(false)
-    }
   }
 
   const deployHuman = async () => {
@@ -205,7 +173,7 @@ function HumanProvider(props) {
         console.error(error)
       }
       setLoadingDeployment(false)
-      loadHuman()
+      loadHumanData()
     }
   }
 
@@ -228,20 +196,20 @@ function HumanProvider(props) {
 
   useEffect(() => {
     loadPreUserOpsData()
-    loadUserOps()
+    loadUserOpsData()
     const interval = setInterval(() => {
       loadPreUserOpsData()
-      loadUserOps()
+      loadUserOpsData()
     }, 5000)
     return () => clearInterval(interval)
   }, [human])
 
   useEffect(() => {
     loadHumanAddressData()
-    loadHuman()
+    loadHumanData()
     const interval = setInterval(() => {
       loadHumanAddressData()
-      loadHuman()
+      loadHumanData()
     }, 5000)
     return () => clearInterval(interval)
   }, [user])

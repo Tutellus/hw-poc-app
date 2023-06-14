@@ -75,4 +75,52 @@ export const humanSDK = {
       }
     }
   },
+
+  loadUserOps: async ({ projectId, chainId, human, user }) => {
+    if (human?.address) {
+      try {
+        const response = await fetch("/api/usecases/userOps/getUserOpsUC", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            params: {
+              first: 1000,
+              where: {
+                projectId,
+                chainId,
+                sender: human.address,
+              },
+            },
+            user,
+          }),
+        })
+        const { userOps: innerUserOps } = await response.json()
+        return innerUserOps
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  },
+
+  loadHuman: async () => {
+    const email = user?.email
+    if (email) {
+      try {
+        console.log("loadHuman", { email, chainId, projectId })
+        const response = await fetch("/api/usecases/humans/getHumanByEmailUC", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, chainId, projectId }),
+        })
+        const { human: innerHuman } = await response.json()
+        return innerHuman
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  },
 }
