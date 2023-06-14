@@ -1,12 +1,9 @@
-import { explorerLink } from "@/utils/address";
+import { explorerLink } from "@/utils/address"
 
-export const UserOp = ({
-  userOp,
-}) => {
-
+export const UserOp = ({ userOp }) => {
   const truncateHash = (hash) => {
-    if (!hash) return '----'
-    return hash.slice(0, 10) + '...' + hash.slice(-8)
+    if (!hash) return "----"
+    return hash.slice(0, 10) + "..." + hash.slice(-8)
   }
 
   return (
@@ -26,19 +23,23 @@ export const UserOp = ({
           <div>{userOp.nonce}</div>
           {userOp.receipt?.transactionHash ? (
             <a
-              style={{ color: 'white' }}
+              style={{ color: "white" }}
               href={explorerLink({
-                type: 'tx',
+                type: "tx",
                 value: userOp.receipt?.transactionHash,
               })}
               target="_blank"
               rel="noreferrer"
-            >{truncateHash(userOp.receipt?.transactionHash)}</a>
-          ) : <div>----</div>}
+            >
+              {truncateHash(userOp.receipt?.transactionHash)}
+            </a>
+          ) : (
+            <div>----</div>
+          )}
           <div>{userOp.status}</div>
           <div>{userOp.createdAt.toString()}</div>
         </div>
       </div>
-  </div>
+    </div>
   )
 }

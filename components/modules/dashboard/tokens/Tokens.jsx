@@ -1,56 +1,26 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useContract } from "@/state/contract.context"
+import { useHuman } from "@/state/human.context"
 import { ethers } from "ethers"
 import { useWeb3Auth } from "@/state/web3auth.context"
-import { contractSDK, humanSDK } from "@/sdk"
 
 export const Tokens = () => {
-  const { projectId, user, web3Provider } = useWeb3Auth()
-  const { loadingContract, contract, balance } = useContract()
-
-  // state
-  const [address, setAddress] = useState(null)
-  const [human, setHuman] = useState(null)
+  const { projectId } = useWeb3Auth()
+  const { loadingContract, contract, balance, updateContract } = useContract()
+  const { address, human, requestPreUserOp, signAndSubmitPreUserOp } =
+    useHuman()
 
   const [minting, setMinting] = useState(false)
-  const { updateContract } = contractSDK
-  const {
-    requestPreUserOp,
-    signAndSubmitPreUserOp,
-    loadHuman,
-    loadHumanAddress,
-  } = humanSDK
 
   const canMint = human?.status === "CONFIRMED"
 
-  const loadHumanAddressData = async () => {
-    const address = await loadHumanAddress({ user })
-    setAddress(address)
-  }
-
-  const loadHumanData = async () => {
-    const human = await loadHuman({ user })
-    setHuman(human)
-  }
-
-  useEffect(() => {
-    loadHumanAddressData({ user })
-    loadHumanData({ user })
-    const interval = setInterval(() => {
-      loadHumanAddressData()
-      loadHumanData({ user })
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [user])
-
   const requestMint = async () => {
     setMinting(true)
-
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
-      human,
-      user,
       projectId,
+      chainId: contract.chainId,
+      address: contract.address,
       method: "mint",
       params: [address, ethers.utils.parseEther("5")],
       value: ethers.utils.parseEther("0"),
@@ -59,9 +29,6 @@ export const Tokens = () => {
     if (preUserOp.status === "SIGNABLE") {
       signAndSubmitPreUserOp({
         preUserOpId: preUserOp._id,
-        web3Provider,
-        user,
-        human,
       })
     }
 
