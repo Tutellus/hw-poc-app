@@ -173,4 +173,21 @@ export const humanSDK = {
 
   signMessageFromOwner: async ({ web3Provider, message }) =>
     await web3Provider.getSigner().signMessage(message),
+
+  confirmPreUserOp: async ({ preUserOpId, code }) => {
+    const response = await fetch("/api/usecases/userOps/confirmPreUserOpUC", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        preUserOpId,
+        code,
+        user,
+      }),
+    })
+    const { preUserOp } = await response.json()
+    loadPreUserOpsData()
+    return preUserOp
+  },
 }

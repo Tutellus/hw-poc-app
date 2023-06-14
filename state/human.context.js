@@ -38,6 +38,7 @@ function HumanProvider(props) {
     getPreUserOpHash,
     submitUserOp,
     signMessageFromOwner,
+    confirmPreUserOp,
   } = humanSDK
 
   // state
@@ -128,21 +129,14 @@ function HumanProvider(props) {
     return response
   }
 
-  const confirmPreUserOp = async ({ preUserOpId, code }) => {
-    const response = await fetch("/api/usecases/userOps/confirmPreUserOpUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        preUserOpId,
-        code,
-        user,
-      }),
+  const confirmPreUserOpData = async ({ preUserOpId, code }) => {
+    const response = await confirmPreUserOp({
+      preUserOpId,
+      code,
+      user,
     })
-    const { preUserOp } = await response.json()
     loadPreUserOpsData()
-    return preUserOp
+    return response
   }
 
   const deployHuman = async () => {
@@ -208,7 +202,7 @@ function HumanProvider(props) {
       requestPreUserOp: getRequestPreUserOpData,
       getPreUserOpHash,
       submitUserOp: submitUserOpData,
-      confirmPreUserOp,
+      confirmPreUserOp: confirmPreUserOpData,
       signAndSubmitPreUserOp: signAndSubmitPreUserOpData,
     }),
     [
