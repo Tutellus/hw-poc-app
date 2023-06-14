@@ -37,6 +37,7 @@ function HumanProvider(props) {
     signAndSubmitPreUserOp,
     getPreUserOpHash,
     submitUserOp,
+    signMessageFromOwner,
   } = humanSDK
 
   // state
@@ -53,8 +54,8 @@ function HumanProvider(props) {
   const [loadingPreUserOps, setLoadingPreUserOps] = useState(false)
   const [loadingUserOps, setLoadingUserOps] = useState(false)
 
-  const signMessageFromOwner = async (message) =>
-    await web3Provider.getSigner().signMessage(message)
+  const signMessageFromOwnerData = async ({ message }) =>
+    await signMessageFromOwner({ web3Provider, message })
 
   const loadPreUserOpsData = async () => {
     setLoadingPreUserOps(true)
@@ -108,6 +109,7 @@ function HumanProvider(props) {
   const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
     setProcessing(true)
     const response = await signAndSubmitPreUserOp({
+      web3Provider,
       preUserOpId,
       user,
     })
@@ -202,7 +204,7 @@ function HumanProvider(props) {
       loadingPreUserOps,
       loadingUserOps,
       deployHuman,
-      signMessageFromOwner,
+      signMessageFromOwner: signMessageFromOwnerData,
       requestPreUserOp: getRequestPreUserOpData,
       getPreUserOpHash,
       submitUserOp: submitUserOpData,

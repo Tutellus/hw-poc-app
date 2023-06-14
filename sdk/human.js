@@ -139,12 +139,15 @@ export const humanSDK = {
     return hash
   },
 
-  signAndSubmitPreUserOp: async ({ preUserOpId, user }) => {
+  signAndSubmitPreUserOp: async ({ web3Provider, preUserOpId, user }) => {
     const hash = await humanSDK.getPreUserOpHash({
       preUserOpId,
       user,
     })
-    const signature = await signMessageFromOwner(hash)
+    const signature = await humanSDK.signMessageFromOwner({
+      web3Provider,
+      message: hash,
+    })
     await humanSDK.submitUserOp({
       preUserOpId,
       signature,
@@ -167,4 +170,7 @@ export const humanSDK = {
     const { userOp } = await response.json()
     return userOp
   },
+
+  signMessageFromOwner: async ({ web3Provider, message }) =>
+    await web3Provider.getSigner().signMessage(message),
 }
