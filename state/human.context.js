@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
 import { humanSDK } from "@/sdk"
+import { set } from "lodash"
 
 const HumanContext = createContext({
   address: null,
@@ -27,7 +28,7 @@ function HumanProvider(props) {
   const { chainId, projectId, user, externalAccount, web3Provider } =
     useWeb3Auth()
 
-  const { requestPreUserOp, loadPreUserOps } = humanSDK
+  const { requestPreUserOp, loadPreUserOps, loadHumanAddress } = humanSDK
 
   // state
   const [address, setAddress] = useState(null)
@@ -50,6 +51,13 @@ function HumanProvider(props) {
     setLoadingPreUserOps(true)
     const response = await loadPreUserOps({ projectId, chainId, human, user })
     setPreUserOps(response)
+  }
+
+  const loadHumanAddressData = async () => {
+    setLoadingAddress(true)
+    const response = await loadHumanAddress({ projectId, chainId, user })
+    setAddress(response)
+    setLoadingAddress(false)
   }
 
   const getRequestPreUserOpData = async ({
@@ -121,26 +129,6 @@ function HumanProvider(props) {
     const { userOp } = await response.json()
     loadUserOps()
     return userOp
-  }
-
-  const loadHumanAddress = async () => {
-    if (user) {
-      setLoadingAddress(true)
-      try {
-        const response = await fetch("/api/usecases/humans/getHumanAddressUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ projectId, chainId, user }),
-        })
-        const { address: innerAddress } = await response.json()
-        setAddress(innerAddress)
-      } catch (error) {
-        console.error(error)
-      }
-      setLoadingAddress(false)
-    }
   }
 
   const loadHuman = async () => {
@@ -249,10 +237,10 @@ function HumanProvider(props) {
   }, [human])
 
   useEffect(() => {
-    loadHumanAddress()
+    loadHumanAddressData()
     loadHuman()
     const interval = setInterval(() => {
-      loadHumanAddress()
+      loadHumanAddressData()
       loadHuman()
     }, 5000)
     return () => clearInterval(interval)

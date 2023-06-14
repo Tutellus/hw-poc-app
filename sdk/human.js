@@ -57,4 +57,22 @@ export const humanSDK = {
       }
     }
   },
+
+  loadHumanAddress: async ({ projectId, chainId, user }) => {
+    if (user) {
+      try {
+        const response = await fetch("/api/usecases/humans/getHumanAddressUC", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ projectId, chainId, user }),
+        })
+        const { address: innerAddress } = await response.json()
+        return innerAddress
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  },
 }
