@@ -1,5 +1,5 @@
-import { explorerLink, truncateAddress } from "@/utils/address";
-import { ethers } from "ethers";
+import { explorerLink, truncateAddress } from "@/utils/address"
+import { ethers } from "ethers"
 
 export const PreUserOp = ({
   preUserOp,
@@ -7,7 +7,6 @@ export const PreUserOp = ({
   confirmSignAndSubmitFn,
   signAndSubmitFn,
 }) => {
-
   const renderParam = (param) => {
     if (ethers.utils.isAddress(param)) {
       return truncateAddress({
@@ -19,18 +18,18 @@ export const PreUserOp = ({
   }
 
   const renderParams = (params) => {
-    if (!params) return ''
+    if (!params) return ""
     return params.reduce((acc, param) => {
-      if (acc === '') {
+      if (acc === "") {
         return renderParam(param)
       }
       return `${acc}, ${renderParam(param)}`
-    }
-      , '')
+    }, "")
   }
 
-  const requiresConfirmation = preUserOp.isMasterRequired && preUserOp.masterSignature === '0x';
-  const isSignable = !requiresConfirmation && preUserOp.status === 'SIGNABLE';
+  const requiresConfirmation =
+    preUserOp.isMasterRequired && preUserOp.masterSignature === "0x"
+  const isSignable = !requiresConfirmation && preUserOp.status === "SIGNABLE"
 
   return (
     <div className="proposal">
@@ -46,39 +45,47 @@ export const PreUserOp = ({
         <div className="values">
           <div>{preUserOp._id}</div>
           <a
-            style={{ color: 'white' }}
-            href={explorerLink({ value: preUserOp.target, type: 'address' })}
+            style={{ color: "white" }}
+            href={explorerLink({ value: preUserOp.target, type: "address" })}
             target="_blank"
             rel="noreferrer"
-          >{truncateAddress({
-            address: preUserOp.target
-          })}</a>
+          >
+            {truncateAddress({
+              address: preUserOp.target,
+            })}
+          </a>
           <div>{preUserOp.method}</div>
           <div>{renderParams(preUserOp.params)}</div>
           <div>{preUserOp.status}</div>
           <div>{preUserOp.createdAt}</div>
         </div>
       </div>
-    
-    {requiresConfirmation &&
-        <div className="block">
-          <input
-            type="text"
-            placeholder="2FA Code"
-            value={preUserOp.code2fa}
-          />
-          <button onClick={() => confirmSignAndSubmitFn(preUserOp)}
-          > Verify </button>
-        </div>
-    }
 
-    {isSignable && 
-    <div className="block">
-      <button disabled={!canSign} onClick={() => signAndSubmitFn({
-        preUserOpId: preUserOp._id,
-      })}
-      > Sign </button>
-    </div>}
-  </div>
+      {requiresConfirmation && (
+        <div className="block">
+          <input type="text" placeholder="2FA Code" value={preUserOp.code2fa} />
+          <button onClick={() => confirmSignAndSubmitFn(preUserOp)}>
+            {" "}
+            Verify{" "}
+          </button>
+        </div>
+      )}
+
+      {isSignable && (
+        <div className="block">
+          <button
+            disabled={!canSign}
+            onClick={() =>
+              signAndSubmitFn({
+                preUserOpId: preUserOp._id,
+              })
+            }
+          >
+            {" "}
+            Sign{" "}
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
