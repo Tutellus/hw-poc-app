@@ -1,10 +1,24 @@
-import { GET_HUMAN_ADDRESS_QUERY, authFetcher } from "./GQL"
+import {
+  GET_HUMAN_ADDRESS_QUERY,
+  GET_HUMAN_BY_EMAIL_QUERY,
+  authFetcher,
+} from "./GQL"
 
 export const GQLRepository = {
   getHumanAddress: async ({ projectId }) => {
     const response = await authFetcher(GET_HUMAN_ADDRESS_QUERY, {
       input: {
         projectId,
+      },
+    })
+    return response
+  },
+
+  getHumanByEmail: async ({ projectId, email }) => {
+    const response = await authFetcher(GET_HUMAN_BY_EMAIL_QUERY, {
+      input: {
+        projectId,
+        email,
       },
     })
     return response
