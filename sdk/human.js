@@ -1,4 +1,6 @@
 import { config } from "./config"
+import { GQLRepository } from "./repository"
+
 const { CONTRACT } = config
 
 export const humanSDK = {
@@ -58,18 +60,14 @@ export const humanSDK = {
     }
   },
 
-  loadHumanAddress: async ({ projectId, chainId, user }) => {
+  loadHumanAddress: async ({ projectId, user }) => {
     if (user) {
       try {
-        const response = await fetch("/api/usecases/humans/getHumanAddressUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ projectId, chainId, user }),
+        const { getHumanAddress } = await GQLRepository.getHumanAddress({
+          projectId,
         })
-        const { address: innerAddress } = await response.json()
-        return innerAddress
+
+        return getHumanAddress.address
       } catch (error) {
         console.error(error)
       }
