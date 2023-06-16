@@ -2,6 +2,7 @@ import {
   GET_HUMAN_ADDRESS_QUERY,
   GET_HUMAN_BY_EMAIL_QUERY,
   CHECK_CONTRACT_ADDRESS_QUERY,
+  CHECK_CONTRACT_DATA_QUERY,
   authFetcher,
 } from "./GQL"
 
@@ -36,13 +37,13 @@ export const GQLRepository = {
   },
 
   checkContractData: async ({ address, method, params }) => {
-    const response = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
+    const { checkContractData } = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
       input: {
         contractAddress: address,
         method,
         params,
       },
     })
-    return response
+    return checkContractData.result
   },
 }

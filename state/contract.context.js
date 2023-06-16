@@ -219,11 +219,11 @@ function ContractProvider(props) {
   useEffect(() => {
     if (!contract) return
     checkContractAddress()
-    checkContractData()
+    checkContractDataFunction()
 
     const interval = setInterval(() => {
       checkContractAddress()
-      checkContractData()
+      checkContractDataFunction()
     }, 5000)
     return () => clearInterval(interval)
   }, [contract, updatingPolicies])

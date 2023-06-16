@@ -12,8 +12,10 @@ export const contractSDK = {
 
   checkContractData: async (CONTRACT) => {
     const method = "mint"
-    const params = [ethers.constants.AddressZero, ethers.constants.One]
-
+    const params = [
+      ethers.constants.AddressZero.toString(),
+      ethers.constants.One.toString(),
+    ]
     const result = await GQLRepository.checkContractData({
       address: CONTRACT?.address,
       method,
