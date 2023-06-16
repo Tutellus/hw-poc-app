@@ -15,7 +15,6 @@ const HumanContext = createContext({
   loadingPreUserOps: false,
   loadingUserOps: false,
   loadingDeployment: false,
-  deployHuman: async () => {},
   signMessageFromOwner: async (message) => {},
   requestPreUserOp: async ({ contractId, method, params, value }) => {},
   getPreUserOpHash: async ({ preUserOpId }) => {},
@@ -140,7 +139,7 @@ function HumanProvider(props) {
     return response
   }
 
-  const deployHumanData = async ({ projectId, chainId, user }) => {
+  const deployHumanData = async () => {
     setLoadingDeployment(true)
     const response = await deployHuman({
       projectId,
@@ -148,6 +147,7 @@ function HumanProvider(props) {
       user,
       externalAccount,
     })
+
     setLoadingDeployment(false)
     setHuman(response)
     loadHumanData()

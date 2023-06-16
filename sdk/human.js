@@ -188,20 +188,14 @@ export const humanSDK = {
   deployHuman: async ({ projectId, chainId, user, externalAccount }) => {
     if (user && externalAccount) {
       try {
-        const response = await fetch("/api/usecases/humans/deployHumanUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            chainId,
-            user,
-            owner: externalAccount,
-          }),
+        const response = await GQLRepository.deployHuman({
+          projectId,
+          chainId,
+          user,
+          externalAccount,
         })
-        const { human } = await response.json()
-        return human
+
+        return response
       } catch (error) {
         console.error(error)
       }
