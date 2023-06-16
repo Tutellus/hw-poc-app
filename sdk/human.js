@@ -1,7 +1,4 @@
-import { config } from "./config"
 import { GQLRepository } from "./repository"
-
-const { CONTRACT } = config
 
 export const humanSDK = {
   requestPreUserOp: async ({
