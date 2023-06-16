@@ -161,7 +161,9 @@ function ContractProvider(props) {
 
   const updateMask = async () => {
     try {
-      const selector = new ethers.utils.Interface(TOKEN_ABI).getSighash("mint")
+      const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash(
+        "mint"
+      )
       const mask = ethers.utils.solidityPack(["uint32"], ["0xffffffff"])
 
       const { mask: checkMask } = await fetch(
