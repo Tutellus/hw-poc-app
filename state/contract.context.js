@@ -6,7 +6,7 @@ import { useWeb3Auth } from "./web3auth.context"
 import { config, contractSDK } from "@/sdk"
 
 const { CONTRACT } = config
-const { checkContractAddress } = contractSDK
+const { checkContractAddress, checkContractData } = contractSDK
 
 const ContractContext = createContext({
   loadingContract: false,
@@ -112,29 +112,11 @@ function ContractProvider(props) {
     response ? setFullApprovedOwner(response) : setFullApprovedOwner(false)
   }
 
-  const checkContractData = async () => {
-    try {
-      const method = "mint"
-      const params = [ethers.constants.AddressZero, ethers.constants.One]
-
-      const result = await fetch("/api/usecases/policies/checkContractDataUC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chainId: CONTRACT.chainId,
-          address: CONTRACT.address,
-          method,
-          params,
-        }),
-      })
-      const { response } = await result.json()
-      setFunctionApprovedOwner(response)
-    } catch (error) {
-      console.error(error)
-      setFunctionApprovedOwner(false)
-    }
+  const checkContractDataFunction = async () => {
+    const response = await checkContractData(CONTRACT)
+    response
+      ? setFunctionApprovedOwner(response)
+      : setFunctionApprovedOwner(false)
   }
 
   const updateAddressStatus = async (status) => {
@@ -268,7 +250,7 @@ function ContractProvider(props) {
       getContract,
       updateContract,
       checkContractAddress: checkContractAddressData,
-      checkContractData,
+      checkContractData: checkContractDataFunction,
       updateAddressStatus,
       updateMask,
       updateFunctionStatus,
