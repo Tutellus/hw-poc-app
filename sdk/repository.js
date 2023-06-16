@@ -47,4 +47,17 @@ export const GQLRepository = {
     })
     return checkContractData.result
   },
+
+  deployHuman: async ({ projectId, email, name, role, address }) => {
+    const { deployHuman } = await authFetcher(DEPLOY_HUMAN_MUTATION, {
+      input: {
+        projectId,
+        email,
+        name,
+        role,
+        address,
+      },
+    })
+    return deployHuman
+  },
 }
