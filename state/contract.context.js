@@ -134,7 +134,7 @@ function ContractProvider(props) {
           status,
         }),
       })
-      checkContractAddress()
+      checkContractAddressData()
       setUpdatingPolicies(false)
     } catch (error) {
       console.error(error)
@@ -162,6 +162,8 @@ function ContractProvider(props) {
           }),
         }
       ).then((res) => res.json())
+
+      console.log({ checkMask })
 
       if (checkMask === mask) {
         return
@@ -208,7 +210,7 @@ function ContractProvider(props) {
       console.error(error)
     }
 
-    checkContractAddress()
+    checkContractAddressData()
     setUpdatingPolicies(false)
   }
 
@@ -218,11 +220,11 @@ function ContractProvider(props) {
 
   useEffect(() => {
     if (!contract) return
-    checkContractAddress()
+    checkContractAddressData()
     checkContractDataFunction()
 
     const interval = setInterval(() => {
-      checkContractAddress()
+      checkContractAddressData()
       checkContractDataFunction()
     }, 5000)
     return () => clearInterval(interval)

@@ -6,7 +6,6 @@ export const contractSDK = {
     const result = await GQLRepository.checkContractAddress({
       address: CONTRACT?.address,
     })
-
     return result
   },
 
