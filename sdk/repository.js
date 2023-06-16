@@ -25,14 +25,24 @@ export const GQLRepository = {
     return response
   },
 
-  getContractAddress: async ({ address }) => {
+  checkContractAddress: async ({ address }) => {
     if (!address) return
     const response = await authFetcher(CHECK_CONTRACT_ADDRESS_QUERY, {
       contractAddress: {
         address,
       },
     })
-    console.log({ response })
+    return response
+  },
+
+  checkContractData: async ({ address, method, params }) => {
+    const response = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
+      input: {
+        contractAddress: address,
+        method,
+        params,
+      },
+    })
     return response
   },
 }
