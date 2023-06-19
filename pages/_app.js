@@ -1,15 +1,18 @@
-import { Layout } from '@/components/layout/Layout';
-import { Providers } from '@/components/layout/Providers';
-import '@/styles/globals.css'
+import { Layout } from "@/components/layout/Layout";
+import { Providers } from "@/components/layout/Providers";
+import { SessionProvider } from "next-auth/react";
+import "@/styles/globals.css";
 
-const App = ({ Component, pageProps }) => {
+const App = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
-    <Providers>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </Providers>
+    <SessionProvider session={session}>
+      <Providers>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Providers>
+    </SessionProvider>
   );
-}
+};
 
-export default App
+export default App;
