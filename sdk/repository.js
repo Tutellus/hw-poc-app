@@ -1,6 +1,7 @@
 import {
   GET_HUMAN_ADDRESS_QUERY,
   GET_HUMAN_BY_EMAIL_QUERY,
+  GET_CONTRACTS_QUERY,
   CHECK_CONTRACT_ADDRESS_QUERY,
   CHECK_CONTRACT_DATA_QUERY,
   authFetcher,
@@ -24,6 +25,11 @@ export const GQLRepository = {
       },
     })
     return response
+  },
+
+  getContracts: async () => {
+    const { getContracts } = await authFetcher(GET_CONTRACTS_QUERY, {})
+    return getContracts?.items[0]
   },
 
   checkContractAddress: async ({ address }) => {

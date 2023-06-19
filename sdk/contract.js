@@ -23,4 +23,9 @@ export const contractSDK = {
 
     return result
   },
+
+  getContracts: async () => {
+    const result = await GQLRepository.getContracts()
+    return result
+  },
 }

@@ -6,7 +6,7 @@ import { useWeb3Auth } from "./web3auth.context"
 import { config, contractSDK } from "@/sdk"
 
 const { CONTRACT } = config
-const { checkContractAddress, checkContractData } = contractSDK
+const { checkContractAddress, checkContractData, getContracts } = contractSDK
 
 const ContractContext = createContext({
   loadingContract: false,
@@ -63,19 +63,8 @@ function ContractProvider(props) {
   const getContract = async () => {
     try {
       setLoadingContract(true)
-      const filter = {
-        address: CONTRACT.address,
-        chainId: CONTRACT.chainId,
-      }
-      const response = await fetch("/api/usecases/contracts/getContractUC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filter }),
-      })
-      const { contract: innerContract } = await response.json()
-      setContract(innerContract)
+      const response = await getContracts()
+      setContract(response)
       setLoadingContract(false)
     } catch (error) {
       console.error(error)
