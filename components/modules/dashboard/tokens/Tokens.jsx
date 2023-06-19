@@ -1,39 +1,38 @@
-import { useState } from "react"
-import { useContract } from "@/state/contract.context"
-import { useHuman } from "@/state/human.context"
-import { ethers } from "ethers"
-import { useWeb3Auth } from "@/state/web3auth.context"
+import { useState } from "react";
+import { useContract } from "@/state/contract.context";
+import { useHuman } from "@/state/human.context";
+import { ethers } from "ethers";
+
+const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const Tokens = () => {
-  const { projectId } = useWeb3Auth()
-  const { loadingContract, contract, balance, updateContract } = useContract()
-  const { address, human, requestPreUserOp, signAndSubmitPreUserOp } =
-    useHuman()
+  const { loadingContract, contract, balance, updateContract } = useContract();
+  const { address, human, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
 
-  const [minting, setMinting] = useState(false)
+  const [minting, setMinting] = useState(false);
 
-  const canMint = human?.status === "CONFIRMED"
+  const canMint = human?.status === "CONFIRMED";
 
   const requestMint = async () => {
-    setMinting(true)
+    setMinting(true);
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
-      projectId,
+      projectId: PROJECT_ID,
       chainId: contract.chainId,
       address: contract.address,
       method: "mint",
       params: [address, ethers.utils.parseEther("5")],
       value: ethers.utils.parseEther("0"),
-    })
+    });
 
     if (preUserOp.status === "SIGNABLE") {
       signAndSubmitPreUserOp({
         preUserOpId: preUserOp._id,
-      })
+      });
     }
 
-    setMinting(false)
-  }
+    setMinting(false);
+  };
 
   return (
     <div className="box">
@@ -74,5 +73,5 @@ export const Tokens = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
