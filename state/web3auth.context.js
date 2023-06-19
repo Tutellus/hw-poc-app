@@ -11,7 +11,8 @@ const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
 
 const Web3AuthContext = createContext({
-  provider: null,
+  web3Provider: null,
+  externalAccount: null,
   loggedIn: false,
   login: () => {},
   logout: () => {},
