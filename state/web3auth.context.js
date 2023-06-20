@@ -26,8 +26,7 @@ function Web3AuthProvider(props) {
   const [loggedIn, setLoggedIn] = useState(false)
   const [externalAccount, setExternalAccount] = useState(null)
   const [user, setUser] = useState(null)
-  const [idToken, setIdToken] = useState(null)
-  const data = useSession()
+  const { accessToken } = useSession()
 
   // Initialize Web3Auth
   useEffect(() => {
@@ -88,16 +87,15 @@ function Web3AuthProvider(props) {
   }
 
   useEffect(() => {
-    if (web3authProvider && idToken) {
+    if (web3authProvider && accessToken) {
       const provider = new ethers.providers.Web3Provider(web3authProvider)
       setWeb3Provider(provider)
       getExternalAccount(provider)
     } else {
       setWeb3Provider(null)
       setExternalAccount(null)
-      getIdToken()
     }
-  }, [web3authProvider, idToken])
+  }, [web3authProvider, accessToken])
 
   const login = async () => {
     if (!web3auth) {
@@ -117,6 +115,7 @@ function Web3AuthProvider(props) {
       }
     )
     setLoggedIn(true)
+    console.log({ web3authProvider })
     setWeb3authProvider(web3authProvider)
   }
 
@@ -128,11 +127,6 @@ function Web3AuthProvider(props) {
     await web3auth.logout()
     setWeb3authProvider(null)
     setLoggedIn(false)
-  }
-
-  const getIdToken = async () => {
-    console.log({ web3auth }, "getIDtoken")
-    // setIdToken(data?.token)
   }
 
   const getUser = async () => {
@@ -151,7 +145,7 @@ function Web3AuthProvider(props) {
       setUser(null)
     }
   }, [loggedIn])
-
+  console.log({ web3Provider, user, externalAccount })
   const memoizedData = useMemo(
     () => ({
       web3Provider,
