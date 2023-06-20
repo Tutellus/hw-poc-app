@@ -26,8 +26,8 @@ function Web3AuthProvider(props) {
   const [loggedIn, setLoggedIn] = useState(false)
   const [externalAccount, setExternalAccount] = useState(null)
   const [user, setUser] = useState(null)
-  const { data } = useSession()
-  const accessToken = data?.accessToken
+  const [idToken, setIdToken] = useState(null)
+  const data = useSession()
 
   // Initialize Web3Auth
   useEffect(() => {
@@ -88,15 +88,16 @@ function Web3AuthProvider(props) {
   }
 
   useEffect(() => {
-    if (web3authProvider && accessToken) {
+    if (web3authProvider && idToken) {
       const provider = new ethers.providers.Web3Provider(web3authProvider)
       setWeb3Provider(provider)
       getExternalAccount(provider)
     } else {
       setWeb3Provider(null)
       setExternalAccount(null)
+      getIdToken()
     }
-  }, [web3authProvider, accessToken])
+  }, [web3authProvider, idToken])
 
   const login = async () => {
     if (!web3auth) {
@@ -109,7 +110,7 @@ function Web3AuthProvider(props) {
       {
         loginProvider: "jwt",
         extraLoginOptions: {
-          id_token: accessToken,
+          id_token: idToken,
           verifierIdField: "sub",
           domain: "http://localhost:3000",
         },
@@ -129,13 +130,9 @@ function Web3AuthProvider(props) {
     setLoggedIn(false)
   }
 
-  const getAuthenticateUser = async () => {
-    if (!web3auth) {
-      console.log("web3auth not initialized yet")
-      return
-    }
-    const idToken = await web3auth.authenticateUser()
-    return idToken
+  const getIdToken = async () => {
+    console.log({ web3auth }, "getIDtoken")
+    // setIdToken(data?.token)
   }
 
   const getUser = async () => {

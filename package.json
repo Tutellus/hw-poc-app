@@ -11,7 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.354.0",
+    "@aws-sdk/lib-dynamodb": "3.354.0",
     "@headlessui/react": "^1.7.7",
+    "@next-auth/dynamodb-adapter": "3.0.2",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",
     "@web3auth/no-modal": "6.1.1",
@@ -22,6 +25,7 @@
     "ethers": "^5.7.2",
     "graphql-request": "^6.0.0",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "9.0.0",
     "lodash": "^4.17.21",
     "mongodb": "^4.13.0",
     "next": "12.3.4",
