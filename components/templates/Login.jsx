@@ -1,16 +1,26 @@
-import { useWeb3Auth } from "@/state/web3auth.context"
-import { web3AuthSDK } from "@/sdk"
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export const Login = () => {
-  const { logIn, user, loggingIn } = useWeb3Auth()
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  console.log({ logIn, user })
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
+
+  const isLoading = status === "loading";
 
   return (
     <div className="login">
-      <button type="submit" onClick={logIn} disabled={user}>
-        {loggingIn ? "Logging in..." : "Log in"}
+      <button type="submit" onClick={() => signIn("discord")} disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Log in"}
       </button>
     </div>
-  )
-}
+  );
+};

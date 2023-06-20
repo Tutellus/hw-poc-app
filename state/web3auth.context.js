@@ -1,183 +1,176 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { Web3Auth } from "@web3auth/modal"
-import { ethers } from "ethers"
-import { useRouter } from "next/router"
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
+import { useSession } from "next-auth/react";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { ethers } from "ethers";
 
-const WEB3AUTH_USER_KEY = "web3auth-user"
+const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
 
 const Web3AuthContext = createContext({
-  chainId: null,
-  projectId: null,
-  web3Auth: null,
-  web3Authprovider: null,
   web3Provider: null,
-  user: null,
-  loading: false,
-  loggingIn: false,
   externalAccount: null,
-  logIn: () => {},
-  logOut: () => {},
+  loggedIn: false,
+  login: () => {},
+  logout: () => {},
   redirect: () => {},
-})
+});
 
 function Web3AuthProvider(props) {
-  const [chainId, setChainId] = useState(null)
-  const [projectId, setProjectId] = useState(null)
-  const [web3Auth, setWeb3Auth] = useState(null)
-  const [web3Authprovider, setWeb3AuthProvider] = useState(null)
-  const [web3Provider, setWeb3Provider] = useState(null)
+  const [web3auth, setWeb3auth] = useState(null);
+  const [web3authProvider, setWeb3authProvider] = useState(null);
+  const [web3Provider, setWeb3Provider] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [externalAccount, setExternalAccount] = useState(null);
+  const [user, setUser] = useState(null);
+  const { data } = useSession();
+  const accessToken = data?.accessToken;
 
-  const [loading, setLoading] = useState(false)
-  const [loggingIn, setLoggingIn] = useState(false)
-  const [user, setUser] = useState(null)
-  const [externalAccount, setExternalAccount] = useState(null)
+  // Initialize Web3Auth
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const chainConfig = {
+          chainNamespace: CHAIN_NAMESPACES.EIP155,
+          chainId: CHAIN_ID,
+          rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
+          displayName: "Mumbai Testnet",
+          blockExplorer: "https://mumbai.polygonscan.com/",
+          ticker: "MATIC",
+          tickerName: "Matic",
+        };
+        const web3auth = new Web3AuthNoModal({
+          clientId: WEB3AUTH_CLIENT_ID,
+          chainConfig,
+          web3AuthNetwork: "cyan",
+          useCoreKitKey: false,
+        });
 
-  const router = useRouter()
+        const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
 
-  const logIn = async () => {
-    if (loggingIn) {
-      return
-    }
-    setLoggingIn(true)
-    try {
-      const provider = await web3Auth.connect()
-      setWeb3AuthProvider(provider)
-      getUserInfo(web3Auth)
-    } catch (e) {
-      console.error(e)
-      setWeb3AuthProvider(null)
-      setUser(null)
-    }
-    setLoggingIn(false)
-  }
+        const openloginAdapter = new OpenloginAdapter({
+          adapterSettings: {
+            loginConfig: {
+              jwt: {
+                verifier: "web3auth-custom-jwt",
+                typeOfLogin: "jwt",
+                clientId: WEB3AUTH_CLIENT_ID,
+              },
+            },
+          },
+          privateKeyProvider,
+        });
+        web3auth.configureAdapter(openloginAdapter);
+        setWeb3auth(web3auth);
 
-  const logOut = async () => {
-    if (loggingIn) {
-      return
-    }
-    try {
-      const provider = await web3Auth.logout()
-      setWeb3AuthProvider(provider)
-      setWeb3Provider(null)
-      setUser(null)
-      setExternalAccount(null)
-      localStorage.removeItem(WEB3AUTH_USER_KEY)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const redirect = () => {
-    if (user) {
-      if (router.pathname !== "/dashboard") {
-        router.push("/dashboard")
+        await web3auth.init();
+        setWeb3authProvider(web3auth.provider);
+        if (web3auth.connected) {
+          setLoggedIn(true);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } else {
-      if (router.pathname !== "/login") {
-        router.push("/login")
-      }
-    }
-  }
+    };
+
+    init();
+  }, []);
 
   const getExternalAccount = async (provider) => {
-    const signer = await provider.getSigner()
-    const account = await signer.getAddress()
-    setExternalAccount(account)
-  }
-
-  const getUserInfo = async (w3a) => {
-    try {
-      if (localStorage.getItem(WEB3AUTH_USER_KEY)) {
-        const userInfo = JSON.parse(localStorage.getItem(WEB3AUTH_USER_KEY))
-        setUser(userInfo)
-        return
-      } else {
-        const userInfo = await w3a.getUserInfo()
-        setUser(userInfo)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const init = async () => {
-    try {
-      const innerChainId = process.env.NEXT_PUBLIC_CHAIN_ID
-      const innerProjectId = process.env.NEXT_PUBLIC_PROJECT_ID
-
-      setLoading(true)
-      const w3a = new Web3Auth({
-        clientId: innerChainId,
-        chainConfig: {
-          chainNamespace: "eip155",
-          chainId: process.env.NEXT_PUBLIC_CHAIN_ID,
-        },
-      })
-      await w3a.initModal()
-      setWeb3Auth(w3a)
-      setWeb3AuthProvider(w3a.provider)
-      setChainId(innerChainId)
-      setProjectId(innerProjectId)
-      await getUserInfo(w3a)
-      setLoading(false)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+    const signer = await provider.getSigner();
+    const account = await signer.getAddress();
+    setExternalAccount(account);
+  };
 
   useEffect(() => {
-    init()
-  }, [])
-
-  useEffect(() => {
-    if (web3Authprovider) {
-      const provider = new ethers.providers.Web3Provider(web3Authprovider)
-      setWeb3Provider(provider)
-      getExternalAccount(provider)
+    if (web3authProvider && accessToken) {
+      const provider = new ethers.providers.Web3Provider(web3authProvider);
+      setWeb3Provider(provider);
+      getExternalAccount(provider);
+    } else {
+      setWeb3Provider(null);
+      setExternalAccount(null);
     }
-  }, [web3Authprovider])
+  }, [web3authProvider, accessToken]);
+
+  const login = async () => {
+    if (!web3auth) {
+      console.log("web3auth not initialized yet");
+      return;
+    }
+
+    const web3authProvider = await web3auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+      loginProvider: "jwt",
+      extraLoginOptions: {
+        id_token: accessToken,
+        verifierIdField: "sub",
+        domain: "http://localhost:3000",
+      },
+    });
+    setLoggedIn(true);
+    setWeb3authProvider(web3authProvider);
+  };
+
+  const logout = async () => {
+    if (!web3auth) {
+      console.log("web3auth not initialized yet");
+      return;
+    }
+    await web3auth.logout();
+    setWeb3authProvider(null);
+    setLoggedIn(false);
+  };
+
+  const getAuthenticateUser = async () => {
+    if (!web3auth) {
+      console.log("web3auth not initialized yet");
+      return;
+    }
+    const idToken = await web3auth.authenticateUser();
+    return idToken;
+  };
+
+  const getUser = async () => {
+    if (!web3auth) {
+      console.log("web3auth not initialized yet");
+      return;
+    }
+    const user = await web3auth.getUser();
+    setUser(user);
+  };
 
   useEffect(() => {
-    redirect()
-  }, [user])
+    if (loggedIn) {
+      getUser();
+    } else {
+      setUser(null);
+    }
+  }, [loggedIn]);
 
   const memoizedData = useMemo(
     () => ({
-      chainId,
-      projectId,
-      web3Auth,
-      web3Authprovider,
       web3Provider,
-      loading,
-      loggingIn,
-      user,
       externalAccount,
-      logIn,
-      logOut,
-      redirect,
+      user,
+      loggedIn,
+      login,
+      logout,
     }),
-    [
-      chainId,
-      projectId,
-      web3Auth,
-      web3Authprovider,
-      loading,
-      loggingIn,
-      user,
-      externalAccount,
-    ]
-  )
+    [web3Provider, externalAccount, user, loggedIn]
+  );
 
-  return <Web3AuthContext.Provider value={memoizedData} {...props} />
+  return <Web3AuthContext.Provider value={memoizedData} {...props} />;
 }
 
 function useWeb3Auth() {
-  const context = useContext(Web3AuthContext)
+  const context = useContext(Web3AuthContext);
   if (context === undefined) {
-    throw new Error(`useWeb3Auth must be used within a Web3AuthProvider`)
+    throw new Error(`useWeb3Auth must be used within a Web3AuthProvider`);
   }
-  return context
+  return context;
 }
 
-export { Web3AuthProvider, useWeb3Auth }
+export { Web3AuthProvider, useWeb3Auth };
