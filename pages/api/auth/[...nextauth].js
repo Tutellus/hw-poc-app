@@ -69,7 +69,6 @@ const authenticate = async (sessionUser) => {
     )
 
     const { token, tokenExpiry, refreshToken, user } = authenticate
-    console.log("AUTHEEEEEEENTICATEEE!!", token)
     return { token, tokenExpiry, refreshToken, user }
   } catch (error) {
     console.warn(">>> AUTHENTICATE ERROR", error)
@@ -133,8 +132,8 @@ export default NextAuth({
         // previamente o no en BD
         const response = await authenticate({ ...user })
         currentAuthResponse = response
-      
-        return true;
+
+        return true
       }
       return true
     },
@@ -143,7 +142,7 @@ export default NextAuth({
     // Se guarda la información de en el token para obtenerla en la sesión
     // actual.
     async jwt({ token, user }) {
-      console.log('jwt---', JSON.stringify(token.api));
+      console.log("jwt---", JSON.stringify(token.api))
       if (user) {
         token.api = currentAuthResponse
       }

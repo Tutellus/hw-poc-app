@@ -8,7 +8,6 @@ const client = new GraphQLClient(endpoint || "")
 export const fetch = async (queryName, variables, headers) => {
   const session = await getSession()
   const token = `${session?.accessToken}`
-  console.log({ token })
   const queryStr = getQuery(queryName)
 
   const isPublic = isPublicQuery(queryName)
@@ -67,7 +66,6 @@ export const signOutAndDeleteToken = async () => {
 }
 
 export const setAuthToken = (token) => {
-  console.log({ token })
   client.setHeaders({
     authorization: `Bearer ${token}`,
   })

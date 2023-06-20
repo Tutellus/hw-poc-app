@@ -2,7 +2,6 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
 import { humanSDK } from "@/sdk"
-import { set } from "lodash"
 
 const HumanContext = createContext({
   address: null,
@@ -28,7 +27,6 @@ const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
   const { user, externalAccount, web3Provider } = useWeb3Auth()
-
   const {
     requestPreUserOp,
     loadPreUserOps,
