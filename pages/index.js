@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-export default function Home() {
+const Page = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -17,3 +17,6 @@ export default function Home() {
 
   return null;
 }
+
+export default Page;
+Page.requireAuth = true;

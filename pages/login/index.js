@@ -1,5 +1,7 @@
 import { Login as LoginTemplate } from '../../components/templates/Login';
 
-export default function Login() {
+const Page = () => {
   return <LoginTemplate />;
 };
+
+export default Page;

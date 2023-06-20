@@ -28,7 +28,7 @@ const MINUTES = 60 * 1000
 const REFRESH_SESSION_GAP_IN_MINUTES =
   process.env.NEXTAUTH_REFRESH_SESSION_GAP_IN_MINUTES || 5
 
-const signInPage = "/auth/signin"
+const signInPage = "/login"
 
 const generateAuthToken = ({ id, ...user }) => {
   const authToken = JWTHelper.sign(
@@ -62,14 +62,15 @@ const authenticate = async (sessionUser) => {
       ...sessionUser,
     })
     console.warn(">>> Authenticate", authToken)
-    const authenticate = await fetch(
+    const { authenticate } = await fetch(
       "AUTHENTICATE",
       { rfToken: null },
       { "x-api-next-auth": `Bearer ${authToken}` }
     )
 
-    console.log("AUTHEEEEEEENTICATEEE", { authenticate, authToken })
-    return authenticate
+    const { token, tokenExpiry, refreshToken, user } = authenticate
+    console.log("AUTHEEEEEEENTICATEEE!!", token)
+    return { token, tokenExpiry, refreshToken, user }
   } catch (error) {
     console.warn(">>> AUTHENTICATE ERROR", error)
   }
@@ -127,22 +128,13 @@ export default NextAuth({
   }),
   callbacks: {
     async signIn({ user, email }) {
-      if (email?.verificationRequest) {
-        return true
-      }
       if (user) {
-        // Email no recuperado del provider seleccionado
-        if (!user.email) {
-          return `${signInPage}?error=EmailRequired`
-        }
-
         // AUTHENTICATE. Se comporta como un signIn/signUp en función de si existe
         // previamente o no en BD
         const response = await authenticate({ ...user })
         currentAuthResponse = response
-
-        const { user: userAccount } = response
-        return userAccount
+      
+        return true;
       }
       return true
     },
@@ -151,6 +143,7 @@ export default NextAuth({
     // Se guarda la información de en el token para obtenerla en la sesión
     // actual.
     async jwt({ token, user }) {
+      console.log('jwt---', JSON.stringify(token.api));
       if (user) {
         token.api = currentAuthResponse
       }
