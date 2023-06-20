@@ -23,9 +23,11 @@ const HumanContext = createContext({
   signAndSubmitPreUserOp: async ({ preUserOpId }) => {},
 })
 
+const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+
 function HumanProvider(props) {
-  const { chainId, projectId, user, externalAccount, web3Provider } =
-    useWeb3Auth()
+  const { user, externalAccount, web3Provider } = useWeb3Auth()
 
   const {
     requestPreUserOp,

@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ethers } from "ethers"
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useHuman } from "./human.context"
 import { useWeb3Auth } from "./web3auth.context"
+import { ethers } from "ethers"
+import { useHuman } from "./human.context"
 import { config, contractSDK } from "@/sdk"
-
 const { CONTRACT } = config
 const { checkContractAddress, checkContractData, getContracts } = contractSDK
+const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 const ContractContext = createContext({
   loadingContract: false,
@@ -26,13 +27,12 @@ const ContractContext = createContext({
 })
 
 function ContractProvider(props) {
-  const { projectId, chainId } = useWeb3Auth()
-  const { address } = useHuman()
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
 
   const [loadingBalance, setLoadingBalance] = useState(false)
   const [balance, setBalance] = useState("---")
+  const { address } = useHuman()
 
   const [updatingPolicies, setUpdatingPolicies] = useState(false)
   const [fullApprovedOwner, setFullApprovedOwner] = useState(false)
