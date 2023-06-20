@@ -25,6 +25,7 @@ function Web3AuthProvider(props) {
   const [web3Provider, setWeb3Provider] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [externalAccount, setExternalAccount] = useState(null);
+  const [user, setUser] = useState(null);
   const { data } = useSession();
   const accessToken = data?.accessToken;
 
@@ -79,7 +80,6 @@ function Web3AuthProvider(props) {
   }, []);
 
   const getExternalAccount = async (provider) => {
-    console.log({ provider, web3auth, accessToken });
     const signer = await provider.getSigner();
     const account = await signer.getAddress();
     setExternalAccount(account);
@@ -94,7 +94,7 @@ function Web3AuthProvider(props) {
       setWeb3Provider(null);
       setExternalAccount(null);
     }
-  }, [web3authProvider]);
+  }, [web3authProvider, accessToken]);
 
   const login = async () => {
     if (!web3auth) {
@@ -133,34 +133,33 @@ function Web3AuthProvider(props) {
     return idToken;
   };
 
-  const getUserInfo = async () => {
+  const getUser = async () => {
     if (!web3auth) {
       console.log("web3auth not initialized yet");
       return;
     }
-    const user = await web3auth.getUserInfo();
-    return user;
+    const user = await web3auth.getUser();
+    setUser(user);
   };
 
   useEffect(() => {
-    const userInfo = async () => {
-      if (loggedIn) {
-        const user = await getUserInfo();
-        console.log("user", user);
-      }
-    };
-    userInfo();
+    if (loggedIn) {
+      getUser();
+    } else {
+      setUser(null);
+    }
   }, [loggedIn]);
 
   const memoizedData = useMemo(
     () => ({
       web3Provider,
       externalAccount,
+      user,
       loggedIn,
       login,
       logout,
     }),
-    [web3Provider, externalAccount]
+    [web3Provider, externalAccount, user, loggedIn]
   );
 
   return <Web3AuthContext.Provider value={memoizedData} {...props} />;
