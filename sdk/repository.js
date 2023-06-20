@@ -4,6 +4,7 @@ import {
   GET_CONTRACTS_QUERY,
   CHECK_CONTRACT_ADDRESS_QUERY,
   CHECK_CONTRACT_DATA_QUERY,
+  GET_PROPOSALS_QUERY,
   authFetcher,
 } from "./GQL"
 
@@ -65,5 +66,14 @@ export const GQLRepository = {
       },
     })
     return deployHuman
+  },
+
+  getProposals: async ({ humanId }) => {
+    const { getProposals } = await authFetcher(GET_PROPOSALS_QUERY, {
+      input: {
+        humanId,
+      },
+    })
+    return getProposals?.items
   },
 }
