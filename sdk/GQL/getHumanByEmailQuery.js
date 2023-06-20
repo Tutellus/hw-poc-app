@@ -13,7 +13,6 @@ export const GET_HUMAN_BY_EMAIL_QUERY = gql`
         status
         stringSalt
         userId
-
         nonce
         lastExecutionTime
       }
