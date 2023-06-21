@@ -8,6 +8,9 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ethers } from "ethers";
 
 const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH;
+const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK;
+
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
 
 const Web3AuthContext = createContext({
@@ -46,7 +49,7 @@ function Web3AuthProvider(props) {
         const web3auth = new Web3AuthNoModal({
           clientId: WEB3AUTH_CLIENT_ID,
           chainConfig,
-          web3AuthNetwork: "cyan",
+          web3AuthNetwork: WEB3AUTH_NETWORK,
           useCoreKitKey: false,
         });
 
@@ -58,7 +61,7 @@ function Web3AuthProvider(props) {
           adapterSettings: {
             loginConfig: {
               jwt: {
-                verifier: "web3auth-custom-jwt",
+                verifier: WEB3AUTH_CUSTOMAUTH,
                 typeOfLogin: "jwt",
                 clientId: WEB3AUTH_CLIENT_ID,
               },
@@ -153,7 +156,9 @@ function Web3AuthProvider(props) {
       setUser(null);
     }
   }, [loggedIn]);
+
   console.log({ web3authStatus, loggedIn, accessToken, web3Provider, user, externalAccount });
+  
   const memoizedData = useMemo(
     () => ({
       web3Provider,
