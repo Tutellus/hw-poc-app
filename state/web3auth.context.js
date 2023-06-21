@@ -9,6 +9,8 @@ import { ethers } from "ethers"
 
 const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
+const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
 
 const Web3AuthContext = createContext({
   web3Provider: null,
@@ -46,7 +48,8 @@ function Web3AuthProvider(props) {
         const web3auth = new Web3AuthNoModal({
           clientId: WEB3AUTH_CLIENT_ID,
           chainConfig,
-          web3AuthNetwork: "cyan",
+          web3AuthNetwork: WEB3AUTH_NETWORK,
+          useCoreKitKey: false,
         })
 
         const privateKeyProvider = new EthereumPrivateKeyProvider({
@@ -57,7 +60,7 @@ function Web3AuthProvider(props) {
           adapterSettings: {
             loginConfig: {
               jwt: {
-                verifier: "web3auth-custom-jwt",
+                verifier: WEB3AUTH_CUSTOMAUTH,
                 typeOfLogin: "jwt",
                 clientId: WEB3AUTH_CLIENT_ID,
               },
