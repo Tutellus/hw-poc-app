@@ -1,23 +1,22 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
-import { Human } from "../modules/dashboard/human/Human";
-import { Account } from "../modules/dashboard/account/Account";
-import { Tokens } from "../modules/dashboard/tokens/Tokens";
-import { Contract } from "../modules/dashboard/contract/Contract";
-import { PreUserOps } from "../modules/dashboard/preUserOps/PreUserOps";
-import { UserOps } from "../modules/dashboard/userOps/UserOps";
+import { useEffect } from "react"
+import { useRouter } from "next/router"
+import { useSession } from "next-auth/react"
+import { Human } from "../modules/dashboard/human/Human"
+import { Account } from "../modules/dashboard/account/Account"
+import { Tokens } from "../modules/dashboard/tokens/Tokens"
+import { Contract } from "../modules/dashboard/contract/Contract"
+import { PreUserOps } from "../modules/dashboard/preUserOps/PreUserOps"
 
 export const Dashboard = () => {
-  const { data: session } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     if (!session) {
-      router.push("/login");
+      router.push("/login")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, [session])
 
   return (
     <div className="dashboard">
@@ -33,11 +32,8 @@ export const Dashboard = () => {
       {/* your contract */}
       <Contract />
 
-      {/* my external wallet */}
-      <PreUserOps />
-
       {/* owner proposals list */}
-      <UserOps />
+      <PreUserOps />
     </div>
-  );
-};
+  )
+}

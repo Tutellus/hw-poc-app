@@ -22,14 +22,13 @@ const HumanContext = createContext({
   signAndSubmitPreUserOp: async ({ preUserOpId }) => {},
 })
 
-const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider } = useWeb3Auth()
+  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
   const {
     requestPreUserOp,
-    loadPreUserOps,
     loadHumanAddress,
     loadUserOps,
     loadHuman,
@@ -74,7 +73,12 @@ function HumanProvider(props) {
 
   const loadHumanAddressData = async () => {
     setLoadingAddress(true)
-    const response = await loadHumanAddress({ projectId, chainId, user })
+    const response = await loadHumanAddress({
+      projectId,
+      chainId,
+      user,
+      accessToken,
+    })
     setAddress(response)
     setLoadingAddress(false)
   }
@@ -88,20 +92,17 @@ function HumanProvider(props) {
 
   const getRequestPreUserOpData = async ({
     projectId,
-    chainId,
-    address,
-    method,
-    params,
-    value,
+    title,
+    calls,
+    description,
+    accessToken,
   }) => {
     const response = await requestPreUserOp({
       projectId,
-      chainId,
-      address,
-      method,
-      params,
-      value,
-      user,
+      title,
+      calls,
+      description,
+      accessToken,
     })
     loadPreUserOpsData()
     return response
@@ -146,6 +147,7 @@ function HumanProvider(props) {
       chainId,
       user,
       externalAccount,
+      accessToken,
     })
 
     setLoadingDeployment(false)

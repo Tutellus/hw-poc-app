@@ -19,11 +19,13 @@ export const PreUserOps = () => {
     }
   }
 
+  console.log({ preUserOps })
+
   return (
     <div
       className="box"
       style={{
-        gridColumn: "1 / 3",
+        gridColumn: "1 / 5",
       }}
     >
       <div className="title">Proposals</div>

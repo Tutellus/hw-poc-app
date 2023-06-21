@@ -8,7 +8,7 @@ export const UserOps = () => {
     <div
       className="box"
       style={{
-        gridColumn: "3 / 5",
+        gridColumn: "1 / 5",
       }}
     >
       <div className="title">User Operations</div>
