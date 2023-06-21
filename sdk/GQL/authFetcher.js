@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request"
 
-export const authFetcher = async (query, variables = null) => {
-  const token = process.env.NEXT_PUBLIC_TOKEN_JWT
+export const authFetcher = async (query, variables = null, accessToken) => {
+  // const token = process.env.NEXT_PUBLIC_TOKEN_JWT
 
   const gqlClient = await new GraphQLClient(
     process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
@@ -11,7 +11,7 @@ export const authFetcher = async (query, variables = null) => {
   )
 
   gqlClient.setHeaders({
-    authorization: `Bearer ${token}`,
+    authorization: `Bearer ${accessToken}`,
   })
 
   try {

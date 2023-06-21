@@ -4,17 +4,23 @@ import {
   GET_CONTRACTS_QUERY,
   CHECK_CONTRACT_ADDRESS_QUERY,
   CHECK_CONTRACT_DATA_QUERY,
-  GET_PROPOSALS_QUERY,
+  DEPLOY_HUMAN_MUTATION,
+  REQUEST_PROPOSAL_MUTATION,
+  GET_PROPOSALS_HASH_QUERY,
   authFetcher,
 } from "./GQL"
 
 export const GQLRepository = {
-  getHumanAddress: async ({ projectId }) => {
-    const response = await authFetcher(GET_HUMAN_ADDRESS_QUERY, {
-      input: {
-        projectId,
+  getHumanAddress: async ({ projectId, accessToken }) => {
+    const response = await authFetcher(
+      GET_HUMAN_ADDRESS_QUERY,
+      {
+        input: {
+          projectId,
+        },
       },
-    })
+      accessToken
+    )
     return response
   },
 
@@ -55,25 +61,53 @@ export const GQLRepository = {
     return checkContractData.result
   },
 
-  deployHuman: async ({ projectId, email, name, role, address }) => {
-    const { deployHuman } = await authFetcher(DEPLOY_HUMAN_MUTATION, {
-      input: {
-        projectId,
-        email,
-        name,
-        role,
-        address,
+  deployHuman: async ({ projectId, owner, accessToken }) => {
+    console.log("DEPLOY HUMAN", { projectId, owner })
+
+    const { deployHuman } = await authFetcher(
+      DEPLOY_HUMAN_MUTATION,
+      {
+        input: {
+          projectId,
+          owner,
+        },
       },
-    })
+      accessToken
+    )
     return deployHuman
   },
 
-  getProposals: async ({ humanId }) => {
-    const { getProposals } = await authFetcher(GET_PROPOSALS_QUERY, {
-      input: {
-        humanId,
+  requestProposals: async ({
+    projectId,
+    title,
+    calls,
+    description,
+    accessToken,
+  }) => {
+    const { requestProposal } = await authFetcher(
+      REQUEST_PROPOSAL_MUTATION,
+      {
+        input: {
+          projectId,
+          title,
+          calls,
+          description,
+        },
       },
-    })
-    return getProposals?.items
+      accessToken
+    )
+    return requestProposal
+  },
+
+  getProposalsHash: async ({ proposalId, accessToken }) => {
+    const { getProposalHash } = await authFetcher(
+      GET_PROPOSALS_HASH_QUERY,
+      {
+        proposalId,
+      },
+      accessToken
+    )
+
+    return getProposalHash
   },
 }

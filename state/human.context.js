@@ -51,18 +51,10 @@ function HumanProvider(props) {
   const [loadingAddress, setLoadingAddress] = useState(false)
   const [loadingHuman, setLoadingHuman] = useState(false)
   const [loadingDeployment, setLoadingDeployment] = useState(false)
-  const [loadingPreUserOps, setLoadingPreUserOps] = useState(false)
   const [loadingUserOps, setLoadingUserOps] = useState(false)
 
   const signMessageFromOwnerData = async ({ message }) =>
     await signMessageFromOwner({ web3Provider, message })
-
-  const loadPreUserOpsData = async () => {
-    setLoadingPreUserOps(true)
-    const response = await loadPreUserOps({ projectId, chainId, human, user })
-    setPreUserOps(response)
-    setLoadingPreUserOps(false)
-  }
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
@@ -104,7 +96,6 @@ function HumanProvider(props) {
       description,
       accessToken,
     })
-    loadPreUserOpsData()
     return response
   }
 
@@ -115,7 +106,6 @@ function HumanProvider(props) {
       preUserOpId,
       user,
     })
-    loadPreUserOpsData()
     setProcessing(false)
     return response
   }
@@ -136,7 +126,6 @@ function HumanProvider(props) {
       code,
       user,
     })
-    loadPreUserOpsData()
     return response
   }
 
@@ -156,10 +145,8 @@ function HumanProvider(props) {
   }
 
   useEffect(() => {
-    loadPreUserOpsData()
     loadUserOpsData()
     const interval = setInterval(() => {
-      loadPreUserOpsData()
       loadUserOpsData()
     }, 5000)
     return () => clearInterval(interval)
@@ -185,7 +172,6 @@ function HumanProvider(props) {
       loadingAddress,
       loadingHuman,
       loadingDeployment,
-      loadingPreUserOps,
       loadingUserOps,
       deployHuman: deployHumanData,
       signMessageFromOwner: signMessageFromOwnerData,
@@ -204,7 +190,6 @@ function HumanProvider(props) {
       loadingAddress,
       loadingHuman,
       loadingDeployment,
-      loadingPreUserOps,
       loadingUserOps,
     ]
   )
