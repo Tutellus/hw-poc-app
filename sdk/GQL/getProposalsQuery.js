@@ -15,11 +15,9 @@ export const GET_PROPOSALS_QUERY = gql`
           sender
           required2FA
           status
-          userOps {
+          userOp {
             nonce
             callGasLimit
-            txHash
-            status
           }
         }
         metadata {
