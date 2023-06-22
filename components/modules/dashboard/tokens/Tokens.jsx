@@ -3,7 +3,6 @@ import { useContract } from "@/state/contract.context"
 import { useHuman } from "@/state/human.context"
 import { ethers } from "ethers"
 import { useSession } from "next-auth/react"
-import { humanSDK } from "@/sdk"
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
 
@@ -11,9 +10,7 @@ export const Tokens = () => {
   const { data } = useSession()
   const accessToken = data?.accessToken
   const { loadingContract, contract, balance, updateContract } = useContract()
-  const { address, human } = useHuman()
-
-  const { requestPreUserOp, signAndSubmitPreUserOp } = humanSDK
+  const { requestPreUserOp, signAndSubmitPreUserOp, human } = useHuman()
 
   const [minting, setMinting] = useState(false)
 
