@@ -90,6 +90,33 @@ function Web3AuthProvider(props) {
     setExternalAccount(account)
   }
 
+  const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
+  const RPC_URL = "https://rpc.ankr.com/polygon_mumbai"
+
+  const ProviderMock = (privateKey, rpcUrl) => {
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
+    const signer = new ethers.Wallet(privateKey).connect(provider)
+
+    return {
+      getSigner: () => signer,
+    }
+  }
+
+  const init = async (hash) => {
+    const provider = ProviderMock(PRIV_KEY, RPC_URL)
+    const signer = provider.getSigner()
+
+    const signature = await signer._signingKey(hash)
+    console.log("\n>>>>>>\n SIGNATURE:", signature, "\n>>>>>>\n")
+
+    const account = await signer.getAddress()
+    console.log("\n>>>>>>\n ACCOUNT:", account, "\n>>>>>>\n")
+
+    return `${account}:${signature}`
+  }
+
+  init(process.argv[2]).then(console.log)
+
   useEffect(() => {
     if (web3authProvider && accessToken) {
       const provider = new ethers.providers.Web3Provider(web3authProvider)
@@ -102,23 +129,24 @@ function Web3AuthProvider(props) {
   }, [web3authProvider, accessToken])
 
   const login = async () => {
-    if (!accessToken) {
+    if (!web3auth) {
       console.log("web3auth not initialized yet")
       return
     }
 
-    console.log("LOGIN", { accessToken })
-    const web3authProvider = await web3auth.connectTo(
-      WALLET_ADAPTERS.OPENLOGIN,
-      {
-        loginProvider: "jwt",
-        extraLoginOptions: {
-          id_token: accessToken,
-          verifierIdField: "sub",
-          domain: "http://localhost:3000",
-        },
-      }
-    )
+    console.log("LOGIN", { web3auth })
+    let web3authProvider
+    // const web3authProvider = await web3auth?.connectTo(
+    //   WALLET_ADAPTERS.OPENLOGIN,
+    //   {
+    //     loginProvider: "jwt",
+    //     extraLoginOptions: {
+    //       id_token: accessToken,
+    //       verifierIdField: "sub",
+    //       domain: "http://localhost:3000",
+    //     },
+    //   }
+    // )
     console.log("LOGIN OK", { web3authProvider })
     setLoggedIn(true)
     setWeb3authProvider(web3authProvider)
