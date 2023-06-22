@@ -19,8 +19,6 @@ export const PreUserOps = () => {
     }
   }
 
-  console.log({ preUserOps })
-
   return (
     <div
       className="box"
