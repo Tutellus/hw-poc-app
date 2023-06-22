@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
-import { humanSDK } from "@/sdk"
+import { HumanWalletSDK } from "@/sdk"
 
 const HumanContext = createContext({
   address: null,
@@ -15,7 +15,6 @@ const HumanContext = createContext({
   loadingUserOps: false,
   loadingDeployment: false,
   signMessageFromOwner: async (message) => {},
-  requestPreUserOp: async ({ contractId, method, params, value }) => {},
   getPreUserOpHash: async ({ preUserOpId }) => {},
   submitUserOp: async ({ preUserOpId, signature }) => {},
   confirmPreUserOp: async ({ preUserOpId, code }) => {},
@@ -27,18 +26,17 @@ const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
   const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
-  const {
-    requestPreUserOp,
-    loadHumanAddress,
-    loadUserOps,
-    loadHuman,
-    signAndSubmitPreUserOp,
-    getPreUserOpHash,
-    submitUserOp,
-    signMessageFromOwner,
-    confirmPreUserOp,
-    deployHuman,
-  } = humanSDK
+
+  const humanSDK = useMemo(
+    () =>
+      HumanWalletSDK.build({
+        projectID: projectId,
+        accessToken,
+        provider: web3Provider,
+        user,
+      }),
+    [web3Provider, accessToken]
+  )
 
   // state
   const [address, setAddress] = useState(null)
@@ -54,18 +52,18 @@ function HumanProvider(props) {
   const [loadingUserOps, setLoadingUserOps] = useState(false)
 
   const signMessageFromOwnerData = async ({ message }) =>
-    await signMessageFromOwner({ web3Provider, message })
+    await humanSDK.signMessageFromOwner({ web3Provider, message })
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
-    const response = await loadHuman({ projectId, chainId, user })
+    const response = await humanSDK.loadHuman({ projectId, chainId, user })
     setHuman(response)
     setLoadingHuman(false)
   }
 
   const loadHumanAddressData = async () => {
     setLoadingAddress(true)
-    const response = await loadHumanAddress({
+    const response = await humanSDK.loadHumanAddress({
       projectId,
       chainId,
       user,
@@ -77,7 +75,12 @@ function HumanProvider(props) {
 
   const loadUserOpsData = async () => {
     setLoadingUserOps(true)
-    const response = await loadUserOps({ projectId, chainId, human, user })
+    const response = await humanSDK.loadUserOps({
+      projectId,
+      chainId,
+      human,
+      user,
+    })
     setUserOps(response)
     setLoadingUserOps(false)
   }
@@ -89,7 +92,7 @@ function HumanProvider(props) {
     description,
     accessToken,
   }) => {
-    const response = await requestPreUserOp({
+    const response = await humanSDK.requestPreUserOp({
       projectId,
       title,
       calls,
@@ -101,7 +104,7 @@ function HumanProvider(props) {
 
   const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
     setProcessing(true)
-    const response = await signAndSubmitPreUserOp({
+    const response = await humanSDK.signAndSubmitPreUserOp({
       web3Provider,
       preUserOpId,
       user,
@@ -111,7 +114,7 @@ function HumanProvider(props) {
   }
 
   const submitUserOpData = async ({ preUserOpId, signature, user }) => {
-    const response = await submitUserOp({
+    const response = await humanSDK.submitUserOp({
       preUserOpId,
       signature,
       user,
@@ -121,7 +124,7 @@ function HumanProvider(props) {
   }
 
   const confirmPreUserOpData = async ({ preUserOpId, code }) => {
-    const response = await confirmPreUserOp({
+    const response = await humanSDK.confirmPreUserOp({
       preUserOpId,
       code,
       user,
@@ -131,7 +134,7 @@ function HumanProvider(props) {
 
   const deployHumanData = async () => {
     setLoadingDeployment(true)
-    const response = await deployHuman({
+    const response = await humanSDK.deployHuman({
       projectId,
       chainId,
       user,
