@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useWeb3Auth } from "./web3auth.context";
-import { humanSDK } from "@/sdk";
-import { set } from "lodash";
+import { createContext, useContext, useState, useMemo, useEffect } from "react"
+import { useWeb3Auth } from "./web3auth.context"
+import { humanSDK } from "@/sdk"
 
 const HumanContext = createContext({
   address: null,
@@ -15,24 +14,21 @@ const HumanContext = createContext({
   loadingPreUserOps: false,
   loadingUserOps: false,
   loadingDeployment: false,
-  deployHuman: async () => {},
   signMessageFromOwner: async (message) => {},
   requestPreUserOp: async ({ contractId, method, params, value }) => {},
   getPreUserOpHash: async ({ preUserOpId }) => {},
   submitUserOp: async ({ preUserOpId, signature }) => {},
   confirmPreUserOp: async ({ preUserOpId, code }) => {},
   signAndSubmitPreUserOp: async ({ preUserOpId }) => {},
-});
+})
 
-const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider } = useWeb3Auth();
-
+  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
   const {
     requestPreUserOp,
-    loadPreUserOps,
     loadHumanAddress,
     loadUserOps,
     loadHuman,
@@ -42,130 +38,129 @@ function HumanProvider(props) {
     signMessageFromOwner,
     confirmPreUserOp,
     deployHuman,
-  } = humanSDK;
+  } = humanSDK
 
   // state
-  const [address, setAddress] = useState(null);
-  const [human, setHuman] = useState(null);
-  const [preUserOps, setPreUserOps] = useState([]);
-  const [userOps, setUserOps] = useState([]);
+  const [address, setAddress] = useState(null)
+  const [human, setHuman] = useState(null)
+  const [preUserOps, setPreUserOps] = useState([])
+  const [userOps, setUserOps] = useState([])
 
   // loadings
-  const [processing, setProcessing] = useState(false);
-  const [loadingAddress, setLoadingAddress] = useState(false);
-  const [loadingHuman, setLoadingHuman] = useState(false);
-  const [loadingDeployment, setLoadingDeployment] = useState(false);
-  const [loadingPreUserOps, setLoadingPreUserOps] = useState(false);
-  const [loadingUserOps, setLoadingUserOps] = useState(false);
+  const [processing, setProcessing] = useState(false)
+  const [loadingAddress, setLoadingAddress] = useState(false)
+  const [loadingHuman, setLoadingHuman] = useState(false)
+  const [loadingDeployment, setLoadingDeployment] = useState(false)
+  const [loadingUserOps, setLoadingUserOps] = useState(false)
 
-  const signMessageFromOwnerData = async ({ message }) => await signMessageFromOwner({ web3Provider, message });
-
-  const loadPreUserOpsData = async () => {
-    setLoadingPreUserOps(true);
-    const response = await loadPreUserOps({ projectId, chainId, human, user });
-    setPreUserOps(response);
-    setLoadingPreUserOps(false);
-  };
+  const signMessageFromOwnerData = async ({ message }) =>
+    await signMessageFromOwner({ web3Provider, message })
 
   const loadHumanData = async () => {
-    setLoadingHuman(true);
-    const response = await loadHuman({ projectId, chainId, user });
-    setHuman(response);
-    setLoadingHuman(false);
-  };
+    setLoadingHuman(true)
+    const response = await loadHuman({ projectId, chainId, user })
+    setHuman(response)
+    setLoadingHuman(false)
+  }
 
   const loadHumanAddressData = async () => {
-    setLoadingAddress(true);
-    const response = await loadHumanAddress({ projectId, chainId, user });
-    setAddress(response);
-    setLoadingAddress(false);
-  };
-
-  const loadUserOpsData = async () => {
-    setLoadingUserOps(true);
-    const response = await loadUserOps({ projectId, chainId, human, user });
-    setUserOps(response);
-    setLoadingUserOps(false);
-  };
-
-  const getRequestPreUserOpData = async ({ projectId, chainId, address, method, params, value }) => {
-    const response = await requestPreUserOp({
+    setLoadingAddress(true)
+    const response = await loadHumanAddress({
       projectId,
       chainId,
-      address,
-      method,
-      params,
-      value,
       user,
-    });
-    loadPreUserOpsData();
-    return response;
-  };
+      accessToken,
+    })
+    setAddress(response)
+    setLoadingAddress(false)
+  }
+
+  const loadUserOpsData = async () => {
+    setLoadingUserOps(true)
+    const response = await loadUserOps({ projectId, chainId, human, user })
+    setUserOps(response)
+    setLoadingUserOps(false)
+  }
+
+  const getRequestPreUserOpData = async ({
+    projectId,
+    title,
+    calls,
+    description,
+    accessToken,
+  }) => {
+    const response = await requestPreUserOp({
+      projectId,
+      title,
+      calls,
+      description,
+      accessToken,
+    })
+    return response
+  }
 
   const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
-    setProcessing(true);
+    setProcessing(true)
     const response = await signAndSubmitPreUserOp({
       web3Provider,
       preUserOpId,
       user,
-    });
-    loadPreUserOpsData();
-    setProcessing(false);
-    return response;
-  };
+    })
+    setProcessing(false)
+    return response
+  }
 
   const submitUserOpData = async ({ preUserOpId, signature, user }) => {
     const response = await submitUserOp({
       preUserOpId,
       signature,
       user,
-    });
-    loadUserOpsData();
-    return response;
-  };
+    })
+    loadUserOpsData()
+    return response
+  }
 
   const confirmPreUserOpData = async ({ preUserOpId, code }) => {
     const response = await confirmPreUserOp({
       preUserOpId,
       code,
       user,
-    });
-    loadPreUserOpsData();
-    return response;
-  };
+    })
+    return response
+  }
 
-  const deployHumanData = async ({ projectId, chainId, user }) => {
-    setLoadingDeployment(true);
+  const deployHumanData = async () => {
+    setLoadingDeployment(true)
     const response = await deployHuman({
       projectId,
       chainId,
       user,
       externalAccount,
-    });
-    setLoadingDeployment(false);
-    setHuman(response);
-    loadHumanData();
-  };
+      accessToken,
+    })
+
+    setLoadingDeployment(false)
+    setHuman(response)
+    loadHumanData()
+  }
 
   useEffect(() => {
-    loadPreUserOpsData();
-    loadUserOpsData();
+    loadUserOpsData()
     const interval = setInterval(() => {
-      loadPreUserOpsData();
-      loadUserOpsData();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [human]);
+      loadUserOpsData()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [human])
 
   useEffect(() => {
-    loadHumanAddressData();
-    loadHumanData();
+    loadHumanAddressData()
+    loadHumanData()
     const interval = setInterval(() => {
-      loadHumanAddressData();
-      loadHumanData();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [user]);
+      loadHumanAddressData()
+      loadHumanData()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [user])
 
   const memoizedData = useMemo(
     () => ({
@@ -177,7 +172,6 @@ function HumanProvider(props) {
       loadingAddress,
       loadingHuman,
       loadingDeployment,
-      loadingPreUserOps,
       loadingUserOps,
       deployHuman: deployHumanData,
       signMessageFromOwner: signMessageFromOwnerData,
@@ -196,20 +190,19 @@ function HumanProvider(props) {
       loadingAddress,
       loadingHuman,
       loadingDeployment,
-      loadingPreUserOps,
       loadingUserOps,
     ]
-  );
+  )
 
-  return <HumanContext.Provider value={memoizedData} {...props} />;
+  return <HumanContext.Provider value={memoizedData} {...props} />
 }
 
 function useHuman() {
-  const context = useContext(HumanContext);
+  const context = useContext(HumanContext)
   if (context === undefined) {
-    throw new Error(`useHuman must be used within a HumanProvider`);
+    throw new Error(`useHuman must be used within a HumanProvider`)
   }
-  return context;
+  return context
 }
 
-export { HumanProvider, useHuman };
+export { HumanProvider, useHuman }

@@ -1,75 +1,32 @@
-import { config } from "./config"
-const { CONTRACT } = config
+import { GQLRepository } from "./repository"
 
 export const humanSDK = {
   requestPreUserOp: async ({
     projectId,
-    chainId,
-    address,
-    user,
-    method,
-    params,
-    value,
+    title,
+    calls,
+    description,
+    accessToken,
   }) => {
-    const response = await fetch("/api/usecases/userOps/requestPreUserOpUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        projectId,
-        chainId,
-        address,
-        method: method || "POST",
-        params,
-        value,
-        user,
-      }),
+    const requestProposal = await GQLRepository.requestProposals({
+      projectId,
+      title,
+      calls,
+      description,
+      accessToken,
     })
-    const { preUserOp } = await response.json()
-    return preUserOp
+    return requestProposal
   },
 
-  loadPreUserOps: async ({ projectId, chainId, human, user }) => {
-    if (human?._id) {
-      try {
-        const response = await fetch("/api/usecases/userOps/getPreUserOpsUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            params: {
-              first: 1000,
-              where: {
-                projectId,
-                chainId,
-                humanId: human._id,
-              },
-            },
-            user,
-          }),
-        })
-        const { preUserOps: innerPreUserOps } = await response.json()
-        return innerPreUserOps
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  },
-
-  loadHumanAddress: async ({ projectId, chainId, user }) => {
+  loadHumanAddress: async ({ projectId, user, accessToken }) => {
     if (user) {
       try {
-        const response = await fetch("/api/usecases/humans/getHumanAddressUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ projectId, chainId, user }),
+        const { getHumanAddress } = await GQLRepository.getHumanAddress({
+          projectId,
+          accessToken,
         })
-        const { address: innerAddress } = await response.json()
-        return innerAddress
+
+        return getHumanAddress.address
       } catch (error) {
         console.error(error)
       }
@@ -124,25 +81,23 @@ export const humanSDK = {
     }
   },
 
-  getPreUserOpHash: async ({ preUserOpId, user }) => {
-    const response = await fetch("/api/usecases/userOps/getPreUserOpHashUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        preUserOpId,
-        user,
-      }),
-    })
-    const { hash } = await response.json()
-    return hash
+  getPreUserOpHash: async ({ proposalId, accessToken }) => {
+    try {
+      const hash = await GQLRepository.getProposalsHash({
+        proposalId,
+        accessToken,
+      })
+
+      return hash
+    } catch (error) {
+      console.error(error)
+    }
   },
 
-  signAndSubmitPreUserOp: async ({ web3Provider, preUserOpId, user }) => {
+  signAndSubmitPreUserOp: async ({ proposalId, accessToken }) => {
     const hash = await humanSDK.getPreUserOpHash({
-      preUserOpId,
-      user,
+      proposalId,
+      accessToken,
     })
     const signature = await humanSDK.signMessageFromOwner({
       web3Provider,
@@ -174,7 +129,7 @@ export const humanSDK = {
   signMessageFromOwner: async ({ web3Provider, message }) =>
     await web3Provider.getSigner().signMessage(message),
 
-  confirmPreUserOp: async ({ preUserOpId, code }) => {
+  confirmPreUserOp: async ({ preUserOpId, code, user }) => {
     const response = await fetch("/api/usecases/userOps/confirmPreUserOpUC", {
       method: "POST",
       headers: {
@@ -187,30 +142,20 @@ export const humanSDK = {
       }),
     })
     const { preUserOp } = await response.json()
-    loadPreUserOpsData()
     return preUserOp
   },
 
-  deployHuman: async ({ projectId, chainId, user, externalAccount }) => {
-    if (user && externalAccount) {
-      try {
-        const response = await fetch("/api/usecases/humans/deployHumanUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            chainId,
-            user,
-            owner: externalAccount,
-          }),
-        })
-        const { human } = await response.json()
-        return human
-      } catch (error) {
-        console.error(error)
-      }
+  deployHuman: async ({ projectId, owner, accessToken }) => {
+    try {
+      const response = await GQLRepository.deployHuman({
+        projectId,
+        owner: owner || "0x08B3Ac53b3dc5Abe9039Fb42B2330728409e86A7",
+        accessToken,
+      })
+
+      return response
+    } catch (error) {
+      console.error(error)
     }
   },
 }

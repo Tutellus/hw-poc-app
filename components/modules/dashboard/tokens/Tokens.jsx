@@ -1,38 +1,51 @@
-import { useState } from "react";
-import { useContract } from "@/state/contract.context";
-import { useHuman } from "@/state/human.context";
-import { ethers } from "ethers";
+import { useState } from "react"
+import { useContract } from "@/state/contract.context"
+import { useHuman } from "@/state/human.context"
+import { ethers } from "ethers"
+import { useSession } from "next-auth/react"
+import { humanSDK } from "@/sdk"
 
-const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
+const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
 
 export const Tokens = () => {
-  const { loadingContract, contract, balance, updateContract } = useContract();
-  const { address, human, requestPreUserOp, signAndSubmitPreUserOp } = useHuman();
+  const { data } = useSession()
+  const accessToken = data?.accessToken
+  const { loadingContract, contract, balance, updateContract } = useContract()
+  const { address, human } = useHuman()
 
-  const [minting, setMinting] = useState(false);
+  const { requestPreUserOp, signAndSubmitPreUserOp } = humanSDK
 
-  const canMint = human?.status === "CONFIRMED";
+  const [minting, setMinting] = useState(false)
+
+  const canMint = human?.status === "CONFIRMED"
 
   const requestMint = async () => {
-    setMinting(true);
+    setMinting(true)
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
       projectId: PROJECT_ID,
-      chainId: contract.chainId,
-      address: contract.address,
-      method: "mint",
-      params: [address, ethers.utils.parseEther("5")],
-      value: ethers.utils.parseEther("0"),
-    });
+      title: "Minteo 5 tokens",
+      calls: [
+        {
+          target: contract.address,
+          method: "mint",
+          data: "0x40c10f19000000000000000000000000297596275eebe2c7dd9145030a0364389285340b0000000000000000000000000000000000000000000000004563918244f40000",
+          value: ethers.utils.parseEther("0").toString(),
+        },
+      ],
+      description: "Mint 5 Tokens",
+      accessToken,
+    })
 
     if (preUserOp.status === "SIGNABLE") {
       signAndSubmitPreUserOp({
-        preUserOpId: preUserOp._id,
-      });
+        proposalId: preUserOp._id,
+        accessToken,
+      })
     }
 
-    setMinting(false);
-  };
+    setMinting(false)
+  }
 
   return (
     <div className="box">
@@ -73,5 +86,5 @@ export const Tokens = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

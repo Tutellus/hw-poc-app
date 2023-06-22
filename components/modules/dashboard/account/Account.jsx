@@ -1,9 +1,8 @@
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react"
 
 export const Account = () => {
-  const { data: session } = useSession();
-
-  const user = session?.user;
+  const { data: session } = useSession()
+  const user = session?.user
 
   return (
     <div className="box">
@@ -13,5 +12,5 @@ export const Account = () => {
         <button onClick={() => signOut()}>Logout</button>
       </div>
     </div>
-  );
-};
+  )
+}
