@@ -28,4 +28,12 @@ export const contractSDK = {
     const result = await GQLRepository.getContracts()
     return result
   },
+
+  getTokensBalance: async ({ address, tokens }) => {
+    const result = await GQLRepository.getTokensBalance({
+      address,
+      tokens,
+    })
+    return result
+  },
 }
