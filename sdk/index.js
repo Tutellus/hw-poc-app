@@ -17,11 +17,13 @@ export class HumanWalletSDK {
     this._user = user
   }
 
-  async loadHuman() {
-    return await this._humanSDK.loadHuman({
+  async requestPreUserOp({ title, calls, description }) {
+    return await this._humanSDK.requestPreUserOp({
       projectId: this._projectID,
-      chainId: this._config.CHAIN_ID,
-      user: this._user,
+      title,
+      calls,
+      description,
+      accessToken: this._accessToken,
     })
   }
 
@@ -43,13 +45,11 @@ export class HumanWalletSDK {
     })
   }
 
-  async requestPreUserOp({ title, calls, description }) {
-    return await this._humanSDK.requestPreUserOp({
+  async loadHuman() {
+    return await this._humanSDK.loadHuman({
       projectId: this._projectID,
-      title,
-      calls,
-      description,
-      accessToken: this._accessToken,
+      chainId: this._config.CHAIN_ID,
+      user: this._user,
     })
   }
 
@@ -88,10 +88,23 @@ export class HumanWalletSDK {
     })
   }
 
+  async getContracts() {
+    return await this._contractSDK.getContracts()
+  }
+
   async getTokensBalance({ address, tokens }) {
     return await this._contractSDK.getTokensBalance({
       address,
       tokens,
+    })
+  }
+
+  async deployHuman() {
+    return await this._humanSDK.deployHuman({
+      web3Provider: this._provider,
+      projectId: this._projectID,
+      chainId: this._config.CHAIN_ID,
+      accessToken: this._accessToken,
     })
   }
 }

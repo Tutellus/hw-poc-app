@@ -94,7 +94,7 @@ export const humanSDK = {
     }
   },
 
-  signAndSubmitPreUserOp: async ({ proposalId, accessToken }) => {
+  signAndSubmitPreUserOp: async ({ proposalId, accessToken, web3Provider }) => {
     const hash = await humanSDK.getPreUserOpHash({
       proposalId,
       accessToken,

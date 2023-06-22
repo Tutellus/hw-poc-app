@@ -3,9 +3,8 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
-import { config, contractSDK } from "@/sdk"
-const { CONTRACT } = config
-const { checkContractAddress, checkContractData, getContracts } = contractSDK
+import { HumanWalletSDK } from "@/sdk"
+let CONTRACT
 const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
@@ -27,6 +26,19 @@ const ContractContext = createContext({
 })
 
 function ContractProvider(props) {
+  const { user, web3Provider, accessToken } = useWeb3Auth()
+
+  const humanSDK = useMemo(
+    () =>
+      HumanWalletSDK.build({
+        projectID: projectId,
+        accessToken,
+        provider: web3Provider,
+        user,
+      }),
+    [web3Provider, accessToken]
+  )
+
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
 
@@ -63,7 +75,7 @@ function ContractProvider(props) {
   const getContract = async () => {
     try {
       setLoadingContract(true)
-      const response = await getContracts()
+      const response = await humanSDK.getContracts()
       setContract(response)
       setLoadingContract(false)
     } catch (error) {
@@ -97,12 +109,12 @@ function ContractProvider(props) {
   }
 
   const checkContractAddressData = async () => {
-    const response = await checkContractAddress(CONTRACT)
+    const response = await humanSDK.checkContractAddress(CONTRACT)
     response ? setFullApprovedOwner(response) : setFullApprovedOwner(false)
   }
 
   const checkContractDataFunction = async () => {
-    const response = await checkContractData(CONTRACT)
+    const response = await humanSDK.checkContractData(CONTRACT)
     response
       ? setFunctionApprovedOwner(response)
       : setFunctionApprovedOwner(false)

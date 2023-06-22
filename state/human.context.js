@@ -102,12 +102,24 @@ function HumanProvider(props) {
     return response
   }
 
-  const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
+  const getPreUserOpHashData = async ({ proposalId, accessToken }) => {
+    const response = await humanSDK.getPreUserOpHash({
+      proposalId,
+      accessToken,
+    })
+    return response
+  }
+
+  const signAndSubmitPreUserOpData = async ({
+    proposalId,
+    accessToken,
+    web3Provider,
+  }) => {
     setProcessing(true)
     const response = await humanSDK.signAndSubmitPreUserOp({
+      proposalId,
+      accessToken,
       web3Provider,
-      preUserOpId,
-      user,
     })
     setProcessing(false)
     return response
@@ -179,7 +191,7 @@ function HumanProvider(props) {
       deployHuman: deployHumanData,
       signMessageFromOwner: signMessageFromOwnerData,
       requestPreUserOp: getRequestPreUserOpData,
-      getPreUserOpHash,
+      getPreUserOpHash: getPreUserOpHashData,
       submitUserOp: submitUserOpData,
       confirmPreUserOp: confirmPreUserOpData,
       signAndSubmitPreUserOp: signAndSubmitPreUserOpData,
