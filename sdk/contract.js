@@ -2,21 +2,21 @@ import { GQLRepository } from "./repository"
 import { ethers } from "ethers"
 
 export const contractSDK = {
-  checkContractAddress: async (CONTRACT) => {
+  checkContractAddress: async ({ address }) => {
     const result = await GQLRepository.checkContractAddress({
-      address: CONTRACT?.address,
+      address,
     })
     return result
   },
 
-  checkContractData: async (CONTRACT) => {
+  checkContractData: async ({ address }) => {
     const method = "mint"
     const params = [
       ethers.constants.AddressZero.toString(),
       ethers.constants.One.toString(),
     ]
     const result = await GQLRepository.checkContractData({
-      address: CONTRACT?.address,
+      address,
       method,
       params,
     })
