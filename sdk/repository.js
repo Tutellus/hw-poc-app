@@ -7,6 +7,7 @@ import {
   DEPLOY_HUMAN_MUTATION,
   REQUEST_PROPOSAL_MUTATION,
   GET_PROPOSALS_HASH_QUERY,
+  GET_TOKENS_BALANCE_QUERY,
   authFetcher,
 } from "./GQL"
 
@@ -59,6 +60,20 @@ export const GQLRepository = {
       },
     })
     return checkContractData.result
+  },
+
+  getTokensBalance: async ({ address, tokens }) => {
+    const { getTokensBalance } = await authFetcher(
+      GET_TOKENS_BALANCE_QUERY,
+      {
+        input: {
+          address,
+          tokens,
+        },
+      },
+      null
+    )
+    return getTokensBalance.items
   },
 
   deployHuman: async ({ projectId, owner, accessToken }) => {
