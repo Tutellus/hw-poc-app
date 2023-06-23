@@ -1,6 +1,7 @@
 import { GQLRepository } from "./repository"
 
 export const humanSDK = {
+  // TODO: rename to requestProposal
   requestPreUserOp: async ({
     projectId,
     title,
@@ -18,70 +19,45 @@ export const humanSDK = {
     return requestProposal
   },
 
-  loadHumanAddress: async ({ projectId, user, accessToken }) => {
-    if (user) {
-      try {
-        const { getHumanAddress } = await GQLRepository.getHumanAddress({
-          projectId,
-          accessToken,
-        })
+  getHumanAddress: async ({ projectId, accessToken }) => {
+    try {
+      const response = await GQLRepository.getHumanAddress({
+        projectId,
+        accessToken,
+      })
 
-        return getHumanAddress.address
-      } catch (error) {
-        console.error(error)
-      }
+      return response
+    } catch (error) {
+      console.error(error)
     }
   },
 
-  loadUserOps: async ({ projectId, chainId, human, user }) => {
-    if (human?.address) {
-      try {
-        const response = await fetch("/api/usecases/userOps/getUserOpsUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            params: {
-              first: 1000,
-              where: {
-                projectId,
-                chainId,
-                sender: human.address,
-              },
-            },
-            user,
-          }),
-        })
-        const { userOps: innerUserOps } = await response.json()
-        return innerUserOps
-      } catch (error) {
-        console.error(error)
-      }
+  getProposals: async ({ projectId, accessToken }) => {
+    try {
+      const getProposals = await GQLRepository.getProposals({
+        projectId,
+        accessToken,
+      })
+
+      return getProposals
+    } catch (error) {
+      console.error(error)
     }
   },
 
-  loadHuman: async ({ projectId, chainId, user }) => {
-    const email = user?.email
-    if (email) {
-      try {
-        console.log("loadHuman", { email, chainId, projectId })
-        const response = await fetch("/api/usecases/humans/getHumanByEmailUC", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, chainId, projectId }),
-        })
-        const { human: innerHuman } = await response.json()
-        return innerHuman
-      } catch (error) {
-        console.error(error)
-      }
+  loadHuman: async ({ projectId, accessToken }) => {
+    try {
+      const innerHuman = await GQLRepository.getHumanAddress({
+        projectId,
+        accessToken,
+      })
+      return innerHuman
+    } catch (error) {
+      console.error(error)
     }
   },
 
-  getPreUserOpHash: async ({ proposalId, accessToken }) => {
+  getProposalsHash: async ({ proposalId, accessToken }) => {
     try {
       const hash = await GQLRepository.getProposalsHash({
         proposalId,
@@ -94,8 +70,11 @@ export const humanSDK = {
     }
   },
 
+  // TODO: rename to signAndSubmitProposal
   signAndSubmitPreUserOp: async ({ proposalId, accessToken, web3Provider }) => {
-    const hash = await humanSDK.getPreUserOpHash({
+    if (!proposalId) return
+    debugger
+    const hash = await humanSDK.getProposalsHash({
       proposalId,
       accessToken,
     })
@@ -103,32 +82,26 @@ export const humanSDK = {
       web3Provider,
       message: hash,
     })
-    await humanSDK.submitUserOp({
-      preUserOpId,
+    await humanSDK.processProposal({
+      proposalId,
       signature,
-      user,
+      accessToken,
     })
   },
 
-  submitUserOp: async ({ preUserOpId, signature, user }) => {
-    const response = await fetch("/api/usecases/userOps/submitUserOpUC", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        preUserOpId,
-        signature,
-        user,
-      }),
+  processProposal: async ({ proposalId, signature, accessToken }) => {
+    const response = await GQLRepository.processProposal({
+      proposalId,
+      signature,
+      accessToken,
     })
-    const { userOp } = await response.json()
-    return userOp
+    return response
   },
 
   signMessageFromOwner: async ({ web3Provider, message }) =>
-    await web3Provider.getSigner().signMessage(message),
+    await web3Provider.getSigner()._signingKey(message),
 
+  // TODO: rename to confirmProposal
   confirmPreUserOp: async ({ preUserOpId, code, user }) => {
     const response = await fetch("/api/usecases/userOps/confirmPreUserOpUC", {
       method: "POST",
