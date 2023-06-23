@@ -27,29 +27,24 @@ export class HumanWalletSDK {
     })
   }
 
-  async loadHumanAddress() {
-    return await this._humanSDK.loadHumanAddress({
+  async getHumanAddress() {
+    return await this._humanSDK.getHumanAddress({
       projectId: this._projectID,
-      chainId: this._config.CHAIN_ID,
-      user: this._user,
       accessToken: this._accessToken,
     })
   }
 
-  async loadUserOps() {
-    return await this._humanSDK.loadUserOps({
+  async getProposals() {
+    return await this._humanSDK.getProposals({
       projectId: this._projectID,
-      chainId: this._config.CHAIN_ID,
-      human: this._human,
-      user: this._user,
+      accessToken: this._accessToken,
     })
   }
 
   async loadHuman() {
     return await this._humanSDK.loadHuman({
       projectId: this._projectID,
-      chainId: this._config.CHAIN_ID,
-      user: this._user,
+      accessToken: this._accessToken,
     })
   }
 
@@ -99,12 +94,11 @@ export class HumanWalletSDK {
     })
   }
 
-  async deployHuman() {
+  async deployHuman({ owner }) {
     return await this._humanSDK.deployHuman({
-      web3Provider: this._provider,
       projectId: this._projectID,
-      chainId: this._config.CHAIN_ID,
       accessToken: this._accessToken,
+      owner,
     })
   }
 }
