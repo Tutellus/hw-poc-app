@@ -3,6 +3,8 @@ import { humanSDK } from "./human"
 import { config } from "./config"
 
 export class HumanWalletSDK {
+  CONTRACT = config.CONTRACT
+
   static build({ projectID, accessToken, provider, user }) {
     return new HumanWalletSDK({ projectID, accessToken, provider, user })
   }
