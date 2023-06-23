@@ -1,6 +1,4 @@
-import { useState } from "react"
 import { useContract } from "@/state/contract.context"
-import { contractSDK } from "@/sdk"
 
 export const Contract = () => {
   const {
@@ -11,9 +9,8 @@ export const Contract = () => {
     functionApprovedOwner,
     updateAddressStatus,
     updateFunctionStatus,
+    updateContract,
   } = useContract()
-
-  const { updateContract } = contractSDK
 
   return (
     <div

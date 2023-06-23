@@ -3,16 +3,13 @@ import { useContract } from "@/state/contract.context";
 import { useHuman } from "@/state/human.context";
 import { ethers } from "ethers";
 import { useUser } from "@/state/user.context";
-import { humanSDK } from "@/sdk";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const Tokens = () => {
   const { accessToken } = useUser();
   const { loadingContract, contract, balance, updateContract } = useContract();
-  const { address, human } = useHuman();
-
-  const { requestPreUserOp, signAndSubmitPreUserOp } = humanSDK;
+  const { requestProposal, signAndSubmitProposal, human } = useHuman();
 
   const [minting, setMinting] = useState(false);
 
@@ -20,8 +17,7 @@ export const Tokens = () => {
 
   const requestMint = async () => {
     setMinting(true);
-    // 1. creates preUserOp which evaluates if master signature is required
-    const preUserOp = await requestPreUserOp({
+    const proposal = await requestProposal({
       projectId: PROJECT_ID,
       title: "Minteo 5 tokens",
       calls: [
@@ -36,10 +32,9 @@ export const Tokens = () => {
       accessToken,
     });
 
-    if (preUserOp.status === "SIGNABLE") {
-      signAndSubmitPreUserOp({
-        proposalId: preUserOp._id,
-        accessToken,
+    if (proposal.status === "SIGNABLE") {
+      signAndSubmitProposal({
+        proposalId: proposal._id,
       });
     }
 

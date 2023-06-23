@@ -37,27 +37,23 @@ export const PreUserOp = ({
         <div className="keys">
           <div>ID</div>
           <div>Contract</div>
-          <div>Function</div>
-          <div>Params</div>
+          <div>Description</div>
           <div>Status</div>
-          <div>Date</div>
         </div>
         <div className="values">
           <div>{preUserOp._id}</div>
           <a
             style={{ color: "white" }}
-            href={explorerLink({ value: preUserOp.target, type: "address" })}
+            href={explorerLink({ value: preUserOp.sender, type: "address" })}
             target="_blank"
             rel="noreferrer"
           >
             {truncateAddress({
-              address: preUserOp.target,
+              address: preUserOp.sender,
             })}
           </a>
-          <div>{preUserOp.method}</div>
-          <div>{renderParams(preUserOp.params)}</div>
+          <div>{preUserOp.description}</div>
           <div>{preUserOp.status}</div>
-          <div>{preUserOp.createdAt}</div>
         </div>
       </div>
 
