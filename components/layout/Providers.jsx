@@ -1,18 +1,16 @@
-import { ModalProvider } from '@/state/modal.context'
-import { ContractProvider } from '@/state/contract.context';
-import { Web3AuthProvider } from '@/state/web3auth.context';
-import { HumanProvider } from '@/state/human.context';
+import { ModalProvider } from "@/state/modal.context";
+import { ContractProvider } from "@/state/contract.context";
+import { UserProvider } from "@/state/user.context";
+import { HumanProvider } from "@/state/human.context";
 
 export const Providers = ({ children }) => {
   return (
     <ModalProvider>
-      <Web3AuthProvider>
+      <UserProvider>
         <HumanProvider>
-          <ContractProvider>
-            {children}
-          </ContractProvider>
+          <ContractProvider>{children}</ContractProvider>
         </HumanProvider>
-      </Web3AuthProvider>
+      </UserProvider>
     </ModalProvider>
-  )
+  );
 };

@@ -1,26 +1,25 @@
-import { useState } from "react"
-import { useContract } from "@/state/contract.context"
-import { useHuman } from "@/state/human.context"
-import { ethers } from "ethers"
-import { useSession } from "next-auth/react"
-import { humanSDK } from "@/sdk"
+import { useState } from "react";
+import { useContract } from "@/state/contract.context";
+import { useHuman } from "@/state/human.context";
+import { ethers } from "ethers";
+import { useUser } from "@/state/user.context";
+import { humanSDK } from "@/sdk";
 
-const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
+const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const Tokens = () => {
-  const { data } = useSession()
-  const accessToken = data?.accessToken
-  const { loadingContract, contract, balance, updateContract } = useContract()
-  const { address, human } = useHuman()
+  const { accessToken } = useUser();
+  const { loadingContract, contract, balance, updateContract } = useContract();
+  const { address, human } = useHuman();
 
-  const { requestPreUserOp, signAndSubmitPreUserOp } = humanSDK
+  const { requestPreUserOp, signAndSubmitPreUserOp } = humanSDK;
 
-  const [minting, setMinting] = useState(false)
+  const [minting, setMinting] = useState(false);
 
-  const canMint = human?.status === "CONFIRMED"
+  const canMint = human?.status === "CONFIRMED";
 
   const requestMint = async () => {
-    setMinting(true)
+    setMinting(true);
     // 1. creates preUserOp which evaluates if master signature is required
     const preUserOp = await requestPreUserOp({
       projectId: PROJECT_ID,
@@ -35,17 +34,17 @@ export const Tokens = () => {
       ],
       description: "Mint 5 Tokens",
       accessToken,
-    })
+    });
 
     if (preUserOp.status === "SIGNABLE") {
       signAndSubmitPreUserOp({
         proposalId: preUserOp._id,
         accessToken,
-      })
+      });
     }
 
-    setMinting(false)
-  }
+    setMinting(false);
+  };
 
   return (
     <div className="box">
@@ -86,5 +85,5 @@ export const Tokens = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

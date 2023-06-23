@@ -1,24 +1,23 @@
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { signIn } from "next-auth/react";
+import { useUser } from "@/state/user.context";
 import { useRouter } from "next/router";
 
 export const Login = () => {
-  const { data: session, status } = useSession();
+  const { user, login } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       router.push("/dashboard");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, [user]);
 
-  const isLoading = status === "loading";
+  const isLoading = user?.status === "loading";
 
   return (
     <div className="login">
-      <button type="submit" onClick={() => signIn("discord")} disabled={isLoading}>
+      <button type="submit" onClick={() => login("discord")} disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log in"}
       </button>
     </div>

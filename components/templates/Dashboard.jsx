@@ -1,22 +1,22 @@
-import { useEffect } from "react"
-import { useRouter } from "next/router"
-import { useSession } from "next-auth/react"
-import { Human } from "../modules/dashboard/human/Human"
-import { Account } from "../modules/dashboard/account/Account"
-import { Tokens } from "../modules/dashboard/tokens/Tokens"
-import { Contract } from "../modules/dashboard/contract/Contract"
-import { PreUserOps } from "../modules/dashboard/preUserOps/PreUserOps"
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useUser } from "@/state/user.context";
+import { Human } from "../modules/dashboard/human/Human";
+import { Account } from "../modules/dashboard/account/Account";
+import { Tokens } from "../modules/dashboard/tokens/Tokens";
+import { Contract } from "../modules/dashboard/contract/Contract";
+import { PreUserOps } from "../modules/dashboard/preUserOps/PreUserOps";
 
 export const Dashboard = () => {
-  const { data: session } = useSession()
-  const router = useRouter()
+  const { user } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
-    if (!session) {
-      router.push("/login")
+    if (!user) {
+      router.push("/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  }, [user]);
 
   return (
     <div className="dashboard">
@@ -35,5 +35,5 @@ export const Dashboard = () => {
       {/* owner proposals list */}
       <PreUserOps />
     </div>
-  )
-}
+  );
+};

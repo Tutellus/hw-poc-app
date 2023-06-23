@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useWeb3Auth } from "./web3auth.context"
-import { humanSDK } from "@/sdk"
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { useUser } from "./user.context";
+import { humanSDK } from "@/sdk";
 
 const HumanContext = createContext({
   address: null,
@@ -20,13 +20,13 @@ const HumanContext = createContext({
   submitUserOp: async ({ preUserOpId, signature }) => {},
   confirmPreUserOp: async ({ preUserOpId, code }) => {},
   signAndSubmitPreUserOp: async ({ preUserOpId }) => {},
-})
+});
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
+  const { user, externalAccount, web3Provider, accessToken } = useUser();
   const {
     requestPreUserOp,
     loadHumanAddress,
@@ -38,129 +38,122 @@ function HumanProvider(props) {
     signMessageFromOwner,
     confirmPreUserOp,
     deployHuman,
-  } = humanSDK
+  } = humanSDK;
 
   // state
-  const [address, setAddress] = useState(null)
-  const [human, setHuman] = useState(null)
-  const [preUserOps, setPreUserOps] = useState([])
-  const [userOps, setUserOps] = useState([])
+  const [address, setAddress] = useState(null);
+  const [human, setHuman] = useState(null);
+  const [preUserOps, setPreUserOps] = useState([]);
+  const [userOps, setUserOps] = useState([]);
 
   // loadings
-  const [processing, setProcessing] = useState(false)
-  const [loadingAddress, setLoadingAddress] = useState(false)
-  const [loadingHuman, setLoadingHuman] = useState(false)
-  const [loadingDeployment, setLoadingDeployment] = useState(false)
-  const [loadingUserOps, setLoadingUserOps] = useState(false)
+  const [processing, setProcessing] = useState(false);
+  const [loadingAddress, setLoadingAddress] = useState(false);
+  const [loadingHuman, setLoadingHuman] = useState(false);
+  const [loadingDeployment, setLoadingDeployment] = useState(false);
+  const [loadingUserOps, setLoadingUserOps] = useState(false);
 
-  const signMessageFromOwnerData = async ({ message }) =>
-    await signMessageFromOwner({ web3Provider, message })
+  const signMessageFromOwnerData = async ({ message }) => await signMessageFromOwner({ web3Provider, message });
 
   const loadHumanData = async () => {
-    setLoadingHuman(true)
-    const response = await loadHuman({ projectId, chainId, user })
-    setHuman(response)
-    setLoadingHuman(false)
-  }
+    setLoadingHuman(true);
+    const response = await loadHuman({ projectId, chainId, user });
+    setHuman(response);
+    setLoadingHuman(false);
+  };
 
   const loadHumanAddressData = async () => {
-    setLoadingAddress(true)
+    setLoadingAddress(true);
     const response = await loadHumanAddress({
       projectId,
       chainId,
       user,
       accessToken,
-    })
-    setAddress(response)
-    setLoadingAddress(false)
-  }
+    });
+    setAddress(response);
+    setLoadingAddress(false);
+  };
 
   const loadUserOpsData = async () => {
-    setLoadingUserOps(true)
-    const response = await loadUserOps({ projectId, chainId, human, user })
-    setUserOps(response)
-    setLoadingUserOps(false)
-  }
+    setLoadingUserOps(true);
+    const response = await loadUserOps({ projectId, chainId, human, user });
+    setUserOps(response);
+    setLoadingUserOps(false);
+  };
 
-  const getRequestPreUserOpData = async ({
-    projectId,
-    title,
-    calls,
-    description,
-    accessToken,
-  }) => {
+  const getRequestPreUserOpData = async ({ projectId, title, calls, description, accessToken }) => {
     const response = await requestPreUserOp({
       projectId,
       title,
       calls,
       description,
       accessToken,
-    })
-    return response
-  }
+    });
+    return response;
+  };
 
   const signAndSubmitPreUserOpData = async ({ preUserOpId }) => {
-    setProcessing(true)
+    setProcessing(true);
     const response = await signAndSubmitPreUserOp({
       web3Provider,
       preUserOpId,
       user,
-    })
-    setProcessing(false)
-    return response
-  }
+    });
+    setProcessing(false);
+    return response;
+  };
 
   const submitUserOpData = async ({ preUserOpId, signature, user }) => {
     const response = await submitUserOp({
       preUserOpId,
       signature,
       user,
-    })
-    loadUserOpsData()
-    return response
-  }
+    });
+    loadUserOpsData();
+    return response;
+  };
 
   const confirmPreUserOpData = async ({ preUserOpId, code }) => {
     const response = await confirmPreUserOp({
       preUserOpId,
       code,
       user,
-    })
-    return response
-  }
+    });
+    return response;
+  };
 
   const deployHumanData = async () => {
-    setLoadingDeployment(true)
+    setLoadingDeployment(true);
     const response = await deployHuman({
       projectId,
       chainId,
       user,
       externalAccount,
       accessToken,
-    })
+    });
 
-    setLoadingDeployment(false)
-    setHuman(response)
-    loadHumanData()
-  }
-
-  useEffect(() => {
-    loadUserOpsData()
-    const interval = setInterval(() => {
-      loadUserOpsData()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [human])
+    setLoadingDeployment(false);
+    setHuman(response);
+    loadHumanData();
+  };
 
   useEffect(() => {
-    loadHumanAddressData()
-    loadHumanData()
+    loadUserOpsData();
     const interval = setInterval(() => {
-      loadHumanAddressData()
-      loadHumanData()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [user])
+      loadUserOpsData();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [human]);
+
+  useEffect(() => {
+    loadHumanAddressData();
+    loadHumanData();
+    const interval = setInterval(() => {
+      loadHumanAddressData();
+      loadHumanData();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const memoizedData = useMemo(
     () => ({
@@ -181,28 +174,18 @@ function HumanProvider(props) {
       confirmPreUserOp: confirmPreUserOpData,
       signAndSubmitPreUserOp: signAndSubmitPreUserOpData,
     }),
-    [
-      address,
-      human,
-      preUserOps,
-      userOps,
-      processing,
-      loadingAddress,
-      loadingHuman,
-      loadingDeployment,
-      loadingUserOps,
-    ]
-  )
+    [address, human, preUserOps, userOps, processing, loadingAddress, loadingHuman, loadingDeployment, loadingUserOps]
+  );
 
-  return <HumanContext.Provider value={memoizedData} {...props} />
+  return <HumanContext.Provider value={memoizedData} {...props} />;
 }
 
 function useHuman() {
-  const context = useContext(HumanContext)
+  const context = useContext(HumanContext);
   if (context === undefined) {
-    throw new Error(`useHuman must be used within a HumanProvider`)
+    throw new Error(`useHuman must be used within a HumanProvider`);
   }
-  return context
+  return context;
 }
 
-export { HumanProvider, useHuman }
+export { HumanProvider, useHuman };

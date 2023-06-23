@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@/state/user.context";
 import { useRouter } from "next/router";
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!session) {
+    if (!user) {
       router.push("/login");
     } else {
       router.push("/dashboard");
@@ -16,7 +16,7 @@ const Page = () => {
   }, []);
 
   return null;
-}
+};
 
 export default Page;
 Page.requireAuth = true;
