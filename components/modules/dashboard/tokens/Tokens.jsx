@@ -10,7 +10,7 @@ export const Tokens = () => {
   const { data } = useSession()
   const accessToken = data?.accessToken
   const { loadingContract, contract, balance, updateContract } = useContract()
-  const { requestPreUserOp, signAndSubmitPreUserOp, human } = useHuman()
+  const { requestProposal, signAndSubmitProposal, human } = useHuman()
 
   const [minting, setMinting] = useState(false)
 
@@ -18,8 +18,7 @@ export const Tokens = () => {
 
   const requestMint = async () => {
     setMinting(true)
-    // 1. creates preUserOp which evaluates if master signature is required
-    const preUserOp = await requestPreUserOp({
+    const proposal = await requestProposal({
       projectId: PROJECT_ID,
       title: "Minteo 5 tokens",
       calls: [
@@ -34,9 +33,9 @@ export const Tokens = () => {
       accessToken,
     })
 
-    if (preUserOp.status === "SIGNABLE") {
-      signAndSubmitPreUserOp({
-        proposalId: preUserOp._id,
+    if (proposal.status === "SIGNABLE") {
+      signAndSubmitProposal({
+        proposalId: proposal._id,
       })
     }
 

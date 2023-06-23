@@ -2,7 +2,7 @@ import { useHuman } from "@/state/human.context"
 import { PreUserOp } from "./PreUserOp"
 
 export const PreUserOps = () => {
-  const { preUserOps, processing, confirmPreUserOp, signAndSubmitPreUserOp } =
+  const { preUserOps, processing, confirmPreUserOp, signAndSubmitProposal } =
     useHuman()
   const confirmSignAndSubmitFn = async (preUserOp) => {
     try {
@@ -10,7 +10,7 @@ export const PreUserOps = () => {
         preUserOpId: preUserOp._id,
         code: preUserOp.code2fa,
       })
-      await signAndSubmitPreUserOp({
+      await signAndSubmitProposal({
         proposalId: innerPreUserOp._id,
       })
     } catch (error) {
@@ -34,7 +34,7 @@ export const PreUserOps = () => {
               preUserOp={preUserOp}
               canSign={!processing}
               confirmSignAndSubmitFn={confirmSignAndSubmitFn}
-              signAndSubmitFn={signAndSubmitPreUserOp}
+              signAndSubmitFn={signAndSubmitProposal}
             />
           ))}
       </div>
