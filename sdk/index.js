@@ -3,6 +3,8 @@ import { humanSDK } from "./human"
 import { config } from "./config"
 
 export class HumanWalletSDK {
+  CONTRACT = config.CONTRACT
+
   static build({ projectID, accessToken, provider, user }) {
     return new HumanWalletSDK({ projectID, accessToken, provider, user })
   }
@@ -48,11 +50,11 @@ export class HumanWalletSDK {
     })
   }
 
-  async signAndSubmitProposal({ preUserOpId }) {
+  async signAndSubmitProposal({ proposalId }) {
     return await this._humanSDK.signAndSubmitProposal({
       web3Provider: this._provider,
-      preUserOpId,
-      user: this._user,
+      proposalId,
+      accessToken: this._accessToken,
     })
   }
 

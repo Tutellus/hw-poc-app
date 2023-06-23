@@ -1,14 +1,14 @@
 import { useHuman } from "@/state/human.context"
-import { PreUserOp } from "./PreUserOp"
+import { Proposal } from "./Proposal"
 
-export const PreUserOps = () => {
-  const { preUserOps, processing, confirmProposal, signAndSubmitProposal } =
+export const ProposalsList = () => {
+  const { proposals, processing, confirmProposal, signAndSubmitProposal } =
     useHuman()
-  const confirmSignAndSubmitFn = async (preUserOp) => {
+  const confirmSignAndSubmitFn = async (proposal) => {
     try {
       const innerPreUserOp = await confirmProposal({
-        preUserOpId: preUserOp._id,
-        code: preUserOp.code2fa,
+        proposalId: proposal._id,
+        code: proposal.code2fa,
       })
       await signAndSubmitProposal({
         proposalId: innerPreUserOp._id,
@@ -27,11 +27,11 @@ export const PreUserOps = () => {
     >
       <div className="title">Proposals</div>
       <div className="data">
-        {preUserOps?.length > 0 &&
-          preUserOps.map((preUserOp, index) => (
-            <PreUserOp
+        {proposals?.length > 0 &&
+          proposals.map((proposal, index) => (
+            <Proposal
               key={index}
-              preUserOp={preUserOp}
+              proposal={proposal}
               canSign={!processing}
               confirmSignAndSubmitFn={confirmSignAndSubmitFn}
               signAndSubmitFn={signAndSubmitProposal}

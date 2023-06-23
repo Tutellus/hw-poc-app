@@ -4,7 +4,7 @@ import { useUser } from "./user.context";
 import { ethers } from "ethers";
 import { useHuman } from "./human.context";
 import { HumanWalletSDK } from "@/sdk";
-let CONTRACT;
+
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
 
@@ -15,7 +15,7 @@ const ContractContext = createContext({
   updatingPolicies: false,
   fullApprovedOwner: false,
   functionApprovedOwner: false,
-  getBalance: async () => {},
+  getTokenBalance: async () => {},
   getContract: async () => {},
   updateContract: async () => {},
   checkContractAddress: async () => {},
@@ -39,6 +39,8 @@ function ContractProvider(props) {
     [web3Provider, accessToken]
   );
 
+  const CONTRACT = humanSDK.CONTRACT;
+
   const [loadingContract, setLoadingContract] = useState(false);
   const [contract, setContract] = useState(null);
 
@@ -50,21 +52,15 @@ function ContractProvider(props) {
   const [fullApprovedOwner, setFullApprovedOwner] = useState(false);
   const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
-  const getBalance = async () => {
+  const getTokenBalance = async () => {
     try {
       setLoadingBalance(true);
-      const response = await fetch("/api/usecases/tokens/getTokenBalanceUC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chainId: CONTRACT.chainId,
-          token: CONTRACT.address,
-          address: address,
-        }),
+      const response = await humanSDK.getTokensBalance({
+        address,
+        tokens: [CONTRACT.address],
       });
-      const { balance: innerBalance } = await response.json();
+      const innerBalance = ethers.utils.formatEther(response[CONTRACT.address]);
+
       setBalance(innerBalance);
       setLoadingBalance(false);
     } catch (error) {
@@ -226,9 +222,9 @@ function ContractProvider(props) {
 
   useEffect(() => {
     if (!address) return;
-    getBalance();
+    getTokenBalance();
     const interval = setInterval(() => {
-      getBalance();
+      getTokenBalance();
     }, 5000);
     return () => clearInterval(interval);
   }, [address]);
@@ -242,7 +238,7 @@ function ContractProvider(props) {
       updatingPolicies,
       fullApprovedOwner,
       functionApprovedOwner,
-      getBalance,
+      getTokenBalance,
       getContract,
       updateContract,
       checkContractAddress: checkContractAddressData,

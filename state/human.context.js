@@ -6,7 +6,6 @@ import { HumanWalletSDK } from "@/sdk";
 const HumanContext = createContext({
   address: null,
   human: null,
-  preUserOps: [],
   processing: false,
   loadingHuman: false,
   loadingAddress: false,
@@ -16,8 +15,6 @@ const HumanContext = createContext({
   signMessageFromOwner: async (message) => {},
   getPreUserOpHash: async ({ preUserOpId }) => {},
   submitUserOp: async ({ preUserOpId, signature }) => {},
-  confirmProposal: async ({ preUserOpId, code }) => {},
-  signAndSubmitProposal: async ({ preUserOpId }) => {},
 });
 
 const projectID = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -39,7 +36,7 @@ function HumanProvider(props) {
   // state
   const [address, setAddress] = useState(null);
   const [human, setHuman] = useState(null);
-  const [preUserOps, setPreUserOps] = useState([]);
+  const [proposals, setProposals] = useState([]);
 
   // loadings
   const [processing, setProcessing] = useState(false);
@@ -70,7 +67,7 @@ function HumanProvider(props) {
     const response = await humanSDK.getProposals({
       human,
     });
-    setPreUserOps(response);
+    setProposals(response);
     setGettingProposals(false);
   };
 
@@ -93,7 +90,7 @@ function HumanProvider(props) {
     return response;
   };
 
-  const signAndSubmitPreUserOpData = async ({ proposalId, accessToken, web3Provider }) => {
+  const signAndSubmitProposalData = async ({ proposalId, accessToken, web3Provider }) => {
     setProcessing(true);
     const response = await humanSDK.signAndSubmitProposal({
       proposalId,
@@ -158,7 +155,7 @@ function HumanProvider(props) {
     () => ({
       address,
       human,
-      preUserOps,
+      proposals,
       processing,
       loadingAddress,
       loadingHuman,
@@ -170,9 +167,9 @@ function HumanProvider(props) {
       getPreUserOpHash: getPreUserOpHashData,
       submitUserOp: submitUserOpData,
       confirmProposal: confirmProposalData,
-      signAndSubmitProposal: signAndSubmitPreUserOpData,
+      signAndSubmitProposal: signAndSubmitProposalData,
     }),
-    [address, human, preUserOps, processing, loadingAddress, loadingHuman, loadingDeployment, gettingProposals]
+    [address, human, proposals, processing, loadingAddress, loadingHuman, loadingDeployment, gettingProposals]
   );
 
   return <HumanContext.Provider value={memoizedData} {...props} />;

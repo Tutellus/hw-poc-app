@@ -1,8 +1,8 @@
 import { explorerLink, truncateAddress } from "@/utils/address"
 import { ethers } from "ethers"
 
-export const PreUserOp = ({
-  preUserOp,
+export const Proposal = ({
+  proposal,
   canSign,
   confirmSignAndSubmitFn,
   signAndSubmitFn,
@@ -28,9 +28,10 @@ export const PreUserOp = ({
   }
 
   const requiresConfirmation =
-    preUserOp.isMasterRequired && preUserOp.masterSignature === "0x"
-  const isSignable = !requiresConfirmation && preUserOp.status === "SIGNABLE"
+    proposal.isMasterRequired && proposal.masterSignature === "0x"
+  const isSignable = !requiresConfirmation && proposal.status === "SIGNABLE"
 
+  console.log("proposal", proposal)
   return (
     <div className="proposal">
       <div className="block">
@@ -41,26 +42,26 @@ export const PreUserOp = ({
           <div>Status</div>
         </div>
         <div className="values">
-          <div>{preUserOp._id}</div>
+          <div>{proposal._id}</div>
           <a
             style={{ color: "white" }}
-            href={explorerLink({ value: preUserOp.sender, type: "address" })}
+            href={explorerLink({ value: proposal.sender, type: "address" })}
             target="_blank"
             rel="noreferrer"
           >
             {truncateAddress({
-              address: preUserOp.sender,
+              address: proposal.sender,
             })}
           </a>
-          <div>{preUserOp.description}</div>
-          <div>{preUserOp.status}</div>
+          <div>{proposal.description}</div>
+          <div>{proposal.status}</div>
         </div>
       </div>
 
       {requiresConfirmation && (
         <div className="block">
-          <input type="text" placeholder="2FA Code" value={preUserOp.code2fa} />
-          <button onClick={() => confirmSignAndSubmitFn(preUserOp)}>
+          <input type="text" placeholder="2FA Code" value={proposal.code2fa} />
+          <button onClick={() => confirmSignAndSubmitFn(proposal)}>
             {" "}
             Verify{" "}
           </button>
@@ -73,7 +74,7 @@ export const PreUserOp = ({
             disabled={!canSign}
             onClick={() =>
               signAndSubmitFn({
-                preUserOpId: preUserOp._id,
+                proposalId: proposal._id,
               })
             }
           >
