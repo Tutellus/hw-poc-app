@@ -50,11 +50,11 @@ export class HumanWalletSDK {
     })
   }
 
-  async signAndSubmitProposal({ preUserOpId }) {
+  async signAndSubmitProposal({ proposalId }) {
     return await this._humanSDK.signAndSubmitProposal({
       web3Provider: this._provider,
-      preUserOpId,
-      user: this._user,
+      proposalId,
+      accessToken: this._accessToken,
     })
   }
 
