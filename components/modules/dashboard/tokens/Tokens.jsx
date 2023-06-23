@@ -37,7 +37,6 @@ export const Tokens = () => {
     if (preUserOp.status === "SIGNABLE") {
       signAndSubmitPreUserOp({
         proposalId: preUserOp._id,
-        accessToken,
       })
     }
 

@@ -4,7 +4,6 @@ import { PreUserOp } from "./PreUserOp"
 export const PreUserOps = () => {
   const { preUserOps, processing, confirmPreUserOp, signAndSubmitPreUserOp } =
     useHuman()
-
   const confirmSignAndSubmitFn = async (preUserOp) => {
     try {
       const innerPreUserOp = await confirmPreUserOp({
@@ -12,7 +11,7 @@ export const PreUserOps = () => {
         code: preUserOp.code2fa,
       })
       await signAndSubmitPreUserOp({
-        preUserOpId: innerPreUserOp._id,
+        proposalId: innerPreUserOp._id,
       })
     } catch (error) {
       console.error(error)
