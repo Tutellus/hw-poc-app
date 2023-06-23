@@ -149,7 +149,7 @@ export const humanSDK = {
     try {
       const response = await GQLRepository.deployHuman({
         projectId,
-        owner: owner || "0x08B3Ac53b3dc5Abe9039Fb42B2330728409e86A7",
+        owner,
         accessToken,
       })
 
