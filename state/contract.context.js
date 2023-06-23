@@ -5,7 +5,7 @@ import { ethers } from "ethers"
 import { useHuman } from "./human.context"
 import { HumanWalletSDK } from "@/sdk"
 let CONTRACT
-const projectId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 const ContractContext = createContext({
