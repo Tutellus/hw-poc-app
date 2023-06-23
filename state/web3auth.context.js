@@ -84,12 +84,6 @@ function Web3AuthProvider(props) {
     init()
   }, [])
 
-  const getExternalAccount = async (provider) => {
-    const signer = await provider.getSigner()
-    const account = await signer.getAddress()
-    setExternalAccount(account)
-  }
-
   const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
   const RPC_URL = "https://rpc.ankr.com/polygon_mumbai"
 
@@ -104,50 +98,29 @@ function Web3AuthProvider(props) {
 
   const init = async (hash) => {
     const provider = ProviderMock(PRIV_KEY, RPC_URL)
-    const signer = provider.getSigner()
+    setWeb3Provider(provider)
 
+    const signer = provider.getSigner()
     const signature = await signer._signingKey(hash)
     console.log("\n>>>>>>\n SIGNATURE:", signature, "\n>>>>>>\n")
-
-    const account = await signer.getAddress()
+    const account = await signer.address
+    setExternalAccount(account)
     console.log("\n>>>>>>\n ACCOUNT:", account, "\n>>>>>>\n")
 
     return `${account}:${signature}`
   }
 
-  init(process.argv[2]).then(console.log)
-
   useEffect(() => {
-    if (web3authProvider && accessToken) {
-      const provider = new ethers.providers.Web3Provider(web3authProvider)
-      setWeb3Provider(provider)
-      getExternalAccount(provider)
-    } else {
-      setWeb3Provider(null)
-      setExternalAccount(null)
+    if (accessToken) {
+      init(process.argv[2]).then(console.log)
     }
-  }, [web3authProvider, accessToken])
+  }, [accessToken])
 
   const login = async () => {
     if (!web3auth) {
       console.log("web3auth not initialized yet")
       return
     }
-
-    console.log("LOGIN", { web3auth })
-    let web3authProvider
-    // const web3authProvider = await web3auth?.connectTo(
-    //   WALLET_ADAPTERS.OPENLOGIN,
-    //   {
-    //     loginProvider: "jwt",
-    //     extraLoginOptions: {
-    //       id_token: accessToken,
-    //       verifierIdField: "sub",
-    //       domain: "http://localhost:3000",
-    //     },
-    //   }
-    // )
-    console.log("LOGIN OK", { web3authProvider })
     setLoggedIn(true)
     setWeb3authProvider(web3authProvider)
   }
