@@ -7,12 +7,16 @@ import {
   DEPLOY_HUMAN_MUTATION,
   REQUEST_PROPOSAL_MUTATION,
   GET_PROPOSALS_HASH_QUERY,
+  GET_PROPOSALS_QUERY,
+  GET_TOKENS_BALANCE_QUERY,
+  PROCESS_PROPOSAL_MUTATION,
   authFetcher,
 } from "./GQL"
 
 export const GQLRepository = {
   getHumanAddress: async ({ projectId, accessToken }) => {
-    const response = await authFetcher(
+    if (!accessToken) return
+    const { getHumanAddress } = await authFetcher(
       GET_HUMAN_ADDRESS_QUERY,
       {
         input: {
@@ -21,7 +25,8 @@ export const GQLRepository = {
       },
       accessToken
     )
-    return response
+
+    return getHumanAddress
   },
 
   getHumanByEmail: async ({ projectId, email }) => {
@@ -59,6 +64,20 @@ export const GQLRepository = {
       },
     })
     return checkContractData.result
+  },
+
+  getTokensBalance: async ({ address, tokens }) => {
+    const { getTokensBalance } = await authFetcher(
+      GET_TOKENS_BALANCE_QUERY,
+      {
+        input: {
+          address,
+          tokens,
+        },
+      },
+      null
+    )
+    return getTokensBalance.items
   },
 
   deployHuman: async ({ projectId, owner, accessToken }) => {
@@ -109,5 +128,33 @@ export const GQLRepository = {
     )
 
     return getProposalHash
+  },
+
+  getProposals: async ({ projectId, accessToken }) => {
+    const { getProposals } = await authFetcher(
+      GET_PROPOSALS_QUERY,
+      {
+        input: {
+          projectId,
+        },
+      },
+      accessToken
+    )
+
+    return getProposals.items
+  },
+
+  processProposal: async ({ proposalId, signature, accessToken }) => {
+    const { processProposal } = await authFetcher(
+      PROCESS_PROPOSAL_MUTATION,
+      {
+        input: {
+          proposalId,
+          signature,
+        },
+      },
+      accessToken
+    )
+    return processProposal
   },
 }
