@@ -71,7 +71,6 @@ export const humanSDK = {
 
   signAndSubmitProposal: async ({ proposalId, accessToken, web3Provider }) => {
     if (!proposalId) return
-    debugger
     const hash = await humanSDK.getProposalsHash({
       proposalId,
       accessToken,
@@ -82,7 +81,7 @@ export const humanSDK = {
     })
     await humanSDK.processProposal({
       proposalId,
-      signature,
+      signature: signature.publicKey,
       accessToken,
     })
   },

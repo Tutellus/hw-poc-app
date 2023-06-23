@@ -56,13 +56,15 @@ export const GQLRepository = {
   },
 
   checkContractData: async ({ address, method, params }) => {
-    const { checkContractData } = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
+    const response = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
       input: {
         contractAddress: address,
         method,
         params,
       },
     })
+
+    const checkContractData = response?.checkContractData
     return checkContractData.result
   },
 
