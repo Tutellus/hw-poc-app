@@ -2,11 +2,11 @@ import { useHuman } from "@/state/human.context"
 import { PreUserOp } from "./PreUserOp"
 
 export const PreUserOps = () => {
-  const { preUserOps, processing, confirmPreUserOp, signAndSubmitProposal } =
+  const { preUserOps, processing, confirmProposal, signAndSubmitProposal } =
     useHuman()
   const confirmSignAndSubmitFn = async (preUserOp) => {
     try {
-      const innerPreUserOp = await confirmPreUserOp({
+      const innerPreUserOp = await confirmProposal({
         preUserOpId: preUserOp._id,
         code: preUserOp.code2fa,
       })

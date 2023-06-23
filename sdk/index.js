@@ -17,8 +17,8 @@ export class HumanWalletSDK {
     this._user = user
   }
 
-  async requestPreUserOp({ title, calls, description }) {
-    return await this._humanSDK.requestPreUserOp({
+  async requestProposal({ title, calls, description }) {
+    return await this._humanSDK.requestProposal({
       projectId: this._projectID,
       title,
       calls,
@@ -48,8 +48,8 @@ export class HumanWalletSDK {
     })
   }
 
-  async signAndSubmitPreUserOp({ preUserOpId }) {
-    return await this._humanSDK.signAndSubmitPreUserOp({
+  async signAndSubmitProposal({ preUserOpId }) {
+    return await this._humanSDK.signAndSubmitProposal({
       web3Provider: this._provider,
       preUserOpId,
       user: this._user,

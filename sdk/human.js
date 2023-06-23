@@ -1,22 +1,21 @@
 import { GQLRepository } from "./repository"
 
 export const humanSDK = {
-  // TODO: rename to requestProposal
-  requestPreUserOp: async ({
+  requestProposal: async ({
     projectId,
     title,
     calls,
     description,
     accessToken,
   }) => {
-    const requestProposal = await GQLRepository.requestProposals({
+    const response = await GQLRepository.requestProposals({
       projectId,
       title,
       calls,
       description,
       accessToken,
     })
-    return requestProposal
+    return response
   },
 
   getHumanAddress: async ({ projectId, accessToken }) => {
@@ -70,8 +69,7 @@ export const humanSDK = {
     }
   },
 
-  // TODO: rename to signAndSubmitProposal
-  signAndSubmitPreUserOp: async ({ proposalId, accessToken, web3Provider }) => {
+  signAndSubmitProposal: async ({ proposalId, accessToken, web3Provider }) => {
     if (!proposalId) return
     debugger
     const hash = await humanSDK.getProposalsHash({
@@ -101,8 +99,7 @@ export const humanSDK = {
   signMessageFromOwner: async ({ web3Provider, message }) =>
     await web3Provider.getSigner()._signingKey(message),
 
-  // TODO: rename to confirmProposal
-  confirmPreUserOp: async ({ preUserOpId, code, user }) => {
+  confirmProposal: async ({ preUserOpId, code, user }) => {
     const response = await fetch("/api/usecases/userOps/confirmPreUserOpUC", {
       method: "POST",
       headers: {

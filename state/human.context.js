@@ -7,7 +7,6 @@ const HumanContext = createContext({
   address: null,
   human: null,
   preUserOps: [],
-  userOps: [],
   processing: false,
   loadingHuman: false,
   loadingAddress: false,
@@ -17,8 +16,8 @@ const HumanContext = createContext({
   signMessageFromOwner: async (message) => {},
   getPreUserOpHash: async ({ preUserOpId }) => {},
   submitUserOp: async ({ preUserOpId, signature }) => {},
-  confirmPreUserOp: async ({ preUserOpId, code }) => {},
-  signAndSubmitPreUserOp: async ({ preUserOpId }) => {},
+  confirmProposal: async ({ preUserOpId, code }) => {},
+  signAndSubmitProposal: async ({ preUserOpId }) => {},
 })
 
 const projectID = process.env.NEXT_PUBLIC_PROJECT_ID
@@ -41,7 +40,6 @@ function HumanProvider(props) {
   const [address, setAddress] = useState(null)
   const [human, setHuman] = useState(null)
   const [preUserOps, setPreUserOps] = useState([])
-  const [userOps, setUserOps] = useState([])
 
   // loadings
   const [processing, setProcessing] = useState(false)
@@ -76,14 +74,14 @@ function HumanProvider(props) {
     setGettingProposals(false)
   }
 
-  const getRequestPreUserOpData = async ({
+  const requestProposalData = async ({
     projectId,
     title,
     calls,
     description,
     accessToken,
   }) => {
-    const response = await humanSDK.requestPreUserOp({
+    const response = await humanSDK.requestProposal({
       projectId,
       title,
       calls,
@@ -107,7 +105,7 @@ function HumanProvider(props) {
     web3Provider,
   }) => {
     setProcessing(true)
-    const response = await humanSDK.signAndSubmitPreUserOp({
+    const response = await humanSDK.signAndSubmitProposal({
       proposalId,
       accessToken,
       web3Provider,
@@ -126,8 +124,8 @@ function HumanProvider(props) {
     return response
   }
 
-  const confirmPreUserOpData = async ({ preUserOpId, code }) => {
-    const response = await humanSDK.confirmPreUserOp({
+  const confirmProposalData = async ({ preUserOpId, code }) => {
+    const response = await humanSDK.confirmProposal({
       preUserOpId,
       code,
       user,
@@ -166,13 +164,11 @@ function HumanProvider(props) {
     return () => clearInterval(interval)
   }, [user])
 
-  console.log("humaaaaaan", human)
   const memoizedData = useMemo(
     () => ({
       address,
       human,
       preUserOps,
-      userOps,
       processing,
       loadingAddress,
       loadingHuman,
@@ -180,17 +176,16 @@ function HumanProvider(props) {
       gettingProposals,
       deployHuman: deployHumanData,
       signMessageFromOwner: signMessageFromOwnerData,
-      requestPreUserOp: getRequestPreUserOpData,
+      requestProposal: requestProposalData,
       getPreUserOpHash: getPreUserOpHashData,
       submitUserOp: submitUserOpData,
-      confirmPreUserOp: confirmPreUserOpData,
-      signAndSubmitPreUserOp: signAndSubmitPreUserOpData,
+      confirmProposal: confirmProposalData,
+      signAndSubmitProposal: signAndSubmitPreUserOpData,
     }),
     [
       address,
       human,
       preUserOps,
-      userOps,
       processing,
       loadingAddress,
       loadingHuman,
