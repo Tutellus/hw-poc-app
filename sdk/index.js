@@ -95,6 +95,17 @@ export default class HumanWalletSDK {
     })
   }
 
+  async updateContractStatus({ contractAddress, status }) {
+    return this._contractSDK.updateContractStatus({
+      contractAddress,
+      status,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
+      accessToken: this._accessToken,
+    })
+  }
+
   async checkContractData({ contractAddress, method, params }) {
     return this._contractSDK.checkContractData({
       contractAddress, 

@@ -4,12 +4,14 @@ import {
   GET_CONTRACTS_QUERY,
   CHECK_CONTRACT_ADDRESS_QUERY,
   CHECK_CONTRACT_DATA_QUERY,
+  CONFIRM_PROPOSAL_MUTATION,
   DEPLOY_HUMAN_MUTATION,
   REQUEST_PROPOSAL_MUTATION,
   GET_PROPOSALS_HASH_QUERY,
   GET_PROPOSALS_QUERY,
   GET_TOKENS_BALANCE_QUERY,
   PROCESS_PROPOSAL_MUTATION,
+  UPDATE_CONTRACT_STATUS_MUTATION,
   authFetcher,
 } from "./GQL/index.js"
 
@@ -63,6 +65,22 @@ export const GQLRepository = {
       projectId,
     })
     return checkContractAddress
+  },
+
+  updateContractStatus: async ({ uri, contractAddress, status, projectId, accessToken }) => {
+    const { updateContractStatus } = await authFetcher({
+      uri,
+      query: UPDATE_CONTRACT_STATUS_MUTATION,
+      variables: {
+        input: {
+          contractAddress,
+          status,
+        }
+      },
+      accessToken,
+      projectId,
+    })
+    return updateContractStatus
   },
 
   checkContractData: async ({ uri, contractAddress, method, params, projectId, accessToken }) => {

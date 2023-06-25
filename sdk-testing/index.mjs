@@ -43,8 +43,11 @@ const testing = async () => {
     }
 
     // REQUEST PROPOSAL ALLOWED
-    const statusContract = await sdk.checkContractAddress({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F'})
-    console.log('\n>>>>>>\n STATUS CONTRACT:', statusContract, "\n>>>>>>\n")
+    const txContractAllowed = await sdk.updateContractStatus({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F', status: true })
+    console.log('\n>>>>>>\n TX CONTRACT ALLOWED:', txContractAllowed, "\n>>>>>>\n")
+
+    const statusContractAllowed = await sdk.checkContractAddress({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F'})
+    console.log('\n>>>>>>\n STATUS CONTRACT ALLOWED:', statusContractAllowed, "\n>>>>>>\n")
 
     const proposal = await sdk.requestProposal({ 
         title: 'Test Proposal',
@@ -65,10 +68,38 @@ const testing = async () => {
         ]
     });
 
-    console.log('\n>>>>>>\n PROPOSAL:', proposal, "\n>>>>>>\n")
+    console.log('\n>>>>>>\n PROPOSAL SIGNABLE:', proposal, "\n>>>>>>\n")
 
     // REQUEST PROPOSAL NOT ALLOWED
+    const txContractNotAllowed = await sdk.updateContractStatus({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F', status: false })
+    console.log('\n>>>>>>\n TX CONTRACT NOT ALLOWED:', txContractNotAllowed, "\n>>>>>>\n")
 
+    const statusContractNotAllowed = await sdk.checkContractAddress({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F'})
+    console.log('\n>>>>>>\n STATUS CONTRACT NOT ALLOWED:', statusContractNotAllowed, "\n>>>>>>\n")
+
+    const proposalConfirm = await sdk.requestProposal({ 
+        title: 'Test Proposal With Confirm',
+        description: 'Test Proposal Description',
+        calls: [
+            {
+                "target": "0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F",
+                "method": "mint",
+                "data": "0x40c10f19000000000000000000000000ef1ce4124292ede43348b5abdc286099fefbea740000000000000000000000000000000000000000000000004563918244f40000",
+                "value": "0"
+            },
+            {
+                "target": "0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F",
+                "method": "transfer",
+                "data": "0xa9059cbb000000000000000000000000e8ccf013e85700b8783fed7ddde63ca608f0954400000000000000000000000000000000000000000000000022b1c8c1227a0000",
+                "value": "0"
+            }
+        ]
+    });
+
+    console.log('\n>>>>>>\n PROPOSAL PENDING:', proposalConfirm, "\n>>>>>>\n")
+
+    const proposalConfirmed = await sdk.confirmProposal({ proposalId: proposalConfirm._id , code: '123456'})
+    console.log('\n>>>>>>\n PROPOSAL CONFIRMED:', proposalConfirmed, "\n>>>>>>\n")
 
 }
 
