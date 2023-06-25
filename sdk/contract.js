@@ -10,6 +10,17 @@ export const contractSDK = {
     })
   },
 
+
+  updateContractStatus: async ({ uri, contractAddress, status, projectId, accessToken }) => {
+    return GQLRepository.updateContractStatus({
+      uri,
+      contractAddress,
+      status,
+      accessToken,
+      projectId, 
+    })
+  },
+
   checkContractData: async ({ uri, contractAddress, method, params, projectId, accessToken }) => {
     // TODO este calculo va fuera para que se pueda culsultar cualquier método
     // const method = "mint"

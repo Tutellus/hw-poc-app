@@ -105,7 +105,7 @@ export const proposalSDK = {
     return signer.signMessage(ethers.utils.arrayify(message))
   },
 
-  confirmProposal: async ({ uri, proposalId, code, accessToken, projectId }) => {
+  confirmProposal: async ({ uri, proposalId, code, provider, accessToken, projectId }) => {
     const proposal = await GQLRepository.confirmProposal({
       uri,
       proposalId,
