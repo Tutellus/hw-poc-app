@@ -1,106 +1,138 @@
-import { contractSDK } from "./contract"
-import { humanSDK } from "./human"
-import { config } from "./config"
+import { contractSDK } from "./contract.js"
+import { humanSDK } from "./human.js"
+import { proposalSDK } from "./proposal.js"
 
-export class HumanWalletSDK {
-  CONTRACT = config.CONTRACT
-
-  static build({ projectID, accessToken, provider, user }) {
-    return new HumanWalletSDK({ projectID, accessToken, provider, user })
+export default class HumanWalletSDK {
+  static build({ uri, projectId, accessToken, provider }) {
+    return new HumanWalletSDK({ uri, projectId, accessToken, provider })
   }
 
-  constructor({ projectID, accessToken, provider, user }) {
+  constructor({ uri, projectId, accessToken, provider }) {
     this._contractSDK = contractSDK
     this._humanSDK = humanSDK
-    this._config = config
-    this._projectID = projectID
+    this._proposalSDK = proposalSDK
+    this._uri = uri
+    this._projectId = projectId
     this._accessToken = accessToken
     this._provider = provider
-    this._user = user
+  }
+
+  updateAccessToken({ accessToken }) {
+    this._accessToken = accessToken
   }
 
   async requestProposal({ title, calls, description }) {
-    return await this._humanSDK.requestProposal({
-      projectId: this._projectID,
+    return this._proposalSDK.requestProposal({
       title,
       calls,
       description,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
+      accessToken: this._accessToken,
+    })
+  }
+
+  async confirmProposal({ proposalId, code }) {
+    return this._proposalSDK.confirmProposal({
+      proposalId,
+      code,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
     })
   }
 
   async getHumanAddress() {
-    return await this._humanSDK.getHumanAddress({
-      projectId: this._projectID,
+    return this._humanSDK.getHumanAddress({
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
     })
   }
 
   async getProposals() {
-    return await this._humanSDK.getProposals({
-      projectId: this._projectID,
+    return this._proposalSDK.getProposals({
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
     })
   }
 
-  async loadHuman() {
-    return await this._humanSDK.loadHuman({
-      projectId: this._projectID,
+  // async signAndSubmitProposal({ proposalId }) {
+  //   return await this._humanSDK.signAndSubmitProposal({
+  //     web3Provider: this._provider,
+  //     proposalId,
+  //     accessToken: this._accessToken,
+  //   })
+  // }
+
+  // async signMessageFromOwner({ message }) {
+  //   return await this._humanSDK.signMessageFromOwner({
+  //     web3Provider: this._provider,
+  //     message,
+  //   })
+  // }
+
+  // async submitUserOp({ userOpId }) {
+  //   return await this._humanSDK.submitUserOp({
+  //     web3Provider: this._provider,
+  //     userOpId,
+  //     user: this._user,
+  //   })
+  // }
+
+  async checkContractAddress({ contractAddress }) {
+    return this._contractSDK.checkContractAddress({
+      contractAddress,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
     })
   }
 
-  async signAndSubmitProposal({ proposalId }) {
-    return await this._humanSDK.signAndSubmitProposal({
-      web3Provider: this._provider,
-      proposalId,
+  async checkContractData({ contractAddress, method, params }) {
+    return this._contractSDK.checkContractData({
+      contractAddress, 
+      method, 
+      params,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
-    })
-  }
-
-  async signMessageFromOwner({ message }) {
-    return await this._humanSDK.signMessageFromOwner({
-      web3Provider: this._provider,
-      message,
-    })
-  }
-
-  async submitUserOp({ userOpId }) {
-    return await this._humanSDK.submitUserOp({
-      web3Provider: this._provider,
-      userOpId,
-      user: this._user,
-    })
-  }
-
-  async checkContractAddress() {
-    return await this._contractSDK.checkContractAddress({
-      address: this._config.CONTRACT.address,
-    })
-  }
-
-  async checkContractData() {
-    return await this._contractSDK.checkContractData({
-      address: this._config.CONTRACT.address,
     })
   }
 
   async getContracts() {
-    return await this._contractSDK.getContracts()
-  }
-
-  async getTokensBalance({ address, tokens }) {
-    return await this._contractSDK.getTokensBalance({
-      address,
-      tokens,
+    return this._contractSDK.getContracts({
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
+      accessToken: this._accessToken,
     })
   }
 
-  async deployHuman({ owner }) {
-    return await this._humanSDK.deployHuman({
-      projectId: this._projectID,
+  async getTokensBalance({ address, tokens }) {
+    return this._contractSDK.getTokensBalance({
+      address,
+      tokens,
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
       accessToken: this._accessToken,
-      owner,
+    })
+  }
+
+  async deployHuman() {
+    return this._humanSDK.deployHuman({
+      uri: this._uri,
+      provider: this._provider,
+      projectId: this._projectId,
+      accessToken: this._accessToken,
     })
   }
 }

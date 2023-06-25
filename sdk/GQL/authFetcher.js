@@ -1,10 +1,8 @@
 import { GraphQLClient } from "graphql-request"
 
-export const authFetcher = async (query, variables = null, accessToken) => {
-  // const token = process.env.NEXT_PUBLIC_TOKEN_JWT
-
+export const authFetcher = async ({ uri, query, variables = {}, accessToken, projectId }) => {
   const gqlClient = await new GraphQLClient(
-    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+    uri,
     {
       credentials: "same-origin",
     }
@@ -12,12 +10,8 @@ export const authFetcher = async (query, variables = null, accessToken) => {
 
   gqlClient.setHeaders({
     authorization: `Bearer ${accessToken}`,
+    'x-project-key': projectId,
   })
 
-  try {
-    const response = await gqlClient.request(query, variables)
-    return response
-  } catch (error) {
-    console.error("< public fetcher - ERROR", error)
-  }
+  return gqlClient.request(query, variables)
 }

@@ -11,152 +11,191 @@ import {
   GET_TOKENS_BALANCE_QUERY,
   PROCESS_PROPOSAL_MUTATION,
   authFetcher,
-} from "./GQL"
+} from "./GQL/index.js"
 
 export const GQLRepository = {
-  getHumanAddress: async ({ projectId, accessToken }) => {
-    if (!accessToken) return
-    const { getHumanAddress } = await authFetcher(
-      GET_HUMAN_ADDRESS_QUERY,
-      {
-        input: {
-          projectId,
-        },
-      },
-      accessToken
-    )
 
+  getHumanAddress: async ({ uri, projectId, accessToken }) => {
+    // if (!accessToken) return
+    const { getHumanAddress } = await authFetcher({
+      uri,
+      query: GET_HUMAN_ADDRESS_QUERY,
+      accessToken,
+      projectId,
+    })
     return getHumanAddress
   },
 
-  getHumanByEmail: async ({ projectId, email }) => {
-    const response = await authFetcher(GET_HUMAN_BY_EMAIL_QUERY, {
-      input: {
-        projectId,
-        email,
+  // TODO Deprecated Internal UC
+  getHumanByEmail: async ({ uri, email, projectId, accessToken }) => {
+    const { getHumanByEmail } = await authFetcher({
+      uri,
+      query: GET_HUMAN_BY_EMAIL_QUERY, 
+      variables: {
+        input: {
+          email,
+        }
       },
+      accessToken,
+      projectId,
     })
-    return response
+    return getHumanByEmail
   },
 
-  getContracts: async () => {
-    const { getContracts } = await authFetcher(GET_CONTRACTS_QUERY, {})
-    return getContracts?.items[0]
+  getContracts: async ({ uri, projectId, accessToken }) => {
+    const { getContracts } = await authFetcher({
+      uri,
+      query: GET_CONTRACTS_QUERY,
+      accessToken,
+      projectId,
+    })
+    return { getContracts }
   },
 
-  checkContractAddress: async ({ address }) => {
-    if (!address) return
-    const { checkContractAddress } = await authFetcher(
-      CHECK_CONTRACT_ADDRESS_QUERY,
-      {
-        contractAddress: address,
-      }
-    )
-    return checkContractAddress?.result
-  },
-
-  checkContractData: async ({ address, method, params }) => {
-    const response = await authFetcher(CHECK_CONTRACT_DATA_QUERY, {
-      input: {
-        contractAddress: address,
-        method,
-        params,
+  checkContractAddress: async ({ uri, contractAddress, projectId, accessToken  }) => {
+    const { checkContractAddress } = await authFetcher({
+      uri,
+      query: CHECK_CONTRACT_ADDRESS_QUERY,
+      variables: {
+        contractAddress,
       },
+      accessToken,
+      projectId,
     })
-
-    const checkContractData = response?.checkContractData
-    return checkContractData.result
+    return checkContractAddress
   },
 
-  getTokensBalance: async ({ address, tokens }) => {
-    const { getTokensBalance } = await authFetcher(
-      GET_TOKENS_BALANCE_QUERY,
-      {
+  checkContractData: async ({ uri, contractAddress, method, params, projectId, accessToken }) => {
+    const { checkContractData } = await authFetcher({
+      uri,
+      query: CHECK_CONTRACT_DATA_QUERY, 
+      variables: {
+        input: {
+          contractAddress,
+          method,
+          params,
+        }
+      },
+      accessToken,
+      projectId,
+    })
+
+    return checkContractData
+  },
+
+  getTokensBalance: async ({ uri, address, tokens, projectId, accessToken }) => {
+    const { getTokensBalance } = await authFetcher({
+      uri,
+      query: GET_TOKENS_BALANCE_QUERY,
+      variables: {
         input: {
           address,
           tokens,
         },
       },
-      null
-    )
-    return getTokensBalance.items
+      accessToken,
+      projectId,
+    })
+    return getTokensBalance
   },
 
-  deployHuman: async ({ projectId, owner, accessToken }) => {
-    console.log("DEPLOY HUMAN", { projectId, owner })
-
-    const { deployHuman } = await authFetcher(
-      DEPLOY_HUMAN_MUTATION,
-      {
+  deployHuman: async ({ uri, owner, projectId, accessToken }) => {
+    const { deployHuman } = await authFetcher({
+      uri,
+      query: DEPLOY_HUMAN_MUTATION,
+      variables: {
         input: {
-          projectId,
           owner,
         },
       },
-      accessToken
-    )
+      accessToken,
+      projectId,
+    })  
     return deployHuman
   },
 
   requestProposals: async ({
-    projectId,
+    uri, 
     title,
-    calls,
     description,
-    accessToken,
+    calls,
+    projectId, 
+    accessToken 
   }) => {
-    const { requestProposal } = await authFetcher(
-      REQUEST_PROPOSAL_MUTATION,
-      {
+    const { requestProposal } = await authFetcher({
+      uri,
+      query: REQUEST_PROPOSAL_MUTATION,
+      variables: {
         input: {
-          projectId,
           title,
           calls,
           description,
         },
       },
-      accessToken
-    )
+      accessToken,
+      projectId,
+    })
     return requestProposal
   },
 
-  getProposalsHash: async ({ proposalId, accessToken }) => {
-    const { getProposalHash } = await authFetcher(
-      GET_PROPOSALS_HASH_QUERY,
-      {
+  getProposalsHash: async ({ uri, proposalId, accessToken, projectId }) => {
+    const { getProposalHash } = await authFetcher({
+      uri,
+      query: GET_PROPOSALS_HASH_QUERY,
+      variables: {
         proposalId,
       },
-      accessToken
-    )
+      accessToken,
+      projectId,
+    })
 
     return getProposalHash
   },
 
-  getProposals: async ({ projectId, accessToken }) => {
-    const { getProposals } = await authFetcher(
-      GET_PROPOSALS_QUERY,
-      {
+  getProposals: async ({ uri, projectId, accessToken }) => {
+    const { getProposals } = await authFetcher({
+      uri,
+      query: GET_PROPOSALS_QUERY,
+      variables: {
         input: {
-          projectId,
         },
       },
-      accessToken
-    )
+      accessToken,
+      projectId,
+    })
 
-    return getProposals.items
+    return getProposals
   },
 
-  processProposal: async ({ proposalId, signature, accessToken }) => {
-    const { processProposal } = await authFetcher(
-      PROCESS_PROPOSAL_MUTATION,
-      {
+  processProposal: async ({ uri, proposalId, signature, accessToken, projectId }) => {
+    const { processProposal } = await authFetcher({
+      uri,
+      query: PROCESS_PROPOSAL_MUTATION,
+      variables: {
         input: {
           proposalId,
           signature,
         },
       },
-      accessToken
-    )
+      accessToken,
+      projectId,
+    })
     return processProposal
+  },
+
+  confirmProposal: async ({ uri, proposalId, code, accessToken, projectId }) => {
+    const { confirmProposal } = await authFetcher({
+      uri,
+      query: CONFIRM_PROPOSAL_MUTATION,
+      variables: {
+        input: {
+          proposalId,
+          code,
+        },
+      },
+      accessToken,
+      projectId,
+    })
+    return confirmProposal
   },
 }
