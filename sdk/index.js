@@ -1,3 +1,4 @@
+import { contractSDK } from "./contracts.js"
 import { humanSDK } from "./humans.js"
 import { policySDK } from "./policies.js"
 import { proposalSDK } from "./proposals.js"
@@ -9,6 +10,7 @@ export default class HumanWalletSDK {
   }
 
   constructor({ uri, projectId, accessToken, provider }) {
+    this._contractSDK = contractSDK
     this._humanSDK = humanSDK
     this._proposalSDK = proposalSDK
     this._tokenSDK = tokenSDK
