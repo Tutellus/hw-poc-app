@@ -1,4 +1,3 @@
-import { contractSDK } from "./contracts.js"
 import { humanSDK } from "./humans.js"
 import { policySDK } from "./policies.js"
 import { proposalSDK } from "./proposals.js"
@@ -10,7 +9,6 @@ export default class HumanWalletSDK {
   }
 
   constructor({ uri, projectId, accessToken, provider }) {
-    this._contractSDK = contractSDK
     this._humanSDK = humanSDK
     this._proposalSDK = proposalSDK
     this._tokenSDK = tokenSDK
@@ -90,8 +88,8 @@ export default class HumanWalletSDK {
 
   async checkContractData({ contractAddress, method, params }) {
     return this._policySDK.checkContractData({
-      contractAddress, 
-      method, 
+      contractAddress,
+      method,
       params,
       uri: this._uri,
       provider: this._provider,
