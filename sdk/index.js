@@ -1,6 +1,8 @@
-import { contractSDK } from "./contract.js"
-import { humanSDK } from "./human.js"
-import { proposalSDK } from "./proposal.js"
+import { contractSDK } from "./contracts.js"
+import { humanSDK } from "./humans.js"
+import { policySDK } from "./policies.js"
+import { proposalSDK } from "./proposals.js"
+import { tokenSDK } from "./tokens.js"
 
 export default class HumanWalletSDK {
   static build({ uri, projectId, accessToken, provider }) {
@@ -11,6 +13,9 @@ export default class HumanWalletSDK {
     this._contractSDK = contractSDK
     this._humanSDK = humanSDK
     this._proposalSDK = proposalSDK
+    this._tokenSDK = tokenSDK
+    this._policySDK = policySDK
+
     this._uri = uri
     this._projectId = projectId
     this._accessToken = accessToken
@@ -62,31 +67,8 @@ export default class HumanWalletSDK {
     })
   }
 
-  // async signAndSubmitProposal({ proposalId }) {
-  //   return await this._humanSDK.signAndSubmitProposal({
-  //     web3Provider: this._provider,
-  //     proposalId,
-  //     accessToken: this._accessToken,
-  //   })
-  // }
-
-  // async signMessageFromOwner({ message }) {
-  //   return await this._humanSDK.signMessageFromOwner({
-  //     web3Provider: this._provider,
-  //     message,
-  //   })
-  // }
-
-  // async submitUserOp({ userOpId }) {
-  //   return await this._humanSDK.submitUserOp({
-  //     web3Provider: this._provider,
-  //     userOpId,
-  //     user: this._user,
-  //   })
-  // }
-
   async checkContractAddress({ contractAddress }) {
-    return this._contractSDK.checkContractAddress({
+    return this._policySDK.checkContractAddress({
       contractAddress,
       uri: this._uri,
       provider: this._provider,
@@ -96,7 +78,7 @@ export default class HumanWalletSDK {
   }
 
   async updateContractStatus({ contractAddress, status }) {
-    return this._contractSDK.updateContractStatus({
+    return this._policySDK.updateContractStatus({
       contractAddress,
       status,
       uri: this._uri,
@@ -107,7 +89,7 @@ export default class HumanWalletSDK {
   }
 
   async checkContractData({ contractAddress, method, params }) {
-    return this._contractSDK.checkContractData({
+    return this._policySDK.checkContractData({
       contractAddress, 
       method, 
       params,
@@ -128,7 +110,7 @@ export default class HumanWalletSDK {
   }
 
   async getTokensBalance({ address, tokens }) {
-    return this._contractSDK.getTokensBalance({
+    return this._tokenSDK.getTokensBalance({
       address,
       tokens,
       uri: this._uri,

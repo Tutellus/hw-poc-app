@@ -1,7 +1,6 @@
 import { GQLRepository } from "./repository.js"
 
 export const humanSDK = {
-
   getAddress: async ({ provider }) => {
     const signer = await provider.getSigner();
     return signer.getAddress()

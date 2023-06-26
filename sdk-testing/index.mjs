@@ -9,6 +9,11 @@ const URI = process.env.NEXT_PUBLIC_URI;
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
 const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
+const waiting = async (timeout = 5000) => new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve(true)
+    }, timeout)
+})
 
 const getProviderMock = (privateKey, rpcUrl) => {
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
@@ -70,6 +75,11 @@ const testing = async () => {
 
     console.log('\n>>>>>>\n PROPOSAL SIGNABLE:', proposal, "\n>>>>>>\n")
 
+    await waiting(5000)
+
+    const balanceAllowed = await sdk.getTokensBalance({ address: '0xef1Ce4124292edE43348B5AbDC286099FEFBeA74', tokens: ['0x0000000000000000000000000000000000001010', '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F']})
+    console.log('\n>>>>>>\n BALANCE ALLOWED:', balanceAllowed, "\n>>>>>>\n")
+
     // REQUEST PROPOSAL NOT ALLOWED
     const txContractNotAllowed = await sdk.updateContractStatus({ contractAddress: '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F', status: false })
     console.log('\n>>>>>>\n TX CONTRACT NOT ALLOWED:', txContractNotAllowed, "\n>>>>>>\n")
@@ -100,6 +110,11 @@ const testing = async () => {
 
     const proposalConfirmed = await sdk.confirmProposal({ proposalId: proposalConfirm._id , code: '123456'})
     console.log('\n>>>>>>\n PROPOSAL CONFIRMED:', proposalConfirmed, "\n>>>>>>\n")
+
+    await waiting(5000)
+
+    const balanceNotAllowed = await sdk.getTokensBalance({ address: '0xef1Ce4124292edE43348B5AbDC286099FEFBeA74', tokens: ['0x0000000000000000000000000000000000001010', '0x2CEDFf179BF88F7B4b1FFF9ca6d53393E956B74F']})
+    console.log('\n>>>>>>\n BALANCE NOT ALLOWED:', balanceNotAllowed, "\n>>>>>>\n")
 
 }
 
