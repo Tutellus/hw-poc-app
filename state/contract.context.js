@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
+import { config } from "@/utils"
 import HumanWalletSDK from "@/sdk"
 
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
@@ -40,7 +41,7 @@ function ContractProvider(props) {
     [web3Provider, accessToken]
   )
 
-  const CONTRACT = humanSDK.CONTRACT
+  const CONTRACT = config.CONTRACT
 
   const [loadingContract, setLoadingContract] = useState(false)
   const [contract, setContract] = useState(null)
@@ -106,7 +107,9 @@ function ContractProvider(props) {
   }
 
   const checkContractAddressData = async () => {
-    const response = await humanSDK.checkContractAddress(CONTRACT)
+    const response = await humanSDK.checkContractAddress({
+      contractAddress: CONTRACT.address,
+    })
     response ? setFullApprovedOwner(response) : setFullApprovedOwner(false)
   }
 
