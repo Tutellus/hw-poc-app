@@ -13,7 +13,6 @@ export default class HumanWalletSDK {
     this._proposalSDK = proposalSDK
     this._tokenSDK = tokenSDK
     this._policySDK = policySDK
-
     this._uri = uri
     this._projectId = projectId
     this._accessToken = accessToken
