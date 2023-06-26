@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
-import HumanWalletSDK from "@/sdk"
+import HumanWalletSDK from "@tutellus/humanwalletsdk"
 
 const HumanContext = createContext({
   address: null,
