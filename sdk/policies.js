@@ -1,6 +1,6 @@
 import { GQLRepository } from "./repository.js"
 
-export const contractSDK = {
+export const policySDK = {
   checkContractAddress: async ({ uri, contractAddress, projectId, accessToken }) => {
     return GQLRepository.checkContractAddress({
       uri,
@@ -9,7 +9,6 @@ export const contractSDK = {
       projectId, 
     })
   },
-
 
   updateContractStatus: async ({ uri, contractAddress, status, projectId, accessToken }) => {
     return GQLRepository.updateContractStatus({
@@ -34,20 +33,6 @@ export const contractSDK = {
       contractAddress, 
       method, 
       params, 
-      accessToken,
-      projectId, 
-    })
-  },
-
-  getContracts: async ({ uri, projectId, accessToken }) => {
-    return GQLRepository.getContracts({ uri, projectId, accessToken })
-  },
-
-  getTokensBalance: async ({ uri, address, tokens, projectId, accessToken }) => {
-    return GQLRepository.getTokensBalance({
-      uri,
-      address,
-      tokens,
       accessToken,
       projectId, 
     })
