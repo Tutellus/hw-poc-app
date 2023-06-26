@@ -16,7 +16,6 @@ import {
 } from "./GQL/index.js"
 
 export const GQLRepository = {
-
   getHumanAddress: async ({ uri, projectId, accessToken }) => {
     // if (!accessToken) return
     const { getHumanAddress } = await authFetcher({
@@ -32,11 +31,11 @@ export const GQLRepository = {
   getHumanByEmail: async ({ uri, email, projectId, accessToken }) => {
     const { getHumanByEmail } = await authFetcher({
       uri,
-      query: GET_HUMAN_BY_EMAIL_QUERY, 
+      query: GET_HUMAN_BY_EMAIL_QUERY,
       variables: {
         input: {
           email,
-        }
+        },
       },
       accessToken,
       projectId,
@@ -54,7 +53,12 @@ export const GQLRepository = {
     return { getContracts }
   },
 
-  checkContractAddress: async ({ uri, contractAddress, projectId, accessToken  }) => {
+  checkContractAddress: async ({
+    uri,
+    contractAddress,
+    projectId,
+    accessToken,
+  }) => {
     const { checkContractAddress } = await authFetcher({
       uri,
       query: CHECK_CONTRACT_ADDRESS_QUERY,
@@ -67,7 +71,13 @@ export const GQLRepository = {
     return checkContractAddress
   },
 
-  updateContractStatus: async ({ uri, contractAddress, status, projectId, accessToken }) => {
+  updateContractStatus: async ({
+    uri,
+    contractAddress,
+    status,
+    projectId,
+    accessToken,
+  }) => {
     const { updateContractStatus } = await authFetcher({
       uri,
       query: UPDATE_CONTRACT_STATUS_MUTATION,
@@ -75,7 +85,7 @@ export const GQLRepository = {
         input: {
           contractAddress,
           status,
-        }
+        },
       },
       accessToken,
       projectId,
@@ -83,16 +93,23 @@ export const GQLRepository = {
     return updateContractStatus
   },
 
-  checkContractData: async ({ uri, contractAddress, method, params, projectId, accessToken }) => {
+  checkContractData: async ({
+    uri,
+    contractAddress,
+    method,
+    params,
+    projectId,
+    accessToken,
+  }) => {
     const { checkContractData } = await authFetcher({
       uri,
-      query: CHECK_CONTRACT_DATA_QUERY, 
+      query: CHECK_CONTRACT_DATA_QUERY,
       variables: {
         input: {
           contractAddress,
           method,
           params,
-        }
+        },
       },
       accessToken,
       projectId,
@@ -101,7 +118,13 @@ export const GQLRepository = {
     return checkContractData
   },
 
-  getTokensBalance: async ({ uri, address, tokens, projectId, accessToken }) => {
+  getTokensBalance: async ({
+    uri,
+    address,
+    tokens,
+    projectId,
+    accessToken,
+  }) => {
     const { getTokensBalance } = await authFetcher({
       uri,
       query: GET_TOKENS_BALANCE_QUERY,
@@ -128,17 +151,17 @@ export const GQLRepository = {
       },
       accessToken,
       projectId,
-    })  
+    })
     return deployHuman
   },
 
   requestProposals: async ({
-    uri, 
+    uri,
     title,
     description,
     calls,
-    projectId, 
-    accessToken 
+    projectId,
+    accessToken,
   }) => {
     const { requestProposal } = await authFetcher({
       uri,
@@ -175,8 +198,7 @@ export const GQLRepository = {
       uri,
       query: GET_PROPOSALS_QUERY,
       variables: {
-        input: {
-        },
+        input: {},
       },
       accessToken,
       projectId,
@@ -185,7 +207,13 @@ export const GQLRepository = {
     return getProposals
   },
 
-  processProposal: async ({ uri, proposalId, signature, accessToken, projectId }) => {
+  processProposal: async ({
+    uri,
+    proposalId,
+    signature,
+    accessToken,
+    projectId,
+  }) => {
     const { processProposal } = await authFetcher({
       uri,
       query: PROCESS_PROPOSAL_MUTATION,
@@ -201,7 +229,13 @@ export const GQLRepository = {
     return processProposal
   },
 
-  confirmProposal: async ({ uri, proposalId, code, accessToken, projectId }) => {
+  confirmProposal: async ({
+    uri,
+    proposalId,
+    code,
+    accessToken,
+    projectId,
+  }) => {
     const { confirmProposal } = await authFetcher({
       uri,
       query: CONFIRM_PROPOSAL_MUTATION,
