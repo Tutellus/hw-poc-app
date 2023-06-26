@@ -3,8 +3,9 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
-import { HumanWalletSDK } from "@/sdk"
+import HumanWalletSDK from "@/sdk"
 
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
@@ -31,10 +32,10 @@ function ContractProvider(props) {
   const humanSDK = useMemo(
     () =>
       HumanWalletSDK.build({
+        uri,
         projectID: projectId,
         accessToken,
         provider: web3Provider,
-        user,
       }),
     [web3Provider, accessToken]
   )

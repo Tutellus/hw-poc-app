@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { useWeb3Auth } from "./web3auth.context"
-import { HumanWalletSDK } from "@/sdk"
+import HumanWalletSDK from "@/sdk"
 
 const HumanContext = createContext({
   address: null,
@@ -17,7 +17,8 @@ const HumanContext = createContext({
   submitUserOp: async ({ preUserOpId, signature }) => {},
 })
 
-const projectID = process.env.NEXT_PUBLIC_PROJECT_ID
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
@@ -25,10 +26,10 @@ function HumanProvider(props) {
   const humanSDK = useMemo(
     () =>
       HumanWalletSDK.build({
-        projectID,
+        uri,
+        projectId,
         accessToken,
         provider: web3Provider,
-        user,
       }),
     [web3Provider, accessToken]
   )
@@ -50,7 +51,7 @@ function HumanProvider(props) {
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
-    const response = await humanSDK.loadHuman()
+    const response = await humanSDK.getHumanAddress()
     setHuman(response)
     setLoadingHuman(false)
   }
