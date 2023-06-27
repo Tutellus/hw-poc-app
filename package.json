@@ -2,6 +2,7 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "cp .env.test .env.development.local && next dev",
     "dev:dev": "cp .env.development .env.development.local && next dev",
@@ -31,7 +32,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^4.13.0",
     "next": "12.3.4",
-    "next-auth": "4.22.1",
+    "next-auth": "4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "uuid": "^9.0.0"
