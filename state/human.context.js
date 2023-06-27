@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useWeb3Auth } from "./web3auth.context"
+import { useUser } from "./user.context"
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk/umd/index.js"
 
 const HumanContext = createContext({
@@ -22,7 +22,7 @@ const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
+  const { user, externalAccount, web3Provider, accessToken } = useUser()
   const humanSDK = useMemo(
     () =>
       HumanWalletSDK.build({

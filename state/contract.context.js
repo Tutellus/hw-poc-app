@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useWeb3Auth } from "./web3auth.context"
+import { useUser } from "./user.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
 import { config } from "@/utils"
@@ -28,7 +28,7 @@ const ContractContext = createContext({
 })
 
 function ContractProvider(props) {
-  const { user, web3Provider, accessToken } = useWeb3Auth()
+  const { user, web3Provider, accessToken } = useUser()
 
   const humanSDK = useMemo(
     () =>
@@ -114,7 +114,9 @@ function ContractProvider(props) {
   }
 
   const checkContractDataFunction = async () => {
-    const response = await humanSDK.checkContractData(CONTRACT)
+    const response = await humanSDK.checkContractData({
+      contractAddress: CONTRACT.address,
+    })
     response
       ? setFunctionApprovedOwner(response)
       : setFunctionApprovedOwner(false)
