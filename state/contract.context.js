@@ -4,7 +4,7 @@ import { useWeb3Auth } from "./web3auth.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
 import { config } from "@/utils"
-import HumanWalletSDK from "@tutellus/humanwalletsdk"
+import HumanWalletSDK from "@tutellus/humanwalletsdk/"
 
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
