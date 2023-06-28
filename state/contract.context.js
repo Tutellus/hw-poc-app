@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useUser } from "./user.context"
+import { useWeb3Auth } from "./web3auth.context"
 import { ethers } from "ethers"
 import { useHuman } from "./human.context"
 import { config } from "@/utils"
@@ -28,7 +28,7 @@ const ContractContext = createContext({
 })
 
 function ContractProvider(props) {
-  const { user, web3Provider, accessToken } = useUser()
+  const { user, web3Provider, accessToken } = useWeb3Auth()
 
   const humanSDK = useMemo(
     () =>

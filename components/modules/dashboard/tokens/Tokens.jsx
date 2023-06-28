@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { useContract } from "@/state/contract.context";
-import { useHuman } from "@/state/human.context";
-import { ethers } from "ethers";
-import { useUser } from "@/state/user.context";
-
-const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
+import { useState } from "react"
+import { useContract } from "@/state/contract.context"
+import { useHuman } from "@/state/human.context"
+import { ethers } from "ethers"
+import { useSession } from "next-auth/react"
+const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
 
 export const Tokens = () => {
-  const { accessToken } = useUser();
-  const { loadingContract, contract, balance, updateContract } = useContract();
-  const { requestProposal, signAndSubmitProposal, human } = useHuman();
+  const { data } = useSession()
+  const accessToken = data?.accessToken
+  const { loadingContract, contract, balance, updateContract } = useContract()
+  const { requestProposal, signAndSubmitProposal, human } = useHuman()
 
-  const [minting, setMinting] = useState(false);
+  const [minting, setMinting] = useState(false)
 
-  const canMint = human?.status === "CONFIRMED";
+  const canMint = human?.status === "CONFIRMED"
 
   const requestMint = async () => {
-    setMinting(true);
+    setMinting(true)
     const proposal = await requestProposal({
       projectId: PROJECT_ID,
       title: "Minteo 5 tokens",
@@ -30,16 +30,16 @@ export const Tokens = () => {
       ],
       description: "Mint 5 Tokens",
       accessToken,
-    });
+    })
 
     if (proposal.status === "SIGNABLE") {
       signAndSubmitProposal({
         proposalId: proposal._id,
-      });
+      })
     }
 
-    setMinting(false);
-  };
+    setMinting(false)
+  }
 
   return (
     <div className="box">
@@ -80,5 +80,5 @@ export const Tokens = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
