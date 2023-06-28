@@ -56,6 +56,7 @@ function Web3AuthProvider(props) {
           config: { chainConfig },
         })
 
+        debugger
         const openloginAdapter = new OpenloginAdapter({
           adapterSettings: {
             loginConfig: {
