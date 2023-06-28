@@ -3,6 +3,7 @@ import { useContract } from "@/state/contract.context"
 import { useHuman } from "@/state/human.context"
 import { ethers } from "ethers"
 import { useSession } from "next-auth/react"
+
 const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
 
 export const Tokens = () => {

@@ -107,16 +107,18 @@ function ContractProvider(props) {
   }
 
   const checkContractAddressData = async () => {
+    if (!accessToken) return
     const response = await humanSDK.checkContractAddress({
+      uri,
       contractAddress: CONTRACT.address,
+      projectId,
+      accessToken,
     })
     response ? setFullApprovedOwner(response) : setFullApprovedOwner(false)
   }
 
   const checkContractDataFunction = async () => {
-    const response = await humanSDK.checkContractData({
-      contractAddress: CONTRACT.address,
-    })
+    const response = await humanSDK.checkContractData(CONTRACT)
     response
       ? setFunctionApprovedOwner(response)
       : setFunctionApprovedOwner(false)

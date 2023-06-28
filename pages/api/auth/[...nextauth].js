@@ -155,13 +155,13 @@ export default NextAuth({
     // Aquí se comprueba si la sesión guardada previamente está próxima a
     // caducar, si es así, se llama al método de refreshToken y se actualiza
     async session({ session, token }) {
-      if (token.api) {
+      if (token?.api) {
         const {
           token: accessToken,
           refreshToken,
           tokenExpiry,
           user,
-        } = token.api
+        } = token?.api
 
         const sessionExpiredInMin = Math.round(
           (new Date(tokenExpiry) - new Date()) / MINUTES
