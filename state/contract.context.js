@@ -29,12 +29,11 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   const { user, web3Provider, accessToken } = useWeb3Auth()
-
   const humanSDK = useMemo(
     () =>
       HumanWalletSDK.build({
         uri,
-        projectID: projectId,
+        projectId,
         accessToken,
         provider: web3Provider,
       }),
@@ -118,7 +117,12 @@ function ContractProvider(props) {
   }
 
   const checkContractDataFunction = async () => {
-    const response = await humanSDK.checkContractData(CONTRACT)
+    const response = await humanSDK.checkContractData({
+      uri,
+      contractAddress: CONTRACT.address,
+      projectId,
+      accessToken,
+    })
     response
       ? setFunctionApprovedOwner(response)
       : setFunctionApprovedOwner(false)
