@@ -56,11 +56,35 @@ function Web3AuthProvider(props) {
           config: { chainConfig },
         })
 
-        debugger
+        // debugger
+        // const openloginAdapter = new OpenloginAdapter({
+        //   adapterSettings: {
+        //     loginConfig: {
+        //       jwt: {
+        //         verifier: WEB3AUTH_CUSTOMAUTH,
+        //         typeOfLogin: "jwt",
+        //         clientId: WEB3AUTH_CLIENT_ID,
+        //       },
+        //     },
+        //   },
+        //   privateKeyProvider,
+        // })
+
         const openloginAdapter = new OpenloginAdapter({
           adapterSettings: {
+            clientId: WEB3AUTH_CLIENT_ID,
+            network: "testnet",
+            uxMode: "popup",
+            whiteLabel: {
+              name: "HumanWallet",
+              logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+              logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+              defaultLanguage: "en",
+              dark: true, // whether to enable dark mode. defaultValue: false
+            },
             loginConfig: {
               jwt: {
+                name: "Web3Auth-Auth0-JWT",
                 verifier: WEB3AUTH_CUSTOMAUTH,
                 typeOfLogin: "jwt",
                 clientId: WEB3AUTH_CLIENT_ID,
@@ -69,6 +93,7 @@ function Web3AuthProvider(props) {
           },
           privateKeyProvider,
         })
+
         web3auth.configureAdapter(openloginAdapter)
         setWeb3auth(web3auth)
 

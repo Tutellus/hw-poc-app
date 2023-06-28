@@ -2,7 +2,6 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
-  "module": "esm",
   "scripts": {
     "dev": "cp .env.test .env.development.local && next dev",
     "dev:dev": "cp .env.development .env.development.local && next dev",
