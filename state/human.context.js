@@ -23,16 +23,22 @@ const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
   const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
-  const humanSDK = useMemo(
-    () =>
-      HumanWalletSDK.build({
+  const [humanSDK, setHumanSDK] = useState(null)
+
+  useEffect(() => {
+    if (web3Provider && accessToken) {
+      const humanSDK = HumanWalletSDK.build({
         uri,
         projectId,
         accessToken,
         provider: web3Provider,
-      }),
-    [web3Provider, accessToken]
-  )
+      })
+
+      setHumanSDK(humanSDK)
+    }
+  }, [web3Provider, accessToken])
+
+  console.log({ humanSDK, web3Provider, accessToken })
 
   // state
   const [address, setAddress] = useState(null)
@@ -47,25 +53,25 @@ function HumanProvider(props) {
   const [gettingProposals, setGettingProposals] = useState(false)
 
   const signMessageFromOwnerData = async ({ message }) =>
-    await humanSDK.signMessageFromOwner({ web3Provider, message })
+    await humanSDK?.signMessageFromOwner({ web3Provider, message })
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
-    const response = await humanSDK.getHuman()
+    const response = await humanSDK?.getHuman()
     setHuman(response)
     setLoadingHuman(false)
   }
 
   const getHumanData = async () => {
     setLoadingAddress(true)
-    const response = await humanSDK.getHuman()
+    const response = await humanSDK?.getHuman()
     setAddress(response?.address)
     setLoadingAddress(false)
   }
 
   const getProposalsData = async () => {
     setGettingProposals(true)
-    const response = await humanSDK.getProposals({
+    const response = await humanSDK?.getProposals({
       human,
     })
     setProposals(response)
@@ -79,7 +85,7 @@ function HumanProvider(props) {
     description,
     accessToken,
   }) => {
-    const response = await humanSDK.requestProposal({
+    const response = await humanSDK?.requestProposal({
       projectId,
       title,
       calls,
@@ -90,7 +96,7 @@ function HumanProvider(props) {
   }
 
   const getPreUserOpHashData = async ({ proposalId, accessToken }) => {
-    const response = await humanSDK.getPreUserOpHash({
+    const response = await humanSDK?.getPreUserOpHash({
       proposalId,
       accessToken,
     })
@@ -103,7 +109,7 @@ function HumanProvider(props) {
     web3Provider,
   }) => {
     setProcessing(true)
-    const response = await humanSDK.signAndSubmitProposal({
+    const response = await humanSDK?.signAndSubmitProposal({
       proposalId,
       accessToken,
       web3Provider,
@@ -113,7 +119,7 @@ function HumanProvider(props) {
   }
 
   const submitUserOpData = async ({ preUserOpId, signature, user }) => {
-    const response = await humanSDK.submitUserOp({
+    const response = await humanSDK?.submitUserOp({
       preUserOpId,
       signature,
       user,
@@ -123,7 +129,7 @@ function HumanProvider(props) {
   }
 
   const confirmProposalData = async ({ preUserOpId, code }) => {
-    const response = await humanSDK.confirmProposal({
+    const response = await humanSDK?.confirmProposal({
       preUserOpId,
       code,
       user,
@@ -133,7 +139,7 @@ function HumanProvider(props) {
 
   const deployHumanData = async () => {
     setLoadingDeployment(true)
-    const response = await humanSDK.deployHuman({
+    const response = await humanSDK?.deployHuman({
       projectId,
       owner: externalAccount,
       accessToken,
