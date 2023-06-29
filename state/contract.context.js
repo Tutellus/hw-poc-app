@@ -29,17 +29,6 @@ const ContractContext = createContext({
 
 function ContractProvider(props) {
   const { user, web3Provider, accessToken } = useWeb3Auth()
-  const humanSDK = useMemo(
-    () =>
-      HumanWalletSDK.build({
-        uri,
-        projectId,
-        accessToken,
-        provider: web3Provider,
-      }),
-    [web3Provider, accessToken]
-  )
-
   const CONTRACT = config.CONTRACT
 
   const [loadingContract, setLoadingContract] = useState(false)
@@ -47,7 +36,7 @@ function ContractProvider(props) {
 
   const [loadingBalance, setLoadingBalance] = useState(false)
   const [balance, setBalance] = useState("---")
-  const { address } = useHuman()
+  const { address, humanSDK } = useHuman()
 
   const [updatingPolicies, setUpdatingPolicies] = useState(false)
   const [fullApprovedOwner, setFullApprovedOwner] = useState(false)

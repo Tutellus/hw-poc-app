@@ -179,6 +179,7 @@ function HumanProvider(props) {
       submitUserOp: submitUserOpData,
       confirmProposal: confirmProposalData,
       signAndSubmitProposal: signAndSubmitProposalData,
+      humanSDK,
     }),
     [
       address,
@@ -189,6 +190,7 @@ function HumanProvider(props) {
       loadingHuman,
       loadingDeployment,
       gettingProposals,
+      humanSDK,
     ]
   )
 
