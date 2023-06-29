@@ -51,14 +51,14 @@ function HumanProvider(props) {
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
-    const response = await humanSDK.getHumanAddress()
+    const response = await humanSDK.getHuman()
     setHuman(response)
     setLoadingHuman(false)
   }
 
-  const getHumanAddressData = async () => {
+  const getHumanData = async () => {
     setLoadingAddress(true)
-    const response = await humanSDK.getHumanAddress()
+    const response = await humanSDK.getHuman()
     setAddress(response?.address)
     setLoadingAddress(false)
   }
@@ -153,10 +153,10 @@ function HumanProvider(props) {
   }, [human])
 
   useEffect(() => {
-    getHumanAddressData()
+    getHumanData()
     loadHumanData()
     const interval = setInterval(() => {
-      getHumanAddressData()
+      getHumanData()
       loadHumanData()
     }, 5000)
     return () => clearInterval(interval)
