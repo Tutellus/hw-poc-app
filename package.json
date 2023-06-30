@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "phoenix": "rm package-lock.json && rm -rf node_modules && npm --loglevel=error i"
+    "phoenix": "rm -rf .next && rm package-lock.json && rm -rf node_modules && npm --loglevel=error i"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.354.0",
