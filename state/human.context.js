@@ -19,7 +19,6 @@ const HumanContext = createContext({
 
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function HumanProvider(props) {
   const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
@@ -37,8 +36,6 @@ function HumanProvider(props) {
       setHumanSDK(humanSDK)
     }
   }, [web3Provider, accessToken])
-
-  console.log({ humanSDK, web3Provider, accessToken })
 
   // state
   const [address, setAddress] = useState(null)
@@ -65,7 +62,7 @@ function HumanProvider(props) {
   const getHumanData = async () => {
     setLoadingAddress(true)
     const response = await humanSDK.getHuman()
-    setAddress(response?.address)
+    setAddress(response.address)
     setLoadingAddress(false)
   }
 
@@ -97,7 +94,7 @@ function HumanProvider(props) {
   }
 
   const getPreUserOpHashData = async ({ proposalId, accessToken }) => {
-    const response = await humanSDK?.getPreUserOpHash({
+    const response = await humanSDK.getPreUserOpHash({
       proposalId,
       accessToken,
     })
@@ -110,7 +107,7 @@ function HumanProvider(props) {
     web3Provider,
   }) => {
     setProcessing(true)
-    const response = await humanSDK?.signAndSubmitProposal({
+    const response = await humanSDK.signAndSubmitProposal({
       proposalId,
       accessToken,
       web3Provider,
@@ -120,7 +117,7 @@ function HumanProvider(props) {
   }
 
   const submitUserOpData = async ({ preUserOpId, signature, user }) => {
-    const response = await humanSDK?.submitUserOp({
+    const response = await humanSDK.submitUserOp({
       preUserOpId,
       signature,
       user,
@@ -130,7 +127,7 @@ function HumanProvider(props) {
   }
 
   const confirmProposalData = async ({ preUserOpId, code }) => {
-    const response = await humanSDK?.confirmProposal({
+    const response = await humanSDK.confirmProposal({
       preUserOpId,
       code,
       user,
@@ -140,7 +137,7 @@ function HumanProvider(props) {
 
   const deployHumanData = async () => {
     setLoadingDeployment(true)
-    const response = await humanSDK?.deployHuman({
+    const response = await humanSDK.deployHuman({
       projectId,
       owner: externalAccount,
       accessToken,
@@ -169,7 +166,7 @@ function HumanProvider(props) {
       loadHumanData()
     }, 5000)
     return () => clearInterval(interval)
-  }, [user])
+  }, [user, humanSDK])
 
   const memoizedData = useMemo(
     () => ({

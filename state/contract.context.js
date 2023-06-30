@@ -17,7 +17,6 @@ const ContractContext = createContext({
   fullApprovedOwner: false,
   functionApprovedOwner: false,
   getTokenBalance: async () => {},
-  getContract: async () => {},
   updateContract: async () => {},
   checkContractAddress: async () => {},
   checkContractData: async () => {},
@@ -27,7 +26,7 @@ const ContractContext = createContext({
 })
 
 function ContractProvider(props) {
-  const { user, web3Provider, accessToken } = useWeb3Auth()
+  const { accessToken } = useWeb3Auth()
   const CONTRACT = config.CONTRACT
 
   const [loadingContract, setLoadingContract] = useState(false)
@@ -44,12 +43,13 @@ function ContractProvider(props) {
   const getTokenBalance = async () => {
     try {
       setLoadingBalance(true)
-      const response = await humanSDK.getTokensBalance({
+      const { items } = await humanSDK.getTokensBalance({
         address,
         tokens: [CONTRACT.address],
       })
-      const innerBalance = ethers.utils.formatEther(response[CONTRACT.address])
 
+      const value = items.find((item) => item.token === CONTRACT.address).value
+      const innerBalance = ethers.utils.formatEther(value)
       setBalance(innerBalance)
       setLoadingBalance(false)
     } catch (error) {
@@ -216,7 +216,7 @@ function ContractProvider(props) {
   }, [chainId])
 
   useEffect(() => {
-    if (!contract) return
+    if (!contract || !humanSDK) return
     checkContractAddressData()
     checkContractDataFunction()
 
@@ -225,16 +225,16 @@ function ContractProvider(props) {
       checkContractDataFunction()
     }, 5000)
     return () => clearInterval(interval)
-  }, [contract, updatingPolicies])
+  }, [contract, updatingPolicies, humanSDK])
 
   useEffect(() => {
-    if (!address) return
+    if (!address || !humanSDK) return
     getTokenBalance()
     const interval = setInterval(() => {
       getTokenBalance()
     }, 5000)
     return () => clearInterval(interval)
-  }, [address])
+  }, [address, humanSDK])
 
   const memoizedData = useMemo(
     () => ({
