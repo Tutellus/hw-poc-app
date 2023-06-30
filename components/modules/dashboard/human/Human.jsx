@@ -31,7 +31,7 @@ export const Human = () => {
           : "No human connected"}
         {isReady && <div>Ready</div>}
         {isDeploying && <div>Deploying...</div>}
-        {isNotReady && <button onClick={deployHuman}>Deploy</button>}
+        {isNotReady && <div>Not ready yet...</div>}
       </div>
     </div>
   )

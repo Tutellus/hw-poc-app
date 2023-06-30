@@ -27,7 +27,7 @@ export const ProposalsList = () => {
     >
       <div className="title">Proposals</div>
       <div className="data">
-        {proposals?.length > 0 &&
+        {proposals?.length > 0 ? (
           proposals.map((proposal, index) => (
             <Proposal
               key={index}
@@ -36,7 +36,10 @@ export const ProposalsList = () => {
               confirmSignAndSubmitFn={confirmSignAndSubmitFn}
               signAndSubmitFn={signAndSubmitProposal}
             />
-          ))}
+          ))
+        ) : (
+          <p>No availvable proposals yet</p>
+        )}
       </div>
     </div>
   )
