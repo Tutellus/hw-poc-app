@@ -53,25 +53,26 @@ function HumanProvider(props) {
   const [gettingProposals, setGettingProposals] = useState(false)
 
   const signMessageFromOwnerData = async ({ message }) =>
-    await humanSDK?.signMessageFromOwner({ web3Provider, message })
+    await humanSDK.signMessageFromOwner({ web3Provider, message })
 
   const loadHumanData = async () => {
     setLoadingHuman(true)
-    const response = await humanSDK?.getHuman()
+    const response = await humanSDK.getHuman()
     setHuman(response)
     setLoadingHuman(false)
   }
 
   const getHumanData = async () => {
     setLoadingAddress(true)
-    const response = await humanSDK?.getHuman()
+    const response = await humanSDK.getHuman()
     setAddress(response?.address)
     setLoadingAddress(false)
   }
 
   const getProposalsData = async () => {
+    if (!human) return
     setGettingProposals(true)
-    const response = await humanSDK?.getProposals({
+    const response = await humanSDK.getProposals({
       human,
     })
     setProposals(response)
@@ -85,7 +86,7 @@ function HumanProvider(props) {
     description,
     accessToken,
   }) => {
-    const response = await humanSDK?.requestProposal({
+    const response = await humanSDK.requestProposal({
       projectId,
       title,
       calls,
@@ -151,6 +152,7 @@ function HumanProvider(props) {
   }
 
   useEffect(() => {
+    if (!humanSDK) return
     getProposalsData()
     const interval = setInterval(() => {
       getProposalsData()
@@ -159,6 +161,7 @@ function HumanProvider(props) {
   }, [human])
 
   useEffect(() => {
+    if (!humanSDK) return
     getHumanData()
     loadHumanData()
     const interval = setInterval(() => {
