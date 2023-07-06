@@ -26,8 +26,8 @@ const config = {
     dev: 'mongodb+srv://demo:tutellus@serverlessinstance0.gzvnc.mongodb.net/?retryWrites=true&w=majority',
     pro: 'mongodb+srv://demo:tutellus@mongoserverless.gzvnc.mongodb.net/?retryWrites=true&w=majority',
   },
-  gasPriceMultiplier: 2.5,
-  gasLimitMultiplier: 2.5,
+  gasPriceMultiplier: 1.5,
+  gasLimitMultiplier: 1,
 }
 
 module.exports = { config }
