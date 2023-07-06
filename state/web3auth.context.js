@@ -66,6 +66,17 @@ function Web3AuthProvider(props) {
                 clientId: WEB3AUTH_CLIENT_ID,
               },
             },
+            whiteLabel: {
+              name: "Human Wallet",
+              url: "https://www.tutellus.com/",
+              logoLight: "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
+              logoDark: "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
+              defaultLanguage: "es", // en, de, ja, ko, zh, es, fr, pt, nl
+              dark: false, // whether to enable dark mode. defaultValue: false
+              theme: {
+                primary: "#2020df",
+              },
+            },
           },
           privateKeyProvider,
         });
