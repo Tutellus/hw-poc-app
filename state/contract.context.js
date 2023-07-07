@@ -43,9 +43,15 @@ function ContractProvider(props) {
   const getTokenBalance = async () => {
     try {
       setLoadingBalance(true);
+
+      const USDTToken = {
+        token: CONTRACT.address,
+        type: "ERC20",
+      };
+
       const { items } = await humanSDK.getTokensBalance({
         address,
-        tokens: [CONTRACT.address],
+        tokens: [USDTToken],
       });
 
       const value = items.find((item) => item.token === CONTRACT.address).value;
