@@ -1,95 +1,89 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useWeb3Auth } from "./web3auth.context"
-import { ethers } from "ethers"
-import { useHuman } from "./human.context"
-import { config } from "@/utils"
-import HumanWalletSDK from "@/sdk"
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { ethers } from "ethers";
+import { useHuman } from "./human.context";
+import { config } from "@/utils";
+import { useSession } from "next-auth/react";
 
-const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
+const CONTRACT = config.CONTRACT;
 
 const ContractContext = createContext({
-  loadingContract: false,
-  contract: null,
+  loadingContract: true,
+  contract: CONTRACT,
   balance: "0.0",
   updatingPolicies: false,
   fullApprovedOwner: false,
   functionApprovedOwner: false,
   getTokenBalance: async () => {},
-  getContract: async () => {},
   updateContract: async () => {},
   checkContractAddress: async () => {},
   checkContractData: async () => {},
   updateAddressStatus: async (status) => {},
   updateMask: async () => {},
   updateFunctionStatus: async (status) => {},
-})
+});
 
 function ContractProvider(props) {
-  const { user, web3Provider, accessToken } = useWeb3Auth()
+  const { data: session } = useSession();
+  const { accessToken } = session || {};
 
-  const humanSDK = useMemo(
-    () =>
-      HumanWalletSDK.build({
-        uri,
-        projectID: projectId,
-        accessToken,
-        provider: web3Provider,
-      }),
-    [web3Provider, accessToken]
-  )
+  const [loadingContract, setLoadingContract] = useState(false);
+  const [contract, setContract] = useState(CONTRACT);
 
-  const CONTRACT = config.CONTRACT
+  const [loadingBalance, setLoadingBalance] = useState(false);
+  const [balance, setBalance] = useState("---");
+  const { human, humanSDK } = useHuman();
 
-  const [loadingContract, setLoadingContract] = useState(false)
-  const [contract, setContract] = useState(null)
-
-  const [loadingBalance, setLoadingBalance] = useState(false)
-  const [balance, setBalance] = useState("---")
-  const { address } = useHuman()
-
-  const [updatingPolicies, setUpdatingPolicies] = useState(false)
-  const [fullApprovedOwner, setFullApprovedOwner] = useState(false)
-  const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false)
+  const [updatingPolicies, setUpdatingPolicies] = useState(false);
+  const [fullApprovedOwner, setFullApprovedOwner] = useState(false);
+  const [functionApprovedOwner, setFunctionApprovedOwner] = useState(false);
 
   const getTokenBalance = async () => {
     try {
-      setLoadingBalance(true)
-      const response = await humanSDK.getTokensBalance({
-        address,
-        tokens: [CONTRACT.address],
-      })
-      const innerBalance = ethers.utils.formatEther(response[CONTRACT.address])
+      setLoadingBalance(true);
 
-      setBalance(innerBalance)
-      setLoadingBalance(false)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+      const USDTToken = {
+        token: CONTRACT.address,
+        type: "ERC20",
+      };
 
-  const getContract = async () => {
-    try {
-      setLoadingContract(true)
-      const response = await humanSDK.getContracts()
-      setContract(response)
-      setLoadingContract(false)
+      const { items } = await humanSDK.getTokensBalance({
+        address: human.address,
+        tokens: [USDTToken],
+      });
+
+      const value = items.find((item) => item.token === CONTRACT.address).bigNumber;
+      const innerBalance = ethers.utils.formatEther(value);
+      setBalance(innerBalance);
+      setLoadingBalance(false);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
+
+  // const getContract = async () => {
+  //   try {
+  //     setLoadingContract(true);
+  //     const response = await humanSDK.getContracts();
+  //     setContract(response);
+  //     setLoadingContract(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const updateContract = async () => {
     try {
-      setLoadingContract(true)
+      setLoadingContract(true);
 
       const params = {
         address: CONTRACT.address,
         abi: CONTRACT.abi,
         chainId: CONTRACT.chainId,
-      }
+      };
 
       const response = await fetch("/api/usecases/contracts/updateContractUC", {
         method: "POST",
@@ -97,32 +91,40 @@ function ContractProvider(props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(params),
-      })
-      const { contract: innerContract } = await response.json()
-      setContract(innerContract)
+      });
+      const { contract: innerContract } = await response.json();
+      setContract(innerContract);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-    setLoadingContract(false)
-  }
+    setLoadingContract(false);
+  };
 
   const checkContractAddressData = async () => {
+    if (!accessToken || !humanSDK) return;
+
     const response = await humanSDK.checkContractAddress({
+      uri,
       contractAddress: CONTRACT.address,
-    })
-    response ? setFullApprovedOwner(response) : setFullApprovedOwner(false)
-  }
+      projectId,
+      accessToken,
+    });
+    response ? setFullApprovedOwner(response) : setFullApprovedOwner(false);
+  };
 
   const checkContractDataFunction = async () => {
-    const response = await humanSDK.checkContractData(CONTRACT)
-    response
-      ? setFunctionApprovedOwner(response)
-      : setFunctionApprovedOwner(false)
-  }
+    const response = await humanSDK.checkContractData({
+      uri,
+      contractAddress: CONTRACT.address,
+      projectId,
+      accessToken,
+    });
+    response ? setFunctionApprovedOwner(response) : setFunctionApprovedOwner(false);
+  };
 
   const updateAddressStatus = async (status) => {
     try {
-      setUpdatingPolicies(true)
+      setUpdatingPolicies(true);
       await fetch("/api/usecases/policies/updateAddressStatusUC", {
         method: "POST",
         headers: {
@@ -134,40 +136,33 @@ function ContractProvider(props) {
           address: CONTRACT.address,
           status,
         }),
-      })
-      checkContractAddressData()
-      setUpdatingPolicies(false)
+      });
+      checkContractAddressData();
+      setUpdatingPolicies(false);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const updateMask = async () => {
     try {
-      const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash(
-        "mint"
-      )
-      const mask = ethers.utils.solidityPack(["uint32"], ["0xffffffff"])
+      const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash("mint");
+      const mask = ethers.utils.solidityPack(["uint32"], ["0xffffffff"]);
 
-      const { mask: checkMask } = await fetch(
-        "/api/usecases/policies/getMaskUC",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chainId: CONTRACT.chainId,
-            address: CONTRACT.address,
-            method: "mint",
-          }),
-        }
-      ).then((res) => res.json())
-
-      console.log({ checkMask })
+      const { mask: checkMask } = await fetch("/api/usecases/policies/getMaskUC", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chainId: CONTRACT.chainId,
+          address: CONTRACT.address,
+          method: "mint",
+        }),
+      }).then((res) => res.json());
 
       if (checkMask === mask) {
-        return
+        return;
       }
 
       await fetch("/api/usecases/policies/updateMaskUC", {
@@ -182,17 +177,17 @@ function ContractProvider(props) {
           selector,
           mask,
         }),
-      })
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const updateFunctionStatus = async (status) => {
-    setUpdatingPolicies(true)
-    await updateMask()
-    const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash("mint")
-    const selectorAndParams = ethers.utils.solidityPack(["bytes4"], [selector])
+    setUpdatingPolicies(true);
+    await updateMask();
+    const selector = new ethers.utils.Interface(CONTRACT.abi).getSighash("mint");
+    const selectorAndParams = ethers.utils.solidityPack(["bytes4"], [selector]);
 
     try {
       await fetch("/api/usecases/policies/updateFunctionStatusUC", {
@@ -206,39 +201,40 @@ function ContractProvider(props) {
           selectorAndParams,
           status,
         }),
-      })
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
 
-    checkContractAddressData()
-    setUpdatingPolicies(false)
-  }
+    checkContractAddressData();
+    setUpdatingPolicies(false);
+  };
+
+  // useEffect(() => {
+  //   if (!humanSDK) return;
+  //   getContract();
+  // }, [chainId, humanSDK]);
 
   useEffect(() => {
-    getContract()
-  }, [chainId])
-
-  useEffect(() => {
-    if (!contract) return
-    checkContractAddressData()
-    checkContractDataFunction()
+    if (!contract || !humanSDK) return;
+    checkContractAddressData();
+    checkContractDataFunction();
 
     const interval = setInterval(() => {
-      checkContractAddressData()
-      checkContractDataFunction()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [contract, updatingPolicies])
+      checkContractAddressData();
+      checkContractDataFunction();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [contract, updatingPolicies, humanSDK]);
 
   useEffect(() => {
-    if (!address) return
-    getTokenBalance()
+    if (!human || !humanSDK) return;
+    getTokenBalance();
     const interval = setInterval(() => {
-      getTokenBalance()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [address])
+      getTokenBalance();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [human, humanSDK]);
 
   const memoizedData = useMemo(
     () => ({
@@ -250,7 +246,6 @@ function ContractProvider(props) {
       fullApprovedOwner,
       functionApprovedOwner,
       getTokenBalance,
-      getContract,
       updateContract,
       checkContractAddress: checkContractAddressData,
       checkContractData: checkContractDataFunction,
@@ -258,25 +253,18 @@ function ContractProvider(props) {
       updateMask,
       updateFunctionStatus,
     }),
-    [
-      loadingContract,
-      contract,
-      balance,
-      updatingPolicies,
-      fullApprovedOwner,
-      functionApprovedOwner,
-    ]
-  )
+    [loadingContract, contract, balance, updatingPolicies, fullApprovedOwner, functionApprovedOwner]
+  );
 
-  return <ContractContext.Provider value={memoizedData} {...props} />
+  return <ContractContext.Provider value={memoizedData} {...props} />;
 }
 
 function useContract() {
-  const context = useContext(ContractContext)
+  const context = useContext(ContractContext);
   if (context === undefined) {
-    throw new Error(`useContract must be used within a ContractProvider`)
+    throw new Error(`useContract must be used within a ContractProvider`);
   }
-  return context
+  return context;
 }
 
-export { ContractProvider, useContract }
+export { ContractProvider, useContract };

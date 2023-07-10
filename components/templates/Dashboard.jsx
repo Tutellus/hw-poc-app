@@ -30,7 +30,7 @@ export const Dashboard = () => {
       <Tokens />
 
       {/* your contract */}
-      <Contract />
+      {/* <Contract /> */}
 
       {/* owner proposals list */}
       <ProposalsList />

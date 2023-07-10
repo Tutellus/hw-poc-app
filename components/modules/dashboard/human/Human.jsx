@@ -3,11 +3,13 @@ import { truncateAddress } from "@/utils/address"
 import { useState } from "react"
 
 export const Human = () => {
-  const { address, human, loadingDeployment, deployHuman } = useHuman()
+  const { human } = useHuman()
   const [extendedAddress, setExtendedAddress] = useState(false)
 
-  const isDeploying = loadingDeployment || human?.status === "EXECUTED"
-  const isReady = !loadingDeployment && human?.status === "CONFIRMED"
+  const { address } = human || {};
+
+  const isDeploying = human?.status === "PENDING"
+  const isReady = human?.status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
 
   return (
@@ -31,7 +33,7 @@ export const Human = () => {
           : "No human connected"}
         {isReady && <div>Ready</div>}
         {isDeploying && <div>Deploying...</div>}
-        {isNotReady && <button onClick={deployHuman}>Deploy</button>}
+        {isNotReady && <div>Not ready yet...</div>}
       </div>
     </div>
   )

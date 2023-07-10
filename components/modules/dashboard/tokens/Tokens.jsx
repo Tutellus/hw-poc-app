@@ -2,43 +2,34 @@ import { useState } from "react"
 import { useContract } from "@/state/contract.context"
 import { useHuman } from "@/state/human.context"
 import { ethers } from "ethers"
-import { useSession } from "next-auth/react"
-
-const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID
 
 export const Tokens = () => {
-  const { data } = useSession()
-  const accessToken = data?.accessToken
   const { loadingContract, contract, balance, updateContract } = useContract()
-  const { requestProposal, signAndSubmitProposal, human } = useHuman()
+  const { human, processingProposal, requestProposal } = useHuman()
 
   const [minting, setMinting] = useState(false)
 
-  const canMint = human?.status === "CONFIRMED"
+  const canMint = human?.status === "CONFIRMED" && !minting && !processingProposal
 
   const requestMint = async () => {
     setMinting(true)
-    const proposal = await requestProposal({
-      projectId: PROJECT_ID,
-      title: "Minteo 5 tokens",
+    const contractInterface = new ethers.utils.Interface(contract.abi);
+    const calldata = contractInterface.encodeFunctionData("mint", [
+      human.address,
+      ethers.utils.parseEther("5"),
+    ]);
+    await requestProposal({
+      title: "Mint 5 tokens",
+      description: "We will mint 5 tokens for you",
       calls: [
         {
           target: contract.address,
-          method: "mint",
-          data: "0x40c10f19000000000000000000000000297596275eebe2c7dd9145030a0364389285340b0000000000000000000000000000000000000000000000004563918244f40000",
-          value: ethers.utils.parseEther("0").toString(),
+          method: "mint(address,uint256)",
+          data: calldata,
+          value: '0',
         },
       ],
-      description: "Mint 5 Tokens",
-      accessToken,
     })
-
-    if (proposal.status === "SIGNABLE") {
-      signAndSubmitProposal({
-        proposalId: proposal._id,
-      })
-    }
-
     setMinting(false)
   }
 

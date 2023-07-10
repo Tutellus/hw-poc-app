@@ -2,25 +2,27 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
-
   "scripts": {
     "dev": "cp .env.test .env.development.local && next dev",
     "dev:dev": "cp .env.development .env.development.local && next dev",
     "dev:pro": "cp .env.production .env.development.local && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "phoenix": "rm -rf .next && rm package-lock.json && rm -rf node_modules && npm --loglevel=error i"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.354.0",
     "@aws-sdk/lib-dynamodb": "3.354.0",
     "@headlessui/react": "^1.7.7",
     "@next-auth/dynamodb-adapter": "3.0.2",
+    "@tutellus/humanwalletsdk": "0.7.6",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",
     "@web3auth/no-modal": "6.1.1",
     "@web3auth/openlogin-adapter": "6.1.1",
     "assert": "^2.0.0",
+    "axios": "1.4.0",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.2",
     "ethers": "^5.7.2",
@@ -28,9 +30,10 @@
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "9.0.0",
     "lodash": "^4.17.21",
+    "magic-sdk": "^18.4.1",
     "mongodb": "^4.13.0",
     "next": "12.3.4",
-    "next-auth": "4.22.1",
+    "next-auth": "4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "uuid": "^9.0.0"

@@ -1,206 +1,154 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { useWeb3Auth } from "./web3auth.context"
-import HumanWalletSDK from "@/sdk"
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { HumanWalletSDK } from "@tutellus/humanwalletsdk";
+import { useSession } from "next-auth/react";
+// import { useMagicLink } from "./magicLink.context";
+import { useWeb3Auth } from "./web3auth.context";
 
 const HumanContext = createContext({
-  address: null,
+  humanSDK: null,
   human: null,
-  processing: false,
+  proposals: [],
   loadingHuman: false,
-  loadingAddress: false,
-  loadingPreUserOps: false,
-  gettingProposals: false,
-  loadingDeployment: false,
-  signMessageFromOwner: async (message) => {},
-  getPreUserOpHash: async ({ preUserOpId }) => {},
-  submitUserOp: async ({ preUserOpId, signature }) => {},
-})
+  loadingProposals: false,
+  processingProposal: false,
+  requestProposal: async () => {},
+  confirmProposal: async () => {},
+  getTokensBalance: async () => {},
+});
 
-const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth()
-  const humanSDK = useMemo(
-    () =>
-      HumanWalletSDK.build({
+
+  const { web3Provider } = useWeb3Auth();
+  const { data: session } = useSession();
+  const { accessToken, user } = session || {};
+
+  const [humanSDK, setHumanSDK] = useState(null);
+  const [human, setHuman] = useState(null);
+  const [proposals, setProposals] = useState([]);
+  const [loadingHuman, setLoadingHuman] = useState(false);
+  const [loadingProposals, setLoadingProposals] = useState(false);
+  const [processingProposal, setProcessingProposal] = useState(false);
+
+  const loadHuman = async () => {
+    setLoadingHuman(true);
+    const response = await humanSDK.getHuman();
+    setHuman(response);
+    setLoadingHuman(false);
+  };
+
+  const loadProposals = async () => {
+    if (!human) return;
+    setLoadingProposals(true);
+    const { items } = await humanSDK.getProposals();
+    setProposals(items);
+    setLoadingProposals(false);
+  };
+
+  const requestProposal = async ({ title, description, calls }) => {
+    setProcessingProposal(true);
+    let response;
+    try {
+      response = await humanSDK.requestProposal({
+        title,
+        calls,
+        description,
+      });
+    } catch (error) {
+      console.error('Invalid proposal request', error);
+    }
+    setProcessingProposal(false);
+    loadProposals();
+    return response;
+  };
+
+  const confirmProposal = async ({ proposalId, code }) => {
+    setProcessingProposal(true);
+    let response;
+    try {
+      response = await humanSDK.confirmProposal({ proposalId, code });
+    } catch (error) {
+      console.error('Invalid proposal confirmation', error);
+    }
+    setProcessingProposal(false);
+    loadProposals();
+    return response;
+  };
+
+  const getTokensBalance = async (tokens) => {
+    try {
+      const balances = await humanSDK.getTokensBalance({
+        tokens: tokens.map(({ token, type, ids }) => ({
+          token,
+          type,
+          ids,
+        })),
+        address: human.address,
+      });
+      return balances;
+    } catch (error) {
+      console.error('Invalid tokens balance request', error);
+    }
+  };
+
+  useEffect(() => {
+    if (web3Provider && accessToken) {
+      const humanSDK = HumanWalletSDK.build({
         uri,
         projectId,
         accessToken,
         provider: web3Provider,
-      }),
-    [web3Provider, accessToken]
-  )
+      });
 
-  // state
-  const [address, setAddress] = useState(null)
-  const [human, setHuman] = useState(null)
-  const [proposals, setProposals] = useState([])
-
-  // loadings
-  const [processing, setProcessing] = useState(false)
-  const [loadingAddress, setLoadingAddress] = useState(false)
-  const [loadingHuman, setLoadingHuman] = useState(false)
-  const [loadingDeployment, setLoadingDeployment] = useState(false)
-  const [gettingProposals, setGettingProposals] = useState(false)
-
-  const signMessageFromOwnerData = async ({ message }) =>
-    await humanSDK.signMessageFromOwner({ web3Provider, message })
-
-  const loadHumanData = async () => {
-    setLoadingHuman(true)
-    const response = await humanSDK.getHumanAddress()
-    setHuman(response)
-    setLoadingHuman(false)
-  }
-
-  const getHumanAddressData = async () => {
-    setLoadingAddress(true)
-    const response = await humanSDK.getHumanAddress()
-    setAddress(response?.address)
-    setLoadingAddress(false)
-  }
-
-  const getProposalsData = async () => {
-    setGettingProposals(true)
-    const response = await humanSDK.getProposals({
-      human,
-    })
-    setProposals(response)
-    setGettingProposals(false)
-  }
-
-  const requestProposalData = async ({
-    projectId,
-    title,
-    calls,
-    description,
-    accessToken,
-  }) => {
-    const response = await humanSDK.requestProposal({
-      projectId,
-      title,
-      calls,
-      description,
-      accessToken,
-    })
-    return response
-  }
-
-  const getPreUserOpHashData = async ({ proposalId, accessToken }) => {
-    const response = await humanSDK.getPreUserOpHash({
-      proposalId,
-      accessToken,
-    })
-    return response
-  }
-
-  const signAndSubmitProposalData = async ({
-    proposalId,
-    accessToken,
-    web3Provider,
-  }) => {
-    setProcessing(true)
-    const response = await humanSDK.signAndSubmitProposal({
-      proposalId,
-      accessToken,
-      web3Provider,
-    })
-    setProcessing(false)
-    return response
-  }
-
-  const submitUserOpData = async ({ preUserOpId, signature, user }) => {
-    const response = await humanSDK.submitUserOp({
-      preUserOpId,
-      signature,
-      user,
-    })
-    loadUserOpsData()
-    return response
-  }
-
-  const confirmProposalData = async ({ preUserOpId, code }) => {
-    const response = await humanSDK.confirmProposal({
-      preUserOpId,
-      code,
-      user,
-    })
-    return response
-  }
-
-  const deployHumanData = async () => {
-    setLoadingDeployment(true)
-    const response = await humanSDK.deployHuman({
-      projectId,
-      owner: externalAccount,
-      accessToken,
-    })
-
-    setLoadingDeployment(false)
-    setHuman(response)
-    loadHumanData()
-  }
+      setHumanSDK(humanSDK);
+    }
+  }, [web3Provider, accessToken]);
 
   useEffect(() => {
-    getProposalsData()
+    if (!humanSDK) return;
+    loadProposals();
     const interval = setInterval(() => {
-      getProposalsData()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [human])
+      loadProposals();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [human]);
 
   useEffect(() => {
-    getHumanAddressData()
-    loadHumanData()
+    if (!humanSDK) return;
+    loadHuman();
     const interval = setInterval(() => {
-      getHumanAddressData()
-      loadHumanData()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [user])
+      loadHuman();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [user, humanSDK]);
 
   const memoizedData = useMemo(
     () => ({
-      address,
+      humanSDK,
       human,
       proposals,
-      processing,
-      loadingAddress,
       loadingHuman,
-      loadingDeployment,
-      gettingProposals,
-      deployHuman: deployHumanData,
-      signMessageFromOwner: signMessageFromOwnerData,
-      requestProposal: requestProposalData,
-      getPreUserOpHash: getPreUserOpHashData,
-      submitUserOp: submitUserOpData,
-      confirmProposal: confirmProposalData,
-      signAndSubmitProposal: signAndSubmitProposalData,
+      loadingProposals,
+      processingProposal,
+      requestProposal,
+      confirmProposal,
+      getTokensBalance,
     }),
-    [
-      address,
-      human,
-      proposals,
-      processing,
-      loadingAddress,
-      loadingHuman,
-      loadingDeployment,
-      gettingProposals,
-    ]
-  )
+    [humanSDK, human, proposals, loadingHuman, loadingProposals, processingProposal]
+  );
 
-  return <HumanContext.Provider value={memoizedData} {...props} />
+  return <HumanContext.Provider value={memoizedData} {...props} />;
 }
 
 function useHuman() {
-  const context = useContext(HumanContext)
+  const context = useContext(HumanContext);
   if (context === undefined) {
-    throw new Error(`useHuman must be used within a HumanProvider`)
+    throw new Error(`useHuman must be used within a HumanProvider`);
   }
-  return context
+  return context;
 }
 
-export { HumanProvider, useHuman }
+export { HumanProvider, useHuman };
