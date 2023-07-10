@@ -55,7 +55,7 @@ function ContractProvider(props) {
         tokens: [USDTToken],
       });
 
-      const value = items.find((item) => item.token === CONTRACT.address).value;
+      const value = items.find((item) => item.token === CONTRACT.address).bigNumber;
       const innerBalance = ethers.utils.formatEther(value);
       setBalance(innerBalance);
       setLoadingBalance(false);
