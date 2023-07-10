@@ -35,7 +35,7 @@ function ContractProvider(props) {
 
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [balance, setBalance] = useState("---");
-  const { address, humanSDK } = useHuman();
+  const { human, humanSDK } = useHuman();
 
   const [updatingPolicies, setUpdatingPolicies] = useState(false);
   const [fullApprovedOwner, setFullApprovedOwner] = useState(false);
@@ -51,7 +51,7 @@ function ContractProvider(props) {
       };
 
       const { items } = await humanSDK.getTokensBalance({
-        address,
+        address: human.address,
         tokens: [USDTToken],
       });
 
@@ -228,13 +228,13 @@ function ContractProvider(props) {
   }, [contract, updatingPolicies, humanSDK]);
 
   useEffect(() => {
-    if (!address || !humanSDK) return;
+    if (!human || !humanSDK) return;
     getTokenBalance();
     const interval = setInterval(() => {
       getTokenBalance();
     }, 5000);
     return () => clearInterval(interval);
-  }, [address, humanSDK]);
+  }, [human, humanSDK]);
 
   const memoizedData = useMemo(
     () => ({

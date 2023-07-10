@@ -38,7 +38,7 @@ export const ProposalsList = () => {
             />
           ))
         ) : (
-          <p>No availvable proposals yet</p>
+          <p>No available proposals yet</p>
         )}
       </div>
     </div>
