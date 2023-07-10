@@ -1,29 +1,28 @@
 import { useState } from "react"
 import { useContract } from "@/state/contract.context"
 import { useHuman } from "@/state/human.context"
-import { ethers } from "ethers"
 
 export const Tokens = () => {
   const { loadingContract, contract, balance, updateContract } = useContract()
-  const { human, requestProposal } = useHuman()
+  const { human, processingProposal, requestProposal } = useHuman()
 
   const [minting, setMinting] = useState(false)
 
-  const canMint = human?.status === "CONFIRMED"
+  const canMint = human?.status === "CONFIRMED" && !minting && !processingProposal
 
   const requestMint = async () => {
     setMinting(true)
     await requestProposal({
-      title: "Minteo 5 tokens",
+      title: "Mint 5 tokens",
+      description: "We will mint 5 tokens for you",
       calls: [
         {
           target: contract.address,
-          method: "mint",
+          method: "mint(address,uint256)",
           data: "0x40c10f19000000000000000000000000297596275eebe2c7dd9145030a0364389285340b0000000000000000000000000000000000000000000000004563918244f40000",
-          value: ethers.utils.parseEther("0").toString(),
+          value: '0',
         },
       ],
-      description: "Mint 5 Tokens",
     })
     setMinting(false)
   }

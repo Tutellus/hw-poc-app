@@ -2,21 +2,7 @@ import { useHuman } from "@/state/human.context"
 import { Proposal } from "./Proposal"
 
 export const ProposalsList = () => {
-  const { proposals, processing, confirmProposal, signAndSubmitProposal } =
-    useHuman()
-  const confirmSignAndSubmitFn = async (proposal) => {
-    try {
-      const innerPreUserOp = await confirmProposal({
-        proposalId: proposal._id,
-        code: proposal.code2fa,
-      })
-      await signAndSubmitProposal({
-        proposalId: innerPreUserOp._id,
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const { proposals, processingProposal, confirmProposal } = useHuman()
 
   return (
     <div
@@ -32,9 +18,8 @@ export const ProposalsList = () => {
             <Proposal
               key={index}
               proposal={proposal}
-              canSign={!processing}
-              confirmSignAndSubmitFn={confirmSignAndSubmitFn}
-              signAndSubmitFn={signAndSubmitProposal}
+              processingProposal={processingProposal}
+              confirmProposal={confirmProposal}
             />
           ))
         ) : (

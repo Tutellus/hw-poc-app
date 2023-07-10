@@ -8,10 +8,11 @@ import { useSession } from "next-auth/react";
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
+const CONTRACT = config.CONTRACT;
 
 const ContractContext = createContext({
-  loadingContract: false,
-  contract: null,
+  loadingContract: true,
+  contract: CONTRACT,
   balance: "0.0",
   updatingPolicies: false,
   fullApprovedOwner: false,
@@ -28,10 +29,9 @@ const ContractContext = createContext({
 function ContractProvider(props) {
   const { data: session } = useSession();
   const { accessToken } = session || {};
-  const CONTRACT = config.CONTRACT;
 
   const [loadingContract, setLoadingContract] = useState(false);
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState(CONTRACT);
 
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [balance, setBalance] = useState("---");
@@ -64,16 +64,16 @@ function ContractProvider(props) {
     }
   };
 
-  const getContract = async () => {
-    try {
-      setLoadingContract(true);
-      const response = await humanSDK.getContracts();
-      setContract(response);
-      setLoadingContract(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getContract = async () => {
+  //   try {
+  //     setLoadingContract(true);
+  //     const response = await humanSDK.getContracts();
+  //     setContract(response);
+  //     setLoadingContract(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const updateContract = async () => {
     try {
@@ -210,10 +210,10 @@ function ContractProvider(props) {
     setUpdatingPolicies(false);
   };
 
-  useEffect(() => {
-    if (!humanSDK) return;
-    getContract();
-  }, [chainId, humanSDK]);
+  // useEffect(() => {
+  //   if (!humanSDK) return;
+  //   getContract();
+  // }, [chainId, humanSDK]);
 
   useEffect(() => {
     if (!contract || !humanSDK) return;
@@ -246,7 +246,6 @@ function ContractProvider(props) {
       fullApprovedOwner,
       functionApprovedOwner,
       getTokenBalance,
-      getContract,
       updateContract,
       checkContractAddress: checkContractAddressData,
       checkContractData: checkContractDataFunction,

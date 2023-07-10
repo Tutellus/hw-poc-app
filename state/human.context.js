@@ -11,6 +11,7 @@ const HumanContext = createContext({
   proposals: [],
   loadingHuman: false,
   loadingProposals: false,
+  processingProposal: false,
   requestProposal: async () => {},
   confirmProposal: async () => {},
   getTokensBalance: async () => {},
@@ -30,6 +31,7 @@ function HumanProvider(props) {
   const [proposals, setProposals] = useState([]);
   const [loadingHuman, setLoadingHuman] = useState(false);
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [processingProposal, setProcessingProposal] = useState(false);
 
   const loadHuman = async () => {
     setLoadingHuman(true);
@@ -41,27 +43,39 @@ function HumanProvider(props) {
   const loadProposals = async () => {
     if (!human) return;
     setLoadingProposals(true);
-    const response = await humanSDK.getProposals();
-    setProposals(response);
+    const { items } = await humanSDK.getProposals();
+    setProposals(items);
     setLoadingProposals(false);
   };
 
   const requestProposal = async ({ title, description, calls }) => {
-    const response = await humanSDK.requestProposal({
-      title,
-      calls,
-      description,
-    });
+    setProcessingProposal(true);
+    let response;
+    try {
+      response = await humanSDK.requestProposal({
+        title,
+        calls,
+        description,
+      });
+    } catch (error) {
+      console.error('Invalid proposal request', error);
+    }
+    setProcessingProposal(false);
+    loadProposals();
     return response;
   };
 
   const confirmProposal = async ({ proposalId, code }) => {
+    setProcessingProposal(true);
+    let response;
     try {
-      const proposal = await humanSDK.confirmProposal({ proposalId, code });
-      return proposal;
+      response = await humanSDK.confirmProposal({ proposalId, code });
     } catch (error) {
       console.error('Invalid proposal confirmation', error);
     }
+    setProcessingProposal(false);
+    loadProposals();
+    return response;
   };
 
   const getTokensBalance = async (tokens) => {
@@ -118,11 +132,12 @@ function HumanProvider(props) {
       proposals,
       loadingHuman,
       loadingProposals,
+      processingProposal,
       requestProposal,
       confirmProposal,
       getTokensBalance,
     }),
-    [humanSDK, human, proposals, loadingHuman, loadingProposals]
+    [humanSDK, human, proposals, loadingHuman, loadingProposals, processingProposal]
   );
 
   return <HumanContext.Provider value={memoizedData} {...props} />;

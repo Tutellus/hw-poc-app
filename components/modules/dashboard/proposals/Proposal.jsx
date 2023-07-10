@@ -1,48 +1,34 @@
 import { explorerLink, truncateAddress } from "@/utils/address"
-import { ethers } from "ethers"
+import { useState } from "react"
 
 export const Proposal = ({
   proposal,
-  canSign,
-  confirmSignAndSubmitFn,
-  signAndSubmitFn,
+  processingProposal,
+  confirmProposal
 }) => {
-  const renderParam = (param) => {
-    if (ethers.utils.isAddress(param)) {
-      return truncateAddress({
-        address: param,
-        stringify: true,
-      })
-    }
-    return param
+
+  const [code, setCode] = useState("123456")
+
+  const changeCode = (e) => {
+    setCode(e.target.value)
   }
 
-  const renderParams = (params) => {
-    if (!params) return ""
-    return params.reduce((acc, param) => {
-      if (acc === "") {
-        return renderParam(param)
-      }
-      return `${acc}, ${renderParam(param)}`
-    }, "")
-  }
+  const requiresConfirmation = proposal.required2FA && proposal.status === "PENDING"
+  const showNonce = proposal.status !== "PENDING" && proposal.status !== "SIGNABLE"
 
-  const requiresConfirmation =
-    proposal.isMasterRequired && proposal.masterSignature === "0x"
-  const isSignable = !requiresConfirmation && proposal.status === "SIGNABLE"
-
-  console.log("proposal", proposal)
   return (
     <div className="proposal">
       <div className="block">
         <div className="keys">
-          <div>ID</div>
-          <div>Contract</div>
+          <div>Title</div>
           <div>Description</div>
+          <div>Contract</div>
           <div>Status</div>
+          {showNonce && <div>Nonce</div>}
         </div>
         <div className="values">
-          <div>{proposal._id}</div>
+          <div>{proposal.title}</div>
+          <div>{proposal.description}</div>
           <a
             style={{ color: "white" }}
             href={explorerLink({ value: proposal.sender, type: "address" })}
@@ -53,36 +39,30 @@ export const Proposal = ({
               address: proposal.sender,
             })}
           </a>
-          <div>{proposal.description}</div>
+
           <div>{proposal.status}</div>
+          {showNonce && <div>{proposal.userOp?.nonce}</div>}
         </div>
       </div>
 
       {requiresConfirmation && (
         <div className="block">
-          <input type="text" placeholder="2FA Code" value={proposal.code2fa} />
-          <button onClick={() => confirmSignAndSubmitFn(proposal)}>
-            {" "}
-            Verify{" "}
-          </button>
+          <input type="text" placeholder="2FA Code" value={code} onChange={changeCode} />
+          <button disabled={processingProposal} onClick={() => confirmProposal({ proposalId: proposal._id, code })}> Verify </button>
         </div>
       )}
 
-      {isSignable && (
+      {proposal.txHash && (
         <div className="block">
-          <button
-            disabled={!canSign}
-            onClick={() =>
-              signAndSubmitFn({
-                proposalId: proposal._id,
-              })
-            }
-          >
-            {" "}
-            Sign{" "}
-          </button>
+          <a
+            style={{ color: "white" }}
+            href={explorerLink({ value: proposal.txHash, type: "tx" })}
+            target="_blank"
+            rel="noreferrer"
+          >Watch on Explorer</a>
         </div>
       )}
+
     </div>
   )
 }
