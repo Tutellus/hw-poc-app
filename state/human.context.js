@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useWeb3Auth } from "./web3auth.context";
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk";
+import { useSession } from "next-auth/react";
+// import { useMagicLink } from "./magicLink.context";
+import { useWeb3Auth } from "./web3auth.context";
 
 const HumanContext = createContext({
   address: null,
@@ -21,8 +23,11 @@ const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 function HumanProvider(props) {
-  const { user, externalAccount, web3Provider, accessToken } = useWeb3Auth();
+
+  const { externalAccount, web3Provider } = useWeb3Auth();
+  const { data: session } = useSession();
   const [humanSDK, setHumanSDK] = useState(null);
+  const { accessToken, user } = session || {};
 
   useEffect(() => {
     if (web3Provider && accessToken) {

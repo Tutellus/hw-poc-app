@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useWeb3Auth } from "./web3auth.context";
 import { ethers } from "ethers";
 import { useHuman } from "./human.context";
 import { config } from "@/utils";
+import { useSession } from "next-auth/react";
 
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -26,7 +26,8 @@ const ContractContext = createContext({
 });
 
 function ContractProvider(props) {
-  const { accessToken } = useWeb3Auth();
+  const { data: session } = useSession();
+  const { accessToken } = session || {};
   const CONTRACT = config.CONTRACT;
 
   const [loadingContract, setLoadingContract] = useState(false);
