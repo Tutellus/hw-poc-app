@@ -16,7 +16,7 @@
     "@aws-sdk/lib-dynamodb": "3.354.0",
     "@headlessui/react": "^1.7.7",
     "@next-auth/dynamodb-adapter": "3.0.2",
-    "@tutellus/humanwalletsdk": "0.7.6",
+    "@tutellus/humanwalletsdk": "0",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",
     "@web3auth/no-modal": "6.1.1",
