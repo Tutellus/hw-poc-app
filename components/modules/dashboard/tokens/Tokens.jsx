@@ -1,26 +1,27 @@
-import { useState } from "react";
-import { useContract } from "@/state/contract.context";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import { useHuman } from "@/state/human.context";
 import { ethers } from "ethers";
+import Contract from "./Contract";
 
 export const Tokens = () => {
-  const { balance } = useContract();
-  const { human, processingProposal, requestProposal } = useHuman();
+  const { human, processingProposal, requestProposal, getTokensBalance } = useHuman();
 
+  const [balance, setBalance] = useState("0");
   const [minting, setMinting] = useState(false);
 
   const canMint = human?.status === "CONFIRMED" && !minting && !processingProposal;
 
   const requestMint = async () => {
     setMinting(true);
-    const contractInterface = new ethers.utils.Interface(contract.abi);
+    const contractInterface = new ethers.utils.Interface(Contract.abi);
     const calldata = contractInterface.encodeFunctionData("mint", [human.address, ethers.utils.parseEther("5")]);
     await requestProposal({
       title: "Mint 5 tokens",
       description: "We will mint 5 tokens for you",
       calls: [
         {
-          target: contract.address,
+          target: Contract.address,
           method: "mint(address,uint256)",
           data: calldata,
           value: "0",
@@ -29,6 +30,28 @@ export const Tokens = () => {
     });
     setMinting(false);
   };
+
+  const getTokenBalance = async () => {
+    try {
+      const { items } = await getTokensBalance([{
+        token: Contract.address,
+        type: "ERC20",
+      }]);
+      const value = items.find((item) => item.token === Contract.address).bigNumber;
+      const innerBalance = ethers.utils.formatEther(value);
+      setBalance(innerBalance);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getTokenBalance();
+    const interval = setInterval(() => {
+      getTokenBalance();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [human]);
 
   return (
     <div className="box">
