@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 import { ethers } from "ethers";
 
 const MAGICLINK_API_KEY = process.env.NEXT_PUBLIC_MAGICLINK_API_KEY;
 
 const customNodeOptions = {
-  rpcUrl: 'https://rpc.ankr.com/polygon_mumbai', // Polygon RPC URL
+  rpcUrl: "https://rpc.ankr.com/polygon_mumbai", // Polygon RPC URL
   chainId: 80001, // Polygon chain id
-}
+};
 
 const MagicLinkContext = createContext({
   magicLink: null,
@@ -28,10 +28,7 @@ function MagicLinkProvider(props) {
   const accessToken = data?.accessToken;
 
   const login = async () => {
-    const magicLink = new Magic(
-      MAGICLINK_API_KEY,
-      { network: customNodeOptions }
-    );
+    const magicLink = new Magic(MAGICLINK_API_KEY, { network: customNodeOptions });
 
     await magicLink.auth.loginWithEmailOTP({
       email: data?.user?.email || "",
@@ -46,7 +43,6 @@ function MagicLinkProvider(props) {
     setLoggedIn(true);
     setProvider(web3Provider);
     setExternalAccount(account[0]);
-
   };
 
   useEffect(() => {
