@@ -41,10 +41,9 @@ function HumanProvider(props) {
   }
 
   const loadProposals = async () => {
-    if (!human || humanSDK) return
     setLoadingProposals(true)
-    const { items } = await humanSDK.getProposals()
-    setProposals(items)
+    const response = await humanSDK?.getProposals()
+    setProposals(response?.items)
     setLoadingProposals(false)
   }
 

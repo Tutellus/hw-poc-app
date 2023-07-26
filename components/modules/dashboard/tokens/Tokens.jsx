@@ -38,18 +38,20 @@ export const Tokens = () => {
 
   const getTokenBalance = async () => {
     try {
-      const { items } = await getTokensBalance([
+      const response = await getTokensBalance([
         {
           token: Contract.address,
           type: "ERC20",
         },
       ])
 
-      const value = items?.find(
-        (item) => item.token === Contract.address
-      ).bigNumber
-      const innerBalance = ethers.utils.formatEther(value)
-      setBalance(innerBalance)
+      if (response) {
+        const value = response.items.find(
+          (item) => item.token === Contract.address
+        ).bigNumber
+        const innerBalance = ethers.utils.formatEther(value)
+        setBalance(innerBalance)
+      }
     } catch (error) {
       console.error(error)
     }
