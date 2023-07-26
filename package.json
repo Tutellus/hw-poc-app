@@ -1,6 +1,6 @@
 {
   "name": "nextjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "cp .env.test .env.development.local && next dev",
@@ -16,7 +16,7 @@
     "@aws-sdk/lib-dynamodb": "3.354.0",
     "@headlessui/react": "^1.7.7",
     "@next-auth/dynamodb-adapter": "3.0.2",
-    "@tutellus/humanwalletsdk": "0.8.1-beta.3",
+    "@tutellus/humanwalletsdk": "0",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",
     "@web3auth/no-modal": "6.1.1",
