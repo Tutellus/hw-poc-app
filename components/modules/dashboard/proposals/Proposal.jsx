@@ -1,17 +1,16 @@
-import { explorerLink, truncateAddress } from "@/utils/address"
-import { useState } from "react"
+import { explorerLink, truncateAddress } from "@/utils/address";
+import { useState } from "react";
+import { Button, buttonColors } from "@tutellus/tutellus-components/lib/components/atoms/button";
 
 export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
-  const [code, setCode] = useState("123456")
+  const [code, setCode] = useState("123456");
 
   const changeCode = (e) => {
-    setCode(e.target.value)
-  }
+    setCode(e.target.value);
+  };
 
-  const requiresConfirmation =
-    proposal.required2FA && proposal.status === "PENDING"
-  const showNonce =
-    proposal.status !== "PENDING" && proposal.status !== "SIGNABLE"
+  const requiresConfirmation = proposal.required2FA && proposal.status === "PENDING";
+  const showNonce = proposal.status !== "PENDING" && proposal.status !== "SIGNABLE";
 
   return (
     <div className="proposal">
@@ -47,19 +46,14 @@ export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
 
       {requiresConfirmation && (
         <div className="block">
-          <input
-            type="text"
-            placeholder="2FA Code"
-            value={code}
-            onChange={changeCode}
-          />
-          <button
+          <input type="text" placeholder="2FA Code" value={code} onChange={changeCode} />
+          <Button
             disabled={processingProposal}
             onClick={() => confirmProposal({ proposalId: proposal._id, code })}
+            color={buttonColors.ACCENT}
           >
-            {" "}
-            Verify{" "}
-          </button>
+            Verify
+          </Button>
         </div>
       )}
 
@@ -76,5 +70,5 @@ export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
