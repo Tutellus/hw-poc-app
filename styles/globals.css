@@ -1,39 +1,5 @@
-:root {
-  --color-primary: #18b600;
-  --color-primary-light: rgb(30, 225, 0);
-  --color-secondary: #ff0070;
-  --color-secondary-light: #ff0090;
-
-  --color-background: #000000;
-  --color-background-mid-light: #363636;
-  --color-background-light: #1f1f1f;
-  --color-text: rgb(255, 255, 255);
-  --color-text-light: rgb(189, 189, 189);
-  --color-text-lighter: rgb(182, 182, 182);
-
-  --color-border: #128500;
-  --color-border-light: #686868;
-
-  --color-white: #fff;
-  --color-black: #000;
-
-  --color-success: #18b600;
-  --color-error: #dc3545;
-  --color-warning: #ffc107;
-  --color-info: #17a2b8;
-
-  --color-link: #18b600;
-  --color-link-hover: #74b300;
-
-  --color-shadow: rgba(0, 0, 0, 0.1);
-
-  --color-orange: #f08035;
-  --color-yellow: #d0cc11;
-  --color-red: #e22929;
-  --color-green: #16c516;
-
-  --account-center-z-index: 200;
-}
+@import "~@tutellus/human-wallet-theme/lib/index.css";
+@import "~@tutellus/tutellus-components/lib/components.css";
 
 body {
   display: flex;
@@ -43,29 +9,6 @@ body {
   letter-spacing: 1px;
   background-color: var(--color-background);
   color: var(--color-text);
-}
-
-button {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  border: 0;
-  border-radius: 9999px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 0.1s ease-in-out;
-  width: fit-content;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .topbar {
@@ -83,6 +26,7 @@ button:disabled {
 h1 {
   font-size: 2rem;
   font-weight: 600;
+  color: var(--color-text-highlighted);
   margin: 0;
   padding: 0;
 }
@@ -96,7 +40,7 @@ h2 {
 
 .login {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
@@ -127,16 +71,15 @@ h2 {
   flex-direction: column;
   align-items: center;
   border-radius: 12px;
-  background-color: var(--color-background-light);
-  box-shadow: 0 0 8px var(--color-shadow);
-  border: 2px solid var(--color-border);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-gray);
   width: 100%;
 }
 
 .box .title {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--color-primary-light);
+  color: var(--color-primary);
   margin-top: 12px;
   margin-bottom: 4px;
   font-size: 1.2rem;
@@ -219,7 +162,7 @@ input::placeholder {
 
 .proposal {
   justify-content: start;
-  background-color: var(--color-background-mid-light);
+  background-color: var(--color-background);
   border: 2px solid var(--color-border);
   padding: 10px;
   border-radius: 6px;
@@ -259,4 +202,9 @@ input::placeholder {
   border-radius: 6px;
   gap: 5px;
   margin: 10px;
+}
+
+.logo {
+  max-width: 600px;
+  padding: 16px;
 }
