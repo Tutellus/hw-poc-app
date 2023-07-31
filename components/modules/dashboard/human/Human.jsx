@@ -6,8 +6,7 @@ export const Human = () => {
   const { human } = useHuman()
   const [extendedAddress, setExtendedAddress] = useState(false)
 
-  const { address } = human || {};
-
+  const { address } = human || {}
   const isDeploying = human?.status === "PENDING"
   const isReady = human?.status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
