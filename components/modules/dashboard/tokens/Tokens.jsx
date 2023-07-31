@@ -61,7 +61,7 @@ export const Tokens = () => {
     getTokenBalance()
     const interval = setInterval(() => {
       getTokenBalance()
-    }, 5000)
+    }, 60000)
     return () => clearInterval(interval)
   }, [human])
 

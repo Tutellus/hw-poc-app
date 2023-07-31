@@ -2,7 +2,6 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
-// import { useMagicLink } from "./magicLink.context";
 import { useWeb3Auth } from "./web3auth.context"
 
 const HumanContext = createContext({
@@ -42,6 +41,7 @@ function HumanProvider(props) {
   const loadProposals = async () => {
     setLoadingProposals(true)
     const response = await humanSDK?.getProposals()
+    console.log("Proposals", response)
     setProposals(response)
     setLoadingProposals(false)
   }
@@ -109,11 +109,10 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    loadProposals()
-    const interval = setInterval(() => {
+    humanSDK.on("proposalStatusChange", ({ proposalId, result }) => {
+      console.log("Proposal status change", proposalId, result)
       loadProposals()
-    }, 5000)
-    return () => clearInterval(interval)
+    })
   }, [human])
 
   useEffect(() => {
