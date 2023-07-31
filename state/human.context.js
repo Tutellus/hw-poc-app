@@ -35,7 +35,6 @@ function HumanProvider(props) {
   const loadHuman = async () => {
     setLoadingHuman(true)
     const response = await humanSDK.getHuman()
-
     setHuman(response)
     setLoadingHuman(false)
   }
@@ -43,7 +42,7 @@ function HumanProvider(props) {
   const loadProposals = async () => {
     setLoadingProposals(true)
     const response = await humanSDK?.getProposals()
-    setProposals(response?.items)
+    setProposals(response)
     setLoadingProposals(false)
   }
 
@@ -120,10 +119,6 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     loadHuman()
-    const interval = setInterval(() => {
-      loadHuman()
-    }, 5000)
-    return () => clearInterval(interval)
   }, [user, humanSDK])
 
   const memoizedData = useMemo(
