@@ -71,10 +71,16 @@ function HumanProvider(props) {
     } catch (error) {
       console.error("Invalid proposal confirmation", error)
     }
-    console.log("Confirm proposal", response)
-    humanSDK.emit("onProposalConfirmed", () => {
-      console.log("Proposal confirmed")
-    })
+
+    if (response.status === "SIGNABLE") {
+      humanSDK.on("onProposalSignable", () => {
+        console.log("SIGNABLE PROPOSALS RELOADED")
+        loadProposals()
+      })
+    }
+
+    console.log({ CONFIRM_STATUS: response.status })
+
     setProcessingProposal(false)
     loadProposals()
     return response
@@ -115,6 +121,11 @@ function HumanProvider(props) {
     if (!humanSDK) return
     humanSDK.on("onProposalConfirmed", () => {
       console.log("PROPOSALS RELOADED")
+      loadProposals()
+    })
+
+    humanSDK.on("onProposalPending", () => {
+      console.log("PROPOSAL PENDING")
       loadProposals()
     })
     loadProposals()
