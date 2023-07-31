@@ -71,6 +71,10 @@ function HumanProvider(props) {
     } catch (error) {
       console.error("Invalid proposal confirmation", error)
     }
+    console.log("Confirm proposal", response)
+    humanSDK.emit("onProposalConfirmed", () => {
+      console.log("Proposal confirmed")
+    })
     setProcessingProposal(false)
     loadProposals()
     return response
@@ -109,10 +113,11 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    humanSDK.on("proposalStatusChange", ({ proposalId, result }) => {
-      console.log("Proposal status change", proposalId, result)
+    humanSDK.on("onProposalConfirmed", () => {
+      console.log("PROPOSALS RELOADED")
       loadProposals()
     })
+    loadProposals()
   }, [human])
 
   useEffect(() => {
