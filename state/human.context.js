@@ -42,7 +42,7 @@ function HumanProvider(props) {
     setLoadingProposals(true)
     const response = await humanSDK?.getProposals()
     console.log("Proposals", response)
-    setProposals(response)
+    // setProposals(response)
     setLoadingProposals(false)
   }
 
@@ -73,10 +73,7 @@ function HumanProvider(props) {
     }
 
     if (response.status === "SIGNABLE") {
-      humanSDK.on("onProposalSignable", () => {
-        console.log("SIGNABLE PROPOSALS RELOADED")
-        loadProposals()
-      })
+      loadProposals()
     }
 
     console.log({ CONFIRM_STATUS: response.status })
@@ -107,10 +104,12 @@ function HumanProvider(props) {
   useEffect(() => {
     if (web3Provider && accessToken) {
       const humanSDK = HumanWalletSDK.build({
-        uri,
-        projectId,
-        accessToken,
-        provider: web3Provider,
+        context: {
+          uri,
+          projectId,
+          accessToken,
+          provider: web3Provider,
+        },
       })
 
       setHumanSDK(humanSDK)
@@ -119,17 +118,13 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    humanSDK.on("onProposalConfirmed", () => {
-      console.log("PROPOSALS RELOADED")
-      loadProposals()
-    })
-
-    humanSDK.on("onProposalPending", () => {
-      console.log("PROPOSAL PENDING")
-      loadProposals()
+    humanSDK.events().on("getProposals", async (proposal) => {
+      const { items } = await proposal()
+      setProposals(items)
+      console.log("getProposals event listened", items)
     })
     loadProposals()
-  }, [human])
+  }, [humanSDK])
 
   useEffect(() => {
     if (!humanSDK) return
