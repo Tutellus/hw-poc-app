@@ -114,11 +114,8 @@ function Web3AuthProvider(props) {
 
     const signer = provider.getSigner()
     const signature = await signer._signingKey(hash)
-    console.log("\n>>>>>>\n SIGNATURE:", signature, "\n>>>>>>\n")
     const account = await signer.address
     setExternalAccount(account)
-    console.log("\n>>>>>>\n ACCOUNT:", account, "\n>>>>>>\n")
-
     return `${account}:${signature}`
   }
 
@@ -157,7 +154,6 @@ function Web3AuthProvider(props) {
       return
     }
     const user = data?.user
-    console.log("USER", { user })
     setUser(user)
   }
 

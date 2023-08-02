@@ -41,8 +41,7 @@ function HumanProvider(props) {
   const loadProposals = async () => {
     setLoadingProposals(true)
     const response = await humanSDK?.getProposals()
-    console.log("Proposals", response)
-    // setProposals(response)
+    setProposals(response)
     setLoadingProposals(false)
   }
 
@@ -76,8 +75,6 @@ function HumanProvider(props) {
       loadProposals()
     }
 
-    console.log({ CONFIRM_STATUS: response.status })
-
     setProcessingProposal(false)
     loadProposals()
     return response
@@ -104,12 +101,10 @@ function HumanProvider(props) {
   useEffect(() => {
     if (web3Provider && accessToken) {
       const humanSDK = HumanWalletSDK.build({
-        context: {
-          uri,
-          projectId,
-          accessToken,
-          provider: web3Provider,
-        },
+        uri,
+        projectId,
+        accessToken,
+        provider: web3Provider,
       })
 
       setHumanSDK(humanSDK)
@@ -118,10 +113,9 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    humanSDK.events().on("getProposals", async (proposal) => {
+    humanSDK.events().on("proposalUpdate", async (proposal) => {
       const { items } = await proposal()
-      setProposals(items)
-      console.log("getProposals event listened", items)
+      console.log("proposalUpdate event listened", items)
     })
     loadProposals()
   }, [humanSDK])
