@@ -71,7 +71,7 @@ function HumanProvider(props) {
       console.error("Invalid proposal confirmation", error)
     }
 
-    if (response.status === "SIGNABLE") {
+    if (response?.status === "SIGNABLE") {
       loadProposals()
     }
 
@@ -113,9 +113,9 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    humanSDK.events().on("proposalUpdate", async (proposal) => {
-      const { items } = await proposal()
-      console.log("proposalUpdate event listened", items)
+    humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
+      console.log("proposalUpdate event listened with proposal", proposal)
+      loadProposals()
     })
     loadProposals()
   }, [humanSDK])
@@ -123,7 +123,7 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     loadHuman()
-  }, [user, humanSDK])
+  }, [humanSDK])
 
   const memoizedData = useMemo(
     () => ({
