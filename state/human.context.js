@@ -9,7 +9,6 @@ const HumanContext = createContext({
   humanSDK: null,
   human: null,
   proposals: [],
-  loadingHuman: false,
   loadingProposals: false,
   processingProposal: false,
   requestProposal: async () => {},
@@ -28,21 +27,12 @@ function HumanProvider(props) {
   const [humanSDK, setHumanSDK] = useState(null)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
-  const [loadingHuman, setLoadingHuman] = useState(false)
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
 
-  const loadHuman = async () => {
-    setLoadingHuman(true)
-    const response = await humanSDK.getHuman()
-
-    setHuman(response)
-    setLoadingHuman(false)
-  }
-
   const loadProposals = async () => {
     setLoadingProposals(true)
-    const response = await humanSDK?.getProposals()
+    const response = await humanSDK.getProposals()
     setProposals(response?.items)
     setLoadingProposals(false)
   }
@@ -97,11 +87,16 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (web3Provider && accessToken) {
+      console.log("Building HumanWalletSDK")
       const humanSDK = HumanWalletSDK.build({
         uri,
         projectId,
         accessToken,
         provider: web3Provider,
+        options: {
+          MAX_RETRIES: 50,
+          INTERVAL: 5000,
+        },
       })
 
       setHumanSDK(humanSDK)
@@ -110,42 +105,58 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    loadProposals()
-    const interval = setInterval(() => {
-      loadProposals()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [human])
+    humanSDK.events().on("humanStatus", async (human) => {
+      console.log(
+        "\n>>>>>>\n HUMAN STATUS:",
+        {
+          ADDRESS: human.address,
+          STATUS: human.status,
+          IS_READY: humanSDK.isReady(),
+        },
+        "\n",
+        "\n>>>>>>\n"
+      )
+      if (humanSDK.isReady()) {
+        console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
+        setHuman(human)
+        loadProposals()
+      }
+    })
+  }, [humanSDK, proposals, human])
 
   useEffect(() => {
     if (!humanSDK) return
-    loadHuman()
-    const interval = setInterval(() => {
-      loadHuman()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [user, humanSDK])
+    humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
+      console.log("proposalUpdate", proposal.status)
+      setProposals([proposal])
+      if (proposal.status === "PENDING") {
+        await humanSDK.confirmProposal({
+          proposalId: proposal._id,
+          code: "123456",
+        })
+      }
+      if (proposal.status === "PROCESSED") {
+        console.log("proposalUpdate = PROPOSAL IS", proposal.status)
+      }
+
+      if (proposal.status === "EXECUTED") {
+        console.log("proposalUpdate", proposal.status, proposal.txHash)
+      }
+    })
+  }, [humanSDK, proposals])
 
   const memoizedData = useMemo(
     () => ({
       humanSDK,
       human,
       proposals,
-      loadingHuman,
       loadingProposals,
       processingProposal,
       requestProposal,
       confirmProposal,
       getTokensBalance,
     }),
-    [
-      humanSDK,
-      human,
-      proposals,
-      loadingHuman,
-      loadingProposals,
-      processingProposal,
-    ]
+    [humanSDK, human, proposals, loadingProposals, processingProposal]
   )
 
   return <HumanContext.Provider value={memoizedData} {...props} />
