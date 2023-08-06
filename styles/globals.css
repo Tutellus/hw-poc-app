@@ -1,18 +1,12 @@
-:root {
-  --color-primary: #18b600;
-  --color-primary-light: rgb(30, 225, 0);
-  --color-secondary: #ff0070;
-  --color-secondary-light: #ff0090;
+@import "~@tutellus/human-wallet-theme/lib/index.css";
+@import "~@tutellus/tutellus-components/lib/components.css";
+@import "./colors.css";
 
+:root {
   --color-background: #000000;
   --color-background-mid-light: #363636;
   --color-background-light: #1f1f1f;
   --color-text: rgb(255, 255, 255);
-  --color-text-light: rgb(189, 189, 189);
-  --color-text-lighter: rgb(182, 182, 182);
-
-  --color-border: #128500;
-  --color-border-light: #686868;
 
   --color-white: #fff;
   --color-black: #000;
@@ -94,24 +88,6 @@ h2 {
   padding: 0;
 }
 
-.login {
-  display: flex;
-  /* flex-direction: column; */
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 2rem;
-  width: 100%;
-  min-height: 50vh;
-}
-
-.layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100vw;
-}
-
 .dashboard {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -127,9 +103,8 @@ h2 {
   flex-direction: column;
   align-items: center;
   border-radius: 12px;
-  background-color: var(--color-background-light);
-  box-shadow: 0 0 8px var(--color-shadow);
-  border: 2px solid var(--color-border);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-gray);
   width: 100%;
 }
 
