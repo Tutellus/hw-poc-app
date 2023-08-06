@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react"
+import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { useHuman } from "@/state/human.context"
 import { ethers } from "ethers"
 import Contract from "./Contract"
@@ -67,9 +68,8 @@ export const Tokens = () => {
 
   return (
     <div className="box">
-      <div className="title">Token Interaction</div>
+      <div className="title">Acción sin 2 FA que se confirma</div>
       <div className="data">
-        <div>My balance: {balance}</div>
         <div
           style={{
             display: "flex",
@@ -84,7 +84,7 @@ export const Tokens = () => {
               gap: "8px",
             }}
           >
-            <button
+            <Button
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -92,8 +92,8 @@ export const Tokens = () => {
               disabled={!canMint}
               onClick={requestMint}
             >
-              {minting ? "Processing..." : "Mint 5 tokens"}
-            </button>
+              {minting ? "Procesando..." : "PROBAR"}
+            </Button>
           </div>
         </div>
       </div>

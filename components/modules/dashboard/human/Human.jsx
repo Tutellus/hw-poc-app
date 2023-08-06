@@ -1,12 +1,10 @@
-import { useHuman } from "@/state/human.context"
 import { truncateAddress } from "@/utils/address"
 import { useState } from "react"
 
-export const Human = () => {
-  const { human } = useHuman()
+export const Human = ({ human }) => {
   const [extendedAddress, setExtendedAddress] = useState(false)
 
-  const { address } = human || {};
+  const { address } = human || {}
 
   const isDeploying = human?.status === "PENDING"
   const isReady = human?.status === "CONFIRMED"
