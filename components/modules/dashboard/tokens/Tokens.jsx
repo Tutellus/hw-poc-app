@@ -68,7 +68,7 @@ export const Tokens = () => {
 
   return (
     <div className="box">
-      <div className="title">Acción sin 2 FA que se confirma</div>
+      <div className="title">Acción sin 2FA que se confirma</div>
       <div className="data">
         <div
           style={{
