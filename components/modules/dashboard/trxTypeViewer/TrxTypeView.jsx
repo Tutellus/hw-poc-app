@@ -1,10 +1,12 @@
 import { explorerLink } from "@/utils/address"
 
-export const UserOp = ({ userOp }) => {
+export const TrxTypeView = ({ trxData }) => {
   const truncateHash = (hash) => {
     if (!hash) return "----"
     return hash.slice(0, 10) + "..." + hash.slice(-8)
   }
+
+  const { _id, preUserOpId, nonce, receipt, status, createdAt } = trxData
 
   return (
     <div className="proposal">
@@ -18,26 +20,26 @@ export const UserOp = ({ userOp }) => {
           <div>Date</div>
         </div>
         <div className="values">
-          <div>{userOp._id}</div>
-          <div>{userOp.preUserOpId}</div>
-          <div>{userOp.nonce}</div>
-          {userOp.receipt?.transactionHash ? (
+          <div>{_id}</div>
+          <div>{preUserOpId}</div>
+          <div>{nonce}</div>
+          {receipt?.transactionHash ? (
             <a
               style={{ color: "white" }}
               href={explorerLink({
                 type: "tx",
-                value: userOp.receipt?.transactionHash,
+                value: receipt?.transactionHash,
               })}
               target="_blank"
               rel="noreferrer"
             >
-              {truncateHash(userOp.receipt?.transactionHash)}
+              {truncateHash(receipt?.transactionHash)}
             </a>
           ) : (
             <div>----</div>
           )}
-          <div>{userOp.status}</div>
-          <div>{userOp.createdAt.toString()}</div>
+          <div>{status}</div>
+          <div>{createdAt.toString()}</div>
         </div>
       </div>
     </div>
