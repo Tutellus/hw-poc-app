@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 20px 0 0;
-  padding: 20px;
+  margin: var(--size-m) 0 0;
+  padding: var(--size-l);
   width: 100%;
 }
 
