@@ -1,13 +1,13 @@
 import { useEffect } from "react"
 import { useRouter } from "next/router"
 import { useSession } from "next-auth/react"
-import { Human } from "../modules/dashboard/human/Human"
 import { Account } from "../modules/dashboard/account/Account"
 import { Tokens } from "../modules/dashboard/tokens/Tokens"
 import { ProposalsList } from "../modules/dashboard/proposals/ProposalsList"
 import { HumanWalletLogo } from "../icons"
 import { useHuman } from "@/state/human.context"
 import styles from "./Dashboard.module.css"
+import { PendingProposalsList } from "../modules/dashboard/proposals"
 
 export const Dashboard = () => {
   const { data: session } = useSession()
@@ -36,6 +36,9 @@ export const Dashboard = () => {
       </div>
       <div className={styles.modesContainer}>
         <Tokens />
+      </div>
+      <div className={styles.proposalsContainer}>
+        <PendingProposalsList />
         <ProposalsList />
       </div>
     </div>
