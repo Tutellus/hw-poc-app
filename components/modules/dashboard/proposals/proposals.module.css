@@ -1,0 +1,21 @@
+.proposalsContainer {
+  align-items: center;
+  background-color: var(--color-surface);
+  border-radius: var(--size-s);
+  border: 2px solid var(--color-gray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px 0 0;
+  padding: 20px;
+  width: 100%;
+}
+
+.title {
+  margin-bottom: var(--size-s);
+}
+
+.text {
+  margin-bottom: var(--size-s);
+  color: var(--color-gray-soft);
+}
