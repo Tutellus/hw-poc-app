@@ -18,7 +18,7 @@ const truncateAddress = (
     extend ? (
       address
     ) : (
-      `{valueStart}...{valueEnd}`
+      `${valueStart}...${valueEnd}`
     )
   ) : (
     <a
