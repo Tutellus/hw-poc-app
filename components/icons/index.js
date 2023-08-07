@@ -1,2 +1,5 @@
-export * from "./humanWallet"
 export * from "./copyIcon"
+export * from "./humanWallet"
+export * from "./mailIcon"
+export * from "./thumbIcon"
+export * from "./failedIcon"
