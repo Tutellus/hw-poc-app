@@ -3,6 +3,6 @@
   border: 1px solid var(--color-gray);
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--size-l);
+  margin-bottom: var(--size-3xl);
   padding: var(--size-m);
 }
