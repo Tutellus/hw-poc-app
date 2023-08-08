@@ -1,3 +1,5 @@
+export * from "./checkOKIcon"
+export * from "./checkKOIcon"
 export * from "./copyIcon"
 export * from "./humanWallet"
 export * from "./mailIcon"
