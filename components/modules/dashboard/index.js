@@ -1,4 +1,5 @@
 export * from "./account"
+export * from "./balance"
 export * from "./proposals"
 export * from "./trxTypePanel"
 export * from "./trxTypeViewer"

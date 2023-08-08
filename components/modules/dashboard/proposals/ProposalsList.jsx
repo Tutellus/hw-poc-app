@@ -6,7 +6,7 @@ export const ProposalsList = () => {
   const { proposals, processingProposal, confirmProposal } = useHuman()
 
   return (
-    <div className={styles.proposalsContainer}>
+    <div className={styles.container}>
       <div className={styles.title}>Historial</div>
       <div className="data">
         {proposals?.length > 0 ? (
