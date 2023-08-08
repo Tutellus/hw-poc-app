@@ -9,6 +9,7 @@ import {
   TrxTypePanel,
   ProposalsList,
   PendingProposalsList,
+  Balance,
 } from "../modules/dashboard"
 import { HumanWalletLogo, ThumbIcon, MailIcon, FailedIcon } from "../icons"
 import { useHuman } from "@/state/human.context"
@@ -16,37 +17,14 @@ import styles from "./Dashboard.module.css"
 
 export const Dashboard = () => {
   const { data: session } = useSession()
-  const { human, processingProposal, requestProposal, getTokensBalance } =
-    useHuman()
+  const { human, processingProposal, requestProposal } = useHuman()
 
   const router = useRouter()
 
-  const [balance, setBalance] = useState("0")
   const [minting, setMinting] = useState(false)
 
   const canMint =
     human?.status === "CONFIRMED" && !minting && !processingProposal
-
-  const getTokenBalance = async () => {
-    try {
-      const response = await getTokensBalance([
-        {
-          token: CONTRACT.address,
-          type: "ERC20",
-        },
-      ])
-
-      if (response) {
-        const value = response.items.find(
-          (item) => item.token === CONTRACT.address
-        ).bigNumber
-        const innerBalance = ethers.utils.formatEther(value)
-        setBalance(innerBalance)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
   const requestMint = async () => {
     setMinting(true)
@@ -77,14 +55,6 @@ export const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
-  useEffect(() => {
-    getTokenBalance()
-    const interval = setInterval(() => {
-      getTokenBalance()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [human])
-
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.loginContainer}>
@@ -92,6 +62,7 @@ export const Dashboard = () => {
       </div>
       <div>
         <Account session={session} human={human} />
+        <Balance />
       </div>
       <div className={styles.title}>
         <h2>Prueba distintas operaciones en nuestro Human Wallet</h2>
@@ -101,16 +72,19 @@ export const Dashboard = () => {
           literal="Acción sin 2FA que se confirma"
           icon={<ThumbIcon />}
           callback={requestMint}
-        />{" "}
+          isDisabled={!canMint}
+        />
         <TrxTypePanel
           literal="Acción con 2FA que se confirma"
           icon={<MailIcon />}
           callback={requestMint}
-        />{" "}
+          isDisabled={!canMint}
+        />
         <TrxTypePanel
           literal="Acción sin 2FA que da error"
           icon={<FailedIcon />}
           callback={requestMint}
+          isDisabled={!canMint}
         />
       </div>
       <div className={styles.proposalsContainer}>

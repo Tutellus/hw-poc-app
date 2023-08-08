@@ -38,7 +38,7 @@
 
 .proposalsContainer {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 16px;
   width: 100%;
