@@ -13,7 +13,7 @@ import {
 } from "../modules/dashboard"
 import { HumanWalletLogo, ThumbIcon, MailIcon, FailedIcon } from "../icons"
 import { useHuman } from "@/state/human.context"
-import styles from "./Dashboard.module.css"
+import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
   const { data: session } = useSession()
