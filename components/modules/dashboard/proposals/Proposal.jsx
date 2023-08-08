@@ -1,7 +1,12 @@
 import { explorerLink, truncateAddress } from "@/utils/address"
 import { useState } from "react"
+import styles from "./proposals.module.css"
 
-export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
+export const Proposal = ({
+  proposal = {},
+  processingProposal,
+  confirmProposal,
+}) => {
   const [code, setCode] = useState("123456")
 
   const changeCode = (e) => {
@@ -9,39 +14,39 @@ export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
   }
 
   const requiresConfirmation =
-    proposal.required2FA && proposal.status === "PENDING"
+    proposal?.required2FA && proposal?.status === "PENDING"
   const showNonce =
-    proposal.status !== "PENDING" && proposal.status !== "SIGNABLE"
+    proposal?.status !== "PENDING" && proposal?.status !== "SIGNABLE"
 
   return (
-    <div className="proposal">
-      <div className="block">
-        <div className="keys">
+    <div className={styles.pendingItemContainer}>
+      <div className={styles.block}>
+        <div className={styles.keys}>
           <div>Title</div>
           <div>Description</div>
           <div>Contract</div>
           <div>Status</div>
           {showNonce && <div>Nonce</div>}
         </div>
-        <div className="values">
-          <div>{proposal.title}</div>
-          <div>{proposal.description}</div>
+        <div className={styles.values}>
+          <div>{proposal?.title}</div>
+          <div>{proposal?.description}</div>
           <a
             style={{ color: "white" }}
-            href={explorerLink({ value: proposal.sender, type: "address" })}
+            href={explorerLink({ value: proposal?.sender, type: "address" })}
             target="_blank"
             rel="noreferrer"
           >
             {truncateAddress(
               {
-                address: proposal.sender,
+                address: proposal?.sender,
               },
               { noLink: true }
             )}
           </a>
 
-          <div>{proposal.status}</div>
-          {showNonce && <div>{proposal.userOp?.nonce}</div>}
+          <div>{proposal?.status}</div>
+          {showNonce && <div>{proposal?.userOp?.nonce}</div>}
         </div>
       </div>
 
@@ -55,7 +60,7 @@ export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
           />
           <button
             disabled={processingProposal}
-            onClick={() => confirmProposal({ proposalId: proposal._id, code })}
+            onClick={() => confirmProposal({ proposalId: proposal?._id, code })}
           >
             {" "}
             Verify{" "}
@@ -63,11 +68,11 @@ export const Proposal = ({ proposal, processingProposal, confirmProposal }) => {
         </div>
       )}
 
-      {proposal.txHash && (
+      {proposal?.txHash && (
         <div className="block">
           <a
             style={{ color: "white" }}
-            href={explorerLink({ value: proposal.txHash, type: "tx" })}
+            href={explorerLink({ value: proposal?.txHash, type: "tx" })}
             target="_blank"
             rel="noreferrer"
           >

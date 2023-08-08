@@ -1,23 +1,9 @@
 .container {
   align-items: center;
-  background-color: var(--color-surface);
+  background-color: var(--color-background-light);
   border-radius: var(--size-s);
-  border: 2px solid var(--color-gray);
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  margin: var(--size-m) 0 0;
-  padding: var(--size-l);
-  width: 100%;
-}
-
-.title {
   margin-bottom: var(--size-s);
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
   padding: var(--size-l);
   width: 100%;
 }
@@ -40,15 +26,5 @@
 .values {
   display: flex;
   flex-direction: column;
-  gap: var(--size-xs);
-}
-
-.text {
-  margin-bottom: var(--size-s);
-  color: var(--color-gray-soft);
-}
-
-.pendingItemContainer {
-  display: flex;
   gap: var(--size-xs);
 }
