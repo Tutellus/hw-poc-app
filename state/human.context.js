@@ -27,12 +27,14 @@ function HumanProvider(props) {
   const [humanSDK, setHumanSDK] = useState(null)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
+  const [currentProposal, setCurrentProposal] = useState(null)
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
 
   const loadProposals = async () => {
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
+    console.log("loadProposals", response)
     setProposals(response?.items)
     setLoadingProposals(false)
   }
@@ -128,7 +130,6 @@ function HumanProvider(props) {
     if (!humanSDK) return
     humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
       console.log("proposalUpdate", proposal.status)
-      setProposals([proposal])
       if (proposal.status === "PENDING") {
         await humanSDK.confirmProposal({
           proposalId: proposal._id,
@@ -142,21 +143,30 @@ function HumanProvider(props) {
       if (proposal.status === "EXECUTED") {
         console.log("proposalUpdate", proposal.status, proposal.txHash)
       }
+      setCurrentProposal(proposal)
     })
-  }, [humanSDK, proposals])
+  }, [humanSDK, currentProposal])
 
   const memoizedData = useMemo(
     () => ({
       humanSDK,
       human,
       proposals,
+      currentProposal,
       loadingProposals,
       processingProposal,
       requestProposal,
       confirmProposal,
       getTokensBalance,
     }),
-    [humanSDK, human, proposals, loadingProposals, processingProposal]
+    [
+      humanSDK,
+      human,
+      proposals,
+      currentProposal,
+      loadingProposals,
+      processingProposal,
+    ]
   )
 
   return <HumanContext.Provider value={memoizedData} {...props} />
