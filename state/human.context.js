@@ -30,12 +30,12 @@ function HumanProvider(props) {
   const [currentProposal, setCurrentProposal] = useState(null)
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
+  const [subgraphStatus, setSubgraphStatus] = useState(null)
 
   const loadProposals = async () => {
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
-    console.log("loadProposals", response)
-    setProposals(response?.items)
+    setProposals(response)
     setLoadingProposals(false)
   }
 
@@ -108,6 +108,8 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     humanSDK.events().on("humanStatus", async (human) => {
+      const response = await humanSDK.getSubgraphStatus()
+      setSubgraphStatus(response)
       console.log(
         "\n>>>>>>\n HUMAN STATUS:",
         {
@@ -129,12 +131,13 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
-      console.log("proposalUpdate", proposal.status)
+      const response = await humanSDK.getSubgraphStatus()
+      setSubgraphStatus(response)
       if (proposal.status === "PENDING") {
-        await humanSDK.confirmProposal({
-          proposalId: proposal._id,
-          code: "123456",
-        })
+        // await humanSDK.confirmProposal({
+        //   proposalId: proposal._id,
+        //   code: "123456",
+        // })
       }
       if (proposal.status === "PROCESSED") {
         console.log("proposalUpdate = PROPOSAL IS", proposal.status)
@@ -143,9 +146,13 @@ function HumanProvider(props) {
       if (proposal.status === "EXECUTED") {
         console.log("proposalUpdate", proposal.status, proposal.txHash)
       }
-      setCurrentProposal(proposal)
+
+      if (proposal.status === "CONFIRMED") {
+        console.log("proposalUpdate", proposal.status, proposal.txHash)
+        loadProposals()
+      }
     })
-  }, [humanSDK, currentProposal])
+  }, [humanSDK, proposals])
 
   const memoizedData = useMemo(
     () => ({
@@ -158,6 +165,7 @@ function HumanProvider(props) {
       requestProposal,
       confirmProposal,
       getTokensBalance,
+      subgraphStatus,
     }),
     [
       humanSDK,
@@ -166,6 +174,7 @@ function HumanProvider(props) {
       currentProposal,
       loadingProposals,
       processingProposal,
+      subgraphStatus,
     ]
   )
 
