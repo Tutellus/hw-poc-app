@@ -29,6 +29,7 @@
 }
 
 .sgHealthy {
+  color: black;
   background-color: greenyellow;
   font-size: var(--font-size-s);
   border-radius: var(--size-xs);

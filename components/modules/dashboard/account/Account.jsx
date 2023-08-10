@@ -10,8 +10,6 @@ export const Account = ({ session, human, subgraphStatus }) => {
   const [extendedAddress, setExtendedAddress] = useState(false)
   const user = session?.user
   const { status, delay } = subgraphStatus || {}
-  console.log({ subgraphStatus })
-
   const { address } = human || {}
 
   const isDeploying = human?.status === "PENDING"
