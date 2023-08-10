@@ -17,7 +17,8 @@ import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
   const { data: session } = useSession()
-  const { human, processingProposal, requestProposal } = useHuman()
+  const { human, processingProposal, requestProposal, subgraphStatus } =
+    useHuman()
 
   const router = useRouter()
 
@@ -61,7 +62,11 @@ export const Dashboard = () => {
         <HumanWalletLogo />
       </div>
       <div>
-        <Account session={session} human={human} />
+        <Account
+          session={session}
+          human={human}
+          subgraphStatus={subgraphStatus}
+        />
         <Balance />
       </div>
       <div className={styles.title}>
@@ -69,7 +74,7 @@ export const Dashboard = () => {
       </div>
       <div className={styles.modesContainer}>
         <TrxTypePanel
-          literal="Acción sin 2FA que se confirma"
+          literal="Minteo de 5 tokens con 2FA"
           icon={<ThumbIcon />}
           callback={requestMint}
           isDisabled={!canMint}
