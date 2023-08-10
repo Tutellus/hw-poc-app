@@ -1,5 +1,6 @@
-import { explorerLink, truncateAddress } from "@/utils/address"
 import { useState } from "react"
+import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import { explorerLink, truncateAddress } from "@/utils/address"
 import styles from "./proposals.module.css"
 
 export const Proposal = ({
@@ -51,25 +52,24 @@ export const Proposal = ({
       </div>
 
       {requiresConfirmation && (
-        <div className="block">
+        <div className={styles.blockInput}>
           <input
             type="text"
             placeholder="2FA Code"
             value={code}
             onChange={changeCode}
           />
-          <button
+          <Button
             disabled={processingProposal}
             onClick={() => confirmProposal({ proposalId: proposal?._id, code })}
           >
-            {" "}
-            Verify{" "}
-          </button>
+            Verify
+          </Button>
         </div>
       )}
 
       {proposal?.txHash && (
-        <div className="block">
+        <div className={styles.block}>
           <a
             style={{ color: "white" }}
             href={explorerLink({ value: proposal?.txHash, type: "tx" })}

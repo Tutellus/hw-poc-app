@@ -3,18 +3,26 @@ import { Proposal } from "./Proposal"
 import styles from "./proposals.module.css"
 
 export const PendingProposalsList = () => {
-  const { processingProposal, confirmProposal, currentProposal } = useHuman()
+  const { proposals, processingProposal, confirmProposal } = useHuman()
 
   return (
     <div className={styles.container}>
       <div className={styles.title}>Proposals</div>
-      <div className={styles.list}>
-        <Proposal
-          key={currentProposal?._id}
-          proposal={currentProposal}
-          processingProposal={processingProposal}
-          confirmProposal={confirmProposal}
-        />
+      <div className="data">
+        {proposals?.length > 0 ? (
+          proposals
+            .filter((proposal) => proposal.status !== "CONFIRMED")
+            .map((proposal, index) => (
+              <Proposal
+                key={index}
+                proposal={proposal}
+                processingProposal={processingProposal}
+                confirmProposal={confirmProposal}
+              />
+            ))
+        ) : (
+          <p className={styles.text}>No hay transacciones en cola</p>
+        )}
       </div>
     </div>
   )

@@ -30,6 +30,15 @@
   width: 100%;
 }
 
+.blockInput {
+  color: var(--color-gray-soft);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-l);
+  width: 100%;
+}
+
 .keys {
   color: var(--color-gray-soft);
   display: flex;
@@ -50,5 +59,6 @@
 
 .pendingItemContainer {
   display: flex;
+  flex-direction: column;
   gap: var(--size-xs);
 }
