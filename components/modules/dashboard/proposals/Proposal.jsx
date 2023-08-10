@@ -1,7 +1,10 @@
 import { useState } from "react"
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import { Spinner } from "@tutellus/tutellus-components/lib/components/atoms/spinner"
+import { Input } from "@tutellus/tutellus-components/lib/components/atoms/form/input"
 import { explorerLink, truncateAddress } from "@/utils/address"
 import styles from "./proposals.module.css"
+import { SendIcon } from "@/components/icons"
 
 export const Proposal = ({
   proposal = {},
@@ -16,68 +19,49 @@ export const Proposal = ({
 
   const requiresConfirmation =
     proposal?.required2FA && proposal?.status === "PENDING"
-  const showNonce =
-    proposal?.status !== "PENDING" && proposal?.status !== "SIGNABLE"
+
+  const isNotPending =
+    proposal?.status === "PROCESSED" ||
+    proposal?.status === "EXECUTED" ||
+    proposal?.status === "CONFIRMED"
 
   return (
     <div className={styles.pendingItemContainer}>
       <div className={styles.block}>
-        <div className={styles.keys}>
-          <div>Title</div>
-          <div>Description</div>
-          <div>Contract</div>
-          <div>Status</div>
-          {showNonce && <div>Nonce</div>}
-        </div>
         <div className={styles.values}>
-          <div>{proposal?.title}</div>
-          <div>{proposal?.description}</div>
-          <a
-            style={{ color: "white" }}
-            href={explorerLink({ value: proposal?.sender, type: "address" })}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {truncateAddress(
-              {
-                address: proposal?.sender,
-              },
-              { noLink: true }
-            )}
-          </a>
+          {isNotPending && (
+            <div>
+              <div>{proposal?.title}</div>
+            </div>
+          )}
 
-          <div>{proposal?.status}</div>
-          {showNonce && <div>{proposal?.userOp?.nonce}</div>}
+          {proposal?.status !== "PENDING" && (
+            <div className={styles.isPendingTrx}>
+              <div>{proposal?.title}</div>
+              <div className={styles.statusContainer}>
+                <span className={styles.label}>{"PENDING"}</span>
+                <div className={styles.pending}>
+                  <Spinner />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {requiresConfirmation && (
         <div className={styles.blockInput}>
-          <input
+          <Input
             type="text"
             placeholder="2FA Code"
             value={code}
             onChange={changeCode}
           />
           <Button
+            iconLeft={<SendIcon />}
             disabled={processingProposal}
             onClick={() => confirmProposal({ proposalId: proposal?._id, code })}
-          >
-            Verify
-          </Button>
-        </div>
-      )}
-
-      {proposal?.txHash && (
-        <div className={styles.block}>
-          <a
-            style={{ color: "white" }}
-            href={explorerLink({ value: proposal?.txHash, type: "tx" })}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Watch on Explorer
-          </a>
+          ></Button>
         </div>
       )}
     </div>

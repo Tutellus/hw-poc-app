@@ -1,10 +1,9 @@
 import { CheckOKIcon, CheckKOIcon } from "@/components/icons"
 import styles from "./processedProposal.module.css"
 
-export const ProcessedProposal = ({ key, proposal }) => {
-  console.log("ProcessedProposal", { key, proposal })
+export const ProcessedProposal = ({ proposal }) => {
   return (
-    <div key={key} className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.block}>
         <div className={styles.keys}>
           <div>Title</div>
@@ -16,7 +15,11 @@ export const ProcessedProposal = ({ key, proposal }) => {
         </div>
       </div>
       <div>
-        {proposal?.status === "CONFIRMED" ? <CheckOKIcon /> : <CheckKOIcon />}
+        {proposal?.status === "CONFIRMED" ? (
+          <CheckOKIcon />
+        ) : proposal?.status === "REJECTED" ? (
+          <CheckKOIcon />
+        ) : null}
       </div>
     </div>
   )

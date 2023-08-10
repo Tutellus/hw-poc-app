@@ -7,23 +7,23 @@ export const PendingProposalsList = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>Proposals</div>
-      <div className="data">
-        {proposals?.length > 0 ? (
-          proposals
-            .filter((proposal) => proposal.status !== "CONFIRMED")
-            .map((proposal, index) => (
+      <div className={styles.title}>Proposals pendientes</div>
+      {proposals?.length > 0 &&
+        proposals
+          .filter((proposal) => proposal.status !== "CONFIRMED")
+          .map((proposal, index) => (
+            <div className={styles.max} key={index}>
               <Proposal
-                key={index}
                 proposal={proposal}
                 processingProposal={processingProposal}
                 confirmProposal={confirmProposal}
               />
-            ))
-        ) : (
-          <p className={styles.text}>No hay transacciones en cola</p>
-        )}
-      </div>
+            </div>
+          ))}
+      {proposals.filter((proposal) => proposal.status !== "CONFIRMED")
+        .length === 0 && (
+        <p className={styles.text}>No hay transacciones en cola</p>
+      )}
     </div>
   )
 }
