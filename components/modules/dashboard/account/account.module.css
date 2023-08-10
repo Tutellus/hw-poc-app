@@ -28,6 +28,20 @@
   margin: var(--size-l);
 }
 
+.sgHealthy {
+  background-color: greenyellow;
+  font-size: var(--font-size-s);
+  border-radius: var(--size-xs);
+  padding: var(--size-2xs);
+}
+
+.sgUnhealthy {
+  background-color: red;
+  font-size: var(--font-size-s);
+  border-radius: var(--size-xs);
+  padding: var(--size-2xs);
+}
+
 .pulse {
   animation: pulse 2s infinite;
 }

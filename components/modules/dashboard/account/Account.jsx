@@ -6,15 +6,22 @@ import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
 
-export const Account = ({ session, human }) => {
+export const Account = ({ session, human, subgraphStatus }) => {
   const [extendedAddress, setExtendedAddress] = useState(false)
   const user = session?.user
+  const { status, delay } = subgraphStatus || {}
+  console.log({ subgraphStatus })
 
   const { address } = human || {}
 
   const isDeploying = human?.status === "PENDING"
   const isReady = human?.status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
+
+  const statusClass = cx({
+    [styles.sgHealthy]: status === "HEALTHY",
+    [styles.sgUnhealthy]: status === "UNHEALTHY",
+  })
 
   return (
     <div className={styles.accountContainer}>
@@ -36,6 +43,11 @@ export const Account = ({ session, human }) => {
         </span>
       </div>
       <span className={styles.accountLabel}>Ver en el explorador</span>
+      <div className={styles.subgraphStatus}>
+        <span>
+          Subgraph status: <span className={statusClass}>{status}</span>
+        </span>
+      </div>
       <div className={styles.userEmail}>
         {user?.email || "No user"}
         <Button onClick={() => signOut()}>Logout</Button>
