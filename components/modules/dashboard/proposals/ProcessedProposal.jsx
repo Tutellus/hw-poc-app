@@ -4,7 +4,6 @@ import { useRouter } from "next/router"
 
 export const ProcessedProposal = ({ proposal }) => {
   const router = useRouter()
-  console.log({ proposal })
   const handleDetailPage = () => router.push(`/proposal/${proposal._id}`)
 
   return (
