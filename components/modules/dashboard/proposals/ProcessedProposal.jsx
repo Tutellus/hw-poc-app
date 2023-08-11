@@ -1,9 +1,14 @@
 import { CheckOKIcon, CheckKOIcon } from "@/components/icons"
 import styles from "./processedProposal.module.css"
+import { useRouter } from "next/router"
 
 export const ProcessedProposal = ({ proposal }) => {
+  const router = useRouter()
+  console.log({ proposal })
+  const handleDetailPage = () => router.push(`/proposal/${proposal._id}`)
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={handleDetailPage}>
       <div className={styles.block}>
         <div className={styles.keys}>
           <div>Title</div>

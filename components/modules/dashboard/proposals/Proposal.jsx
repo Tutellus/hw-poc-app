@@ -29,12 +29,6 @@ export const Proposal = ({
     <div className={styles.pendingItemContainer}>
       <div className={styles.block}>
         <div className={styles.values}>
-          {isNotPending && (
-            <div>
-              <div>{proposal?.title}</div>
-            </div>
-          )}
-
           {proposal?.status !== "PENDING" && (
             <div className={styles.isPendingTrx}>
               <div>{proposal?.title}</div>
@@ -50,19 +44,26 @@ export const Proposal = ({
       </div>
 
       {requiresConfirmation && (
-        <div className={styles.blockInput}>
-          <Input
-            type="text"
-            placeholder="2FA Code"
-            value={code}
-            onChange={changeCode}
-          />
-          <Button
-            iconLeft={<SendIcon />}
-            disabled={processingProposal}
-            onClick={() => confirmProposal({ proposalId: proposal?._id, code })}
-          ></Button>
-        </div>
+        <>
+          <div>
+            <div>{proposal?.title}</div>
+          </div>
+          <div className={styles.blockInput}>
+            <Input
+              type="text"
+              placeholder="2FA Code"
+              value={code}
+              onChange={changeCode}
+            />
+            <Button
+              iconLeft={<SendIcon />}
+              disabled={processingProposal}
+              onClick={() =>
+                confirmProposal({ proposalId: proposal?._id, code })
+              }
+            ></Button>
+          </div>
+        </>
       )}
     </div>
   )

@@ -18,7 +18,6 @@
 .list {
   display: flex;
   flex-direction: column;
-  padding: var(--size-l);
   width: 100%;
 }
 
@@ -31,6 +30,7 @@
 }
 
 .max {
+  margin-bottom: var(--size-s);
   width: 100%;
 }
 
