@@ -141,15 +141,18 @@ function HumanProvider(props) {
       }
       if (proposal.status === "PROCESSED") {
         console.log("proposalUpdate = PROPOSAL IS", proposal.status)
+        loadProposals()
       }
 
       if (proposal.status === "EXECUTED") {
         console.log("proposalUpdate", proposal.status, proposal.txHash)
+        loadProposals()
       }
 
       if (proposal.status === "CONFIRMED") {
         console.log("proposalUpdate", proposal.status, proposal.txHash)
         loadProposals()
+        getTokensBalance()
       }
     })
   }, [humanSDK, proposals])
