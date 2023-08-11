@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { Spinner } from "@tutellus/tutellus-components/lib/components/atoms/spinner"
 import { Input } from "@tutellus/tutellus-components/lib/components/atoms/form/input"
-import { explorerLink, truncateAddress } from "@/utils/address"
 import styles from "./proposals.module.css"
 import { SendIcon } from "@/components/icons"
 
@@ -19,11 +18,6 @@ export const Proposal = ({
 
   const requiresConfirmation =
     proposal?.required2FA && proposal?.status === "PENDING"
-
-  const isNotPending =
-    proposal?.status === "PROCESSED" ||
-    proposal?.status === "EXECUTED" ||
-    proposal?.status === "CONFIRMED"
 
   return (
     <div className={styles.pendingItemContainer}>

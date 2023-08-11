@@ -2,10 +2,15 @@
   align-items: center;
   background-color: var(--color-background-light);
   border-radius: var(--size-s);
+  cursor: pointer;
   display: flex;
   margin-bottom: var(--size-s);
   padding: var(--size-l);
   width: 100%;
+}
+
+.container:hover {
+  background-color: var(--color-background-mid-light);
 }
 
 .block {
