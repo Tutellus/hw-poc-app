@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import Head from "next/head"
+import { ArrowLeftIcon } from "@tutellus/tutellus-components/lib/components/icons/shared/ArrowLeftIcon"
+import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { ProposalDetail } from "@/components/modules"
 import { useHuman } from "@/state/human.context"
 import styles from "./proposalDetailPage.module.css"
@@ -25,6 +27,12 @@ const Page = ({ id }) => {
         <title>HumanWallet Proposal</title>
       </Head>
       <div className={styles.container}>
+        <Button
+          iconLeft={<ArrowLeftIcon />}
+          onClick={() => window.history.back()}
+        >
+          Volver
+        </Button>
         <h2 className={styles.title}>{title}</h2>
         <h3 className={styles.description}>{description}</h3>
         <ProposalDetail proposal={proposal} />
