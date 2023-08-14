@@ -3,7 +3,7 @@ const compareAddresses = (a, b) => {
 }
 
 const explorerLink = ({ value, type = "address" }) => {
-  return `https://mumbai.polygonscan.com/${type}/${value}`
+  return `https://mumbai.polygonscan.com/${type}/${value}#tokentxns`
 }
 
 const truncateAddress = (
