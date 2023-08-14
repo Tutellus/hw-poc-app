@@ -11,7 +11,14 @@ import {
 } from "@/components/icons"
 import styles from "./proposalDetail.module.css"
 export const ProposalDetail = ({ proposal }) => {
-  const network = proposal?.chainId === "0x13881" ? "Mumbai" : "Unknown"
+  const network =
+    proposal?.chainId === "0x13881" ? (
+      <span className={styles.tagMumbai}>
+        <PolygonScanIcon /> MUMBAI
+      </span>
+    ) : (
+      <span className={styles.tagMumbai}>UNKNOWN</span>
+    )
   const labelStatus =
     proposal?.status === "CONFIRMED" ? (
       <span className={styles.tagOk}>
