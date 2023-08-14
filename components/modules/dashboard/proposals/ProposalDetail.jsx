@@ -1,9 +1,12 @@
+import { truncateAddress } from "@/utils/address"
+import {
+  Button,
+  buttonTypes,
+} from "@tutellus/tutellus-components/lib/components/atoms/button"
+import { LinkIcon, PolygonScanIcon } from "@/components/icons"
 import styles from "./proposalDetail.module.css"
 export const ProposalDetail = ({ proposal }) => {
-  console.log({ proposal })
-
   const network = proposal?.chainId === "0x13881" ? "Mumbai" : "Unknown"
-
   return proposal ? (
     <div className={styles.container}>
       <h2 className={styles.title}>Details</h2>
@@ -26,6 +29,27 @@ export const ProposalDetail = ({ proposal }) => {
           <span>{proposal.projectId}</span>
           <span>{proposal.sender}</span>
         </div>
+      </div>
+      <div className={styles.links}>
+        <span className={styles.cta}>
+          <Button
+            iconLeft={<PolygonScanIcon />}
+            iconRight={<LinkIcon />}
+            type={buttonTypes.OUTLINE}
+            onClick={() =>
+              window.open(
+                `https://mumbai.polygonscan.com/address/${proposal?.sender}#tokentxns`
+              )
+            }
+          >
+            {truncateAddress(
+              {
+                address: proposal?.sender,
+              },
+              { noLink: true }
+            )}
+          </Button>
+        </span>
       </div>
     </div>
   ) : (
