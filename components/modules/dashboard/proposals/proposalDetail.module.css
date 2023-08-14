@@ -50,4 +50,35 @@
   margin: -2px;
   padding-bottom: 16px;
   height: 34px;
+  fill: black;
+}
+
+.tagOk {
+  background-color: #79fc9c;
+  letter-spacing: -0.5px;
+  border-radius: var(--size-s);
+  color: var(--color-black);
+  font-size: var(--size-m);
+  font-weight: var(--font-weight-bold);
+  padding: var(--size-xs) var(--size-s);
+  margin: 0 var(--size-xs) var(--size-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+  max-width: 160px;
+}
+
+.tagKo {
+  background-color: red;
+  letter-spacing: -0.5px;
+  border-radius: var(--size-s);
+  color: var(--color-white);
+  font-size: var(--size-m);
+  font-weight: var(--font-weight-bold);
+  padding: var(--size-xs) var(--size-s);
+  margin: 0 var(--size-xs) var(--size-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+  max-width: 130px;
 }

@@ -12,7 +12,7 @@ export const CheckKOIcon = () => (
       width="22.9091"
       height="22.9091"
       rx="11.4545"
-      fill="#FF5724"
+      fill="currentColor"
     />
     <g clipPath="url(#clip0_13332_245770)">
       <path
@@ -26,7 +26,7 @@ export const CheckKOIcon = () => (
       width="22.9091"
       height="22.9091"
       rx="11.4545"
-      stroke="#FF5724"
+      stroke="currentColor"
       strokeWidth="1.09091"
     />
     <defs>
