@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { CONTRACT } from "@/config"
+import { CONTRACT, tokens } from "@/config"
 import cx from "classnames"
 import styles from "./balance.module.css"
 
@@ -11,20 +11,18 @@ export const Balance = ({ human, getTokensBalance }) => {
   const isReady = human?.status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
 
-  const getTokenBalance = async () => {
+  const updateTokenBalance = async () => {
     try {
-      const response = await getTokensBalance([
-        {
-          token: CONTRACT.address,
-          type: "ERC20",
-        },
-      ])
+      const response = await getTokensBalance({
+        tokens,
+      })
 
       if (response) {
         const value = response.items.find(
           (item) => item.token === CONTRACT.address
         ).bigNumber
         const innerBalance = ethers.utils.formatEther(value)
+        console.log("innerBalance", innerBalance)
         setBalance(innerBalance)
       }
     } catch (error) {
@@ -37,12 +35,9 @@ export const Balance = ({ human, getTokensBalance }) => {
   })
 
   useEffect(() => {
-    getTokenBalance()
-    const interval = setInterval(() => {
-      getTokenBalance()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
+    updateTokenBalance()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [human?.status, balance])
 
   return (
     <div className={balanceClass}>
