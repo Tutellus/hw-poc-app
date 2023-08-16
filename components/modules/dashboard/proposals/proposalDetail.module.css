@@ -21,9 +21,31 @@
 .block {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--size-l);
   width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.itemContainer {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  width: 100%;
+}
+
+.label {
+  text-overflow: ellipsis;
+  padding-right: 20px;
+  white-space: nowrap;
+}
+
+.contentLabel {
+  text-overflow: ellipsis;
+  padding-right: 20px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .keys {
@@ -118,10 +140,4 @@
 }
 
 @media screen and (max-width: 980px) {
-  .contentLabel {
-    text-overflow: ellipsis;
-    padding-right: 20px;
-    white-space: nowrap;
-    overflow: hidden;
-  }
 }

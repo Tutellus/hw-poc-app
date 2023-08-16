@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { useHuman } from "@/state/human.context"
 import { CONTRACT } from "@/config"
+import cx from "classnames"
 import styles from "./balance.module.css"
 
-export const Balance = () => {
+export const Balance = ({ human, getTokensBalance }) => {
   const [balance, setBalance] = useState("0")
 
-  const { getTokensBalance } = useHuman()
+  const isDeploying = human?.status === "PENDING"
+  const isReady = human?.status === "CONFIRMED"
+  const isNotReady = !isDeploying && !isReady
 
   const getTokenBalance = async () => {
     try {
@@ -30,6 +32,10 @@ export const Balance = () => {
     }
   }
 
+  const balanceClass = cx(styles.container, {
+    [styles.pulse]: isNotReady,
+  })
+
   useEffect(() => {
     getTokenBalance()
     const interval = setInterval(() => {
@@ -39,7 +45,7 @@ export const Balance = () => {
   }, [])
 
   return (
-    <div className={styles.container}>
+    <div className={balanceClass}>
       <div className={styles.title}>Balance</div>
       <div className="balance">{balance}</div>
     </div>

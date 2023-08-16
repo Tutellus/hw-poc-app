@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { useSession } from "next-auth/react"
 import { ethers } from "ethers"
 import { CONTRACT } from "@/config"
+import cx from "classnames"
 
 import {
   Account,
@@ -17,8 +18,13 @@ import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
   const { data: session } = useSession()
-  const { human, processingProposal, requestProposal, subgraphStatus } =
-    useHuman()
+  const {
+    human,
+    processingProposal,
+    requestProposal,
+    subgraphStatus,
+    getTokensBalance,
+  } = useHuman()
 
   const router = useRouter()
 
@@ -56,6 +62,10 @@ export const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
+  const proposalsContainerClass = cx(styles.proposalsContainer, {
+    [styles.pulse]: !canMint,
+  })
+
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.loginContainer}>
@@ -67,7 +77,7 @@ export const Dashboard = () => {
           human={human}
           subgraphStatus={subgraphStatus}
         />
-        <Balance />
+        <Balance getTokensBalance={getTokensBalance} human={human} />
       </div>
       <div className={styles.title}>
         <h2>Prueba distintas operaciones en nuestro Human Wallet</h2>
@@ -92,7 +102,7 @@ export const Dashboard = () => {
           isDisabled={!canMint}
         />
       </div>
-      <div className={styles.proposalsContainer}>
+      <div className={proposalsContainerClass}>
         <PendingProposalsList />
         <ProposalsList />
       </div>

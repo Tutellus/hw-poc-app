@@ -34,24 +34,36 @@ export const ProposalDetail = ({ proposal }) => {
     <div className={styles.container}>
       <h2 className={styles.title}>Details</h2>
       <div className={styles.block}>
-        <div className={styles.keys}>
-          <span>Transaction Hash</span>
-          <span>Nonce</span>
-          <span>Required 2FA</span>
-          <span>Status</span>
-          <span>Network</span>
-          <span>Project ID</span>
-          <span>Sender</span>
-        </div>
-        <div className={styles.values}>
+        <div className={styles.itemContainer}>
+          <span className={styles.label}>Transaction Hash</span>
           <span className={styles.contentLabel}>{proposal.txHash}</span>
+        </div>
+        <div className={styles.itemContainer}>
+          <span>Nonce</span>
           <span className={styles.contentLabel}>{proposal.nonce}</span>
+        </div>
+        <div className={styles.itemContainer}>
+          <span>Required 2FA</span>
           <span className={styles.contentLabel}>
             {proposal.required2FA ? "ACTIVE" : "INACTIVE"}
           </span>
+        </div>
+        <div className={styles.itemContainer}>
+          <span>Status</span>
           {labelStatus}
+        </div>
+        <div className={styles.itemContainer}>
+          <span>Network</span>
           <span className={styles.contentLabel}>{network}</span>
+        </div>
+        <div className={styles.itemContainer}>
+          <span>Project ID</span>
           <span className={styles.contentLabel}>{proposal.projectId}</span>
+        </div>
+        <div className={styles.keys}>
+          <span>Sender</span>
+        </div>
+        <div className={styles.values}>
           <span className={styles.contentLabel}>{proposal.sender}</span>
         </div>
       </div>

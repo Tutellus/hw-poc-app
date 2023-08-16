@@ -25,7 +25,7 @@ export const Account = ({ session, human, subgraphStatus }) => {
     <div className={styles.accountContainer}>
       <div
         className={cx(styles.account, {
-          [styles.pulse]: isDeploying,
+          [styles.pulse]: isNotReady,
         })}
         onMouseEnter={() => setExtendedAddress(true)}
         onMouseLeave={() => setExtendedAddress(false)}
