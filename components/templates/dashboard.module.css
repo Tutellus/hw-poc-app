@@ -43,3 +43,10 @@
   gap: 16px;
   width: 100%;
 }
+
+@media screen and (max-width: 980px) {
+  .modesContainer {
+    display: block;
+    flex-direction: column;
+  }
+}
