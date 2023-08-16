@@ -16,3 +16,12 @@
   margin: 0 0 2em 0;
   color: var(--color-gray-soft);
 }
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3em;
+  width: 100%;
+}
