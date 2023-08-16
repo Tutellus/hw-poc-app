@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
-// import { useMagicLink } from "./magicLink.context";
+import { tokens } from "@/config"
 import { useWeb3Auth } from "./web3auth.context"
 
 const HumanContext = createContext({
@@ -37,6 +37,7 @@ function HumanProvider(props) {
     const response = await humanSDK.getProposals()
     setProposals(response)
     setLoadingProposals(false)
+    getTokensBalance()
   }
 
   const requestProposal = async ({ title, description, calls }) => {
@@ -69,22 +70,17 @@ function HumanProvider(props) {
     return response
   }
 
-  const getTokensBalance = async (tokens) => {
+  const getTokensBalance = async () => {
     if (!human) return
-
-    try {
-      const balances = await humanSDK.getTokensBalance({
-        tokens: tokens.map(({ token, type, ids }) => ({
-          token,
-          type,
-          ids,
-        })),
-        address: human.address,
-      })
-      return balances
-    } catch (error) {
-      console.error("Invalid tokens balance request", error)
-    }
+    const balances = await humanSDK.getTokensBalance({
+      tokens: tokens?.map(({ token, type, ids }) => ({
+        token,
+        type,
+        ids,
+      })),
+      address: human.address,
+    })
+    return balances
   }
 
   useEffect(() => {
@@ -152,7 +148,6 @@ function HumanProvider(props) {
       if (proposal.status === "CONFIRMED") {
         console.log("proposalUpdate", proposal.status, proposal.txHash)
         loadProposals()
-        getTokensBalance()
       }
     })
   }, [humanSDK, proposals])
