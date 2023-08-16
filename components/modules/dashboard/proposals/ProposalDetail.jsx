@@ -39,31 +39,29 @@ export const ProposalDetail = ({ proposal }) => {
           <span className={styles.contentLabel}>{proposal.txHash}</span>
         </div>
         <div className={styles.itemContainer}>
-          <span>Nonce</span>
+          <span className={styles.label}>Nonce</span>
           <span className={styles.contentLabel}>{proposal.nonce}</span>
         </div>
         <div className={styles.itemContainer}>
-          <span>Required 2FA</span>
+          <span className={styles.label}>Required 2FA</span>
           <span className={styles.contentLabel}>
             {proposal.required2FA ? "ACTIVE" : "INACTIVE"}
           </span>
         </div>
         <div className={styles.itemContainer}>
-          <span>Status</span>
+          <span className={styles.label}>Status</span>
           {labelStatus}
         </div>
         <div className={styles.itemContainer}>
-          <span>Network</span>
+          <span className={styles.label}>Network</span>
           <span className={styles.contentLabel}>{network}</span>
         </div>
         <div className={styles.itemContainer}>
-          <span>Project ID</span>
+          <span className={styles.label}>Project ID</span>
           <span className={styles.contentLabel}>{proposal.projectId}</span>
         </div>
-        <div className={styles.keys}>
-          <span>Sender</span>
-        </div>
-        <div className={styles.values}>
+        <div className={styles.itemContainer}>
+          <span className={styles.label}>Sender</span>
           <span className={styles.contentLabel}>{proposal.sender}</span>
         </div>
       </div>
