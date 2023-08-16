@@ -49,4 +49,9 @@
     display: block;
     flex-direction: column;
   }
+
+  .proposalsContainer {
+    display: block;
+    flex-direction: column;
+  }
 }
