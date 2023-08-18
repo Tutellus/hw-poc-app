@@ -37,7 +37,6 @@ function HumanProvider(props) {
     const response = await humanSDK.getProposals()
     setProposals(response)
     setLoadingProposals(false)
-    getTokensBalance()
   }
 
   const requestProposal = async ({ title, description, calls }) => {
@@ -130,24 +129,33 @@ function HumanProvider(props) {
       const response = await humanSDK.getSubgraphStatus()
       setSubgraphStatus(response)
       if (proposal.status === "PENDING") {
-        // await humanSDK.confirmProposal({
-        //   proposalId: proposal._id,
-        //   code: "123456",
-        // })
+        console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
+        loadProposals()
       }
       if (proposal.status === "PROCESSED") {
-        console.log("proposalUpdate = PROPOSAL IS", proposal.status)
+        console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
         loadProposals()
       }
 
       if (proposal.status === "EXECUTED") {
-        console.log("proposalUpdate", proposal.status, proposal.txHash)
+        console.log(
+          "proposalUpdate",
+          proposal.status,
+          proposal.txHash,
+          proposal
+        )
         loadProposals()
       }
 
       if (proposal.status === "CONFIRMED") {
-        console.log("proposalUpdate", proposal.status, proposal.txHash)
+        console.log(
+          "proposalUpdate",
+          proposal.status,
+          proposal.txHash,
+          proposal
+        )
         loadProposals()
+        getTokensBalance()
       }
     })
   }, [humanSDK, proposals])
