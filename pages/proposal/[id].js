@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import Head from "next/head"
 import { ArrowLeftIcon } from "@tutellus/tutellus-components/lib/components/icons/shared/ArrowLeftIcon"
-import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import {
+  Button,
+  buttonTypes,
+} from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { ProposalDetail } from "@/components/modules"
 import { useHuman } from "@/state/human.context"
 import { HumanWalletLogo } from "@/components/icons"
@@ -34,6 +37,7 @@ const Page = ({ id }) => {
         <Button
           iconLeft={<ArrowLeftIcon />}
           onClick={() => window.history.back()}
+          type={buttonTypes.OUTLINE}
         >
           Volver
         </Button>
