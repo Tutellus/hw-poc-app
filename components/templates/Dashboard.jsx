@@ -33,16 +33,20 @@ export const Dashboard = () => {
   const canMint =
     human?.status === "CONFIRMED" && !minting && !processingProposal
 
-  const requestMint = async () => {
+  const requestMint = async ({
+    title = "Mint",
+    description = "Minting",
+    value = "0",
+  }) => {
     setMinting(true)
     const contractInterface = new ethers.utils.Interface(CONTRACT.abi)
     const calldata = contractInterface.encodeFunctionData("mint", [
       human.address,
-      ethers.utils.parseEther("5"),
+      ethers.utils.parseEther(value.toString()),
     ])
     await requestProposal({
-      title: "Mint 5 tokens",
-      description: "We will mint 5 tokens for you",
+      title,
+      description,
       calls: [
         {
           target: CONTRACT.address,
@@ -86,15 +90,27 @@ export const Dashboard = () => {
       </div>
       <div className={styles.modesContainer}>
         <TrxTypePanel
-          literal="Minteo de 5 tokens con 2FA"
+          literal="Minteo de 5 tokens sin 2FA"
           icon={<ThumbIcon />}
-          callback={requestMint}
+          callback={() =>
+            requestMint({
+              title: "Mint without 2FA",
+              description: "Minting 5 tokens without 2FA",
+              value: "5",
+            })
+          }
           isDisabled={!canMint}
         />
         <TrxTypePanel
-          literal="Acción con 2FA que se confirma"
+          literal="Minteo de 10 tokens con 2FA"
           icon={<MailIcon />}
-          callback={requestMint}
+          callback={() =>
+            requestMint({
+              title: "Mint with 2FA",
+              description: "Minting 10 tokens with 2FA",
+              value: "10",
+            })
+          }
           isDisabled={!canMint}
         />
         <TrxTypePanel
