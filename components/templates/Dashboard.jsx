@@ -37,10 +37,16 @@ export const Dashboard = () => {
     title = "Mint",
     description = "Minting",
     value = "0",
+    isTransfer = false,
   }) => {
     setMinting(true)
+    const method = isTransfer ? "transfer" : "mint"
+    const callMethod = isTransfer
+      ? "transfer(address,uint256)"
+      : "mint(address,uint256)"
+
     const contractInterface = new ethers.utils.Interface(CONTRACT.abi)
-    const calldata = contractInterface.encodeFunctionData("mint", [
+    const calldata = contractInterface.encodeFunctionData(method, [
       human.address,
       ethers.utils.parseEther(value.toString()),
     ])
@@ -50,7 +56,7 @@ export const Dashboard = () => {
       calls: [
         {
           target: CONTRACT.address,
-          method: "mint(address,uint256)",
+          method: callMethod,
           data: calldata,
           value: "0",
         },
@@ -116,7 +122,14 @@ export const Dashboard = () => {
         <TrxTypePanel
           literal="Acción sin 2FA que da error"
           icon={<FailedIcon />}
-          callback={requestMint}
+          callback={() =>
+            requestMint({
+              title: "Transfer tokens",
+              description: "Transfering 1000 tokens",
+              value: "1000",
+              isTransfer: true,
+            })
+          }
           isDisabled={!canMint}
         />
       </div>
