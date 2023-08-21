@@ -56,6 +56,8 @@ export const Dashboard = () => {
   }
 
   useEffect(() => {
+    document.body.classList.add("dark")
+
     if (!session) {
       router.push("/login")
     }
