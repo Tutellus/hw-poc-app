@@ -1,9 +1,9 @@
 import { useEffect } from "react"
 import { useRouter } from "next/router"
-import { Layout } from "@/components/layout/Layout";
-import { Providers } from "@/components/layout/Providers";
+import { Layout } from "@/components/layout/Layout"
+import { Providers } from "@/components/layout/Providers"
 import { SessionProvider, useSession, signIn } from "next-auth/react"
-import "@/styles/globals.css";
+import "@/styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
   return (
@@ -18,9 +18,8 @@ const App = ({ Component, pageProps }) => {
         )}
       </Layout>
     </Providers>
-  );
-};
-
+  )
+}
 
 function Auth({ children }) {
   const { data: session, status } = useSession()
@@ -43,12 +42,17 @@ function Auth({ children }) {
   return null
 }
 
-const refetchInterval = parseInt(process.env.NEXT_PUBLIC_NEXTAUTH_SESSION_REFETCH_IN_SECONDS || "3600")
+const refetchInterval = parseInt(
+  process.env.NEXT_PUBLIC_NEXTAUTH_SESSION_REFETCH_IN_SECONDS || "3600"
+)
 
 const AppWithAuth = (props) => (
-  <SessionProvider session={props.pageProps.session} refetchInterval={refetchInterval}>
+  <SessionProvider
+    session={props.pageProps.session}
+    refetchInterval={refetchInterval}
+  >
     <App {...props} />
   </SessionProvider>
 )
 
-export default AppWithAuth;
+export default AppWithAuth
