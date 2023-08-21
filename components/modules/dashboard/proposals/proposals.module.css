@@ -74,7 +74,7 @@
   gap: var(--size-xs);
   padding: var(--size-l);
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.316);
+  background-color: var(--color-background);
   border-radius: var(--size-s);
 }
 

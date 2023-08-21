@@ -1,5 +1,6 @@
 .container {
   align-items: flex-start;
+  color: var(--color-gray-strong);
   background-color: #10107085;
   border-radius: var(--size-s);
   display: flex;
@@ -7,10 +8,11 @@
   margin-bottom: var(--size-s);
   padding: var(--size-l);
   width: 100%;
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-gray);
 }
 
 .title {
+  color: var(--color-gray-strong);
   font-size: var(--size-l);
   margin: 0 0 var(--size-l) 0;
   padding: 0 0 var(--size-s) 0;

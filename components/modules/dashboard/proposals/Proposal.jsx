@@ -1,5 +1,8 @@
 import { useState } from "react"
-import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import {
+  Button,
+  buttonColors,
+} from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { Spinner } from "@tutellus/tutellus-components/lib/components/atoms/spinner"
 import { Input } from "@tutellus/tutellus-components/lib/components/atoms/form/input"
 import styles from "./proposals.module.css"
@@ -50,6 +53,7 @@ export const Proposal = ({
               onChange={changeCode}
             />
             <Button
+              color={buttonColors.PRIMARY}
               iconLeft={<SendIcon />}
               disabled={processingProposal}
               onClick={() =>
