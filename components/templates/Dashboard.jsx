@@ -96,25 +96,25 @@ export const Dashboard = () => {
       </div>
       <div className={styles.modesContainer}>
         <TrxTypePanel
-          literal="Minteo de 5 tokens sin 2FA"
+          literal="Minteo de 10 tokens sin 2FA"
           icon={<ThumbIcon />}
           callback={() =>
             requestMint({
               title: "Mint without 2FA",
-              description: "Minting 5 tokens without 2FA",
-              value: "5",
+              description: "Minting 10 tokens without 2FA",
+              value: "10",
             })
           }
           isDisabled={!canMint}
         />
         <TrxTypePanel
-          literal="Minteo de 10 tokens con 2FA"
+          literal="Minteo de 20 tokens con 2FA"
           icon={<MailIcon />}
           callback={() =>
             requestMint({
               title: "Mint with 2FA",
-              description: "Minting 10 tokens with 2FA",
-              value: "10",
+              description: "Minting 20 tokens with 2FA",
+              value: "20",
             })
           }
           isDisabled={!canMint}

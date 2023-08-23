@@ -7,7 +7,6 @@ const Page = () => {
   const router = useRouter()
 
   useEffect(() => {
-    document.body.classList.add("dark")
     if (!session) {
       router.push("/login")
     } else {

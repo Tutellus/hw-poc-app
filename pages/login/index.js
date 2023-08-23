@@ -1,7 +1,11 @@
-import { Login as LoginTemplate } from '../../components/templates/Login';
+import { useEffect } from "react"
+import { Login as LoginTemplate } from "../../components/templates/Login"
 
 const Page = () => {
-  return <LoginTemplate />;
-};
+  useEffect(() => {
+    document.body.classList.add("dark")
+  }, [])
+  return <LoginTemplate />
+}
 
-export default Page;
+export default Page
