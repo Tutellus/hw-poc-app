@@ -38,7 +38,7 @@ function Web3AuthProvider(props) {
         const chainConfig = {
           chainNamespace: CHAIN_NAMESPACES.EIP155,
           chainId: CHAIN_ID,
-          rpcTarget: "https://endpoints.omniatech.io/v1/matic/mumbai/public",
+          rpcTarget: "https://polygon-mumbai-bor.publicnode.com",
           displayName: "Mumbai Testnet",
           blockExplorer: "https://mumbai.polygonscan.com/",
           ticker: "MATIC",
