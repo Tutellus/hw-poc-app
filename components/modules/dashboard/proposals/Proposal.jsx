@@ -30,7 +30,7 @@ export const Proposal = ({
             <div className={styles.isPendingTrx}>
               <div>{proposal?.title}</div>
               <div className={styles.statusContainer}>
-                <span className={styles.label}>{"PENDING"}</span>
+                <span className={styles.label}>{proposal?.status}</span>
                 <div className={styles.pending}>
                   <Spinner />
                 </div>
