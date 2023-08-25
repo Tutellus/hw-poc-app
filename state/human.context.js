@@ -126,37 +126,29 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
-      const response = await humanSDK.getSubgraphStatus()
-      setSubgraphStatus(response)
-      if (proposal.status === "PENDING") {
+      if (proposal?.status === "PENDING") {
         console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-        loadProposals()
       }
-      if (proposal.status === "PROCESSED") {
-        console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-        loadProposals()
-      }
+    })
 
-      if (proposal.status === "EXECUTED") {
-        console.log(
-          "proposalUpdate",
-          proposal.status,
-          proposal.txHash,
-          proposal
-        )
-        loadProposals()
-      }
+    humanSDK.events().on("proposalExecuted", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL EXECUTED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
 
-      if (proposal.status === "CONFIRMED") {
-        console.log(
-          "proposalUpdate",
-          proposal.status,
-          proposal.txHash,
-          proposal
-        )
-        loadProposals()
-        getTokensBalance()
-      }
+    humanSDK.events().on("proposalProcessed", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL PROCESSED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
     })
   }, [humanSDK, proposals])
 
