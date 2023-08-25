@@ -1,0 +1,8 @@
+.layoutContainer {
+  color: var(--color-gray-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  padding: 5em 10em;
+}

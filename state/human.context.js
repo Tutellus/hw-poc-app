@@ -2,14 +2,13 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
-// import { useMagicLink } from "./magicLink.context";
+import { tokens } from "@/config"
 import { useWeb3Auth } from "./web3auth.context"
 
 const HumanContext = createContext({
   humanSDK: null,
   human: null,
   proposals: [],
-  loadingHuman: false,
   loadingProposals: false,
   processingProposal: false,
   requestProposal: async () => {},
@@ -28,22 +27,15 @@ function HumanProvider(props) {
   const [humanSDK, setHumanSDK] = useState(null)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
-  const [loadingHuman, setLoadingHuman] = useState(false)
+  const [currentProposal, setCurrentProposal] = useState(null)
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
-
-  const loadHuman = async () => {
-    setLoadingHuman(true)
-    const response = await humanSDK.getHuman()
-
-    setHuman(response)
-    setLoadingHuman(false)
-  }
+  const [subgraphStatus, setSubgraphStatus] = useState(null)
 
   const loadProposals = async () => {
     setLoadingProposals(true)
-    const response = await humanSDK?.getProposals()
-    setProposals(response?.items)
+    const response = await humanSDK.getProposals()
+    setProposals(response)
     setLoadingProposals(false)
   }
 
@@ -77,31 +69,31 @@ function HumanProvider(props) {
     return response
   }
 
-  const getTokensBalance = async (tokens) => {
+  const getTokensBalance = async () => {
     if (!human) return
-
-    try {
-      const balances = await humanSDK.getTokensBalance({
-        tokens: tokens.map(({ token, type, ids }) => ({
-          token,
-          type,
-          ids,
-        })),
-        address: human.address,
-      })
-      return balances
-    } catch (error) {
-      console.error("Invalid tokens balance request", error)
-    }
+    const balances = await humanSDK.getTokensBalance({
+      tokens: tokens?.map(({ token, type, ids }) => ({
+        token,
+        type,
+        ids,
+      })),
+      address: human.address,
+    })
+    return balances
   }
 
   useEffect(() => {
     if (web3Provider && accessToken) {
+      console.log("Building HumanWalletSDK")
       const humanSDK = HumanWalletSDK.build({
         uri,
         projectId,
         accessToken,
         provider: web3Provider,
+        options: {
+          MAX_RETRIES: 50,
+          INTERVAL: 5000,
+        },
       })
 
       setHumanSDK(humanSDK)
@@ -110,41 +102,77 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (!humanSDK) return
-    loadProposals()
-    const interval = setInterval(() => {
-      loadProposals()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [human])
+    humanSDK.events().on("humanStatus", async (human) => {
+      const response = await humanSDK.getSubgraphStatus()
+      setSubgraphStatus(response)
+      console.log(
+        "\n>>>>>>\n HUMAN STATUS:",
+        {
+          ADDRESS: human.address,
+          STATUS: human.status,
+          IS_READY: humanSDK.isReady(),
+        },
+        "\n",
+        "\n>>>>>>\n"
+      )
+      if (humanSDK.isReady()) {
+        console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
+        setHuman(human)
+        loadProposals()
+      }
+    })
+  }, [humanSDK, proposals, human])
 
   useEffect(() => {
     if (!humanSDK) return
-    loadHuman()
-    const interval = setInterval(() => {
-      loadHuman()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [user, humanSDK])
+    humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
+      if (proposal?.status === "PENDING") {
+        console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
+      }
+    })
+
+    humanSDK.events().on("proposalExecuted", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL EXECUTED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    humanSDK.events().on("proposalProcessed", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL PROCESSED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+  }, [humanSDK, proposals])
 
   const memoizedData = useMemo(
     () => ({
       humanSDK,
       human,
       proposals,
-      loadingHuman,
+      currentProposal,
       loadingProposals,
       processingProposal,
       requestProposal,
       confirmProposal,
       getTokensBalance,
+      subgraphStatus,
     }),
     [
       humanSDK,
       human,
       proposals,
-      loadingHuman,
+      currentProposal,
       loadingProposals,
       processingProposal,
+      subgraphStatus,
     ]
   )
 

@@ -1,0 +1,49 @@
+/* stylelint-disable function-calc-no-invalid */
+:root {
+  /* Colors */
+  /* primary */
+  --color-primary: #8f8fef;
+  --color-primary-strong: #2020df;
+  --color-primary-soft: #101070;
+
+  /* accent */
+  --color-accent: #ff91d1;
+  --color-accent-strong: #f20d92;
+  --color-accent-soft: #61053b;
+
+  /* gray */
+  --color-gray: #6b6b91;
+  --color-gray-strong: #e5ecf2;
+  --color-gray-soft: #949dac;
+
+  /* generics */
+  --color-background: #01011c;
+  --color-surface: #131339;
+  --color-text: var(--color-gray);
+  --color-text-highlighted: var(--color-gray-strong);
+
+  /* tut color */
+  --color-tut: #00f;
+  --color-tut-strong: #0000a8;
+  --color-tut-soft: #a0a0ff;
+  --color-tut-surface: #f0f0ff;
+
+  /* stateful */
+  --color-info: #2094f3;
+  --color-success: #05fa46;
+  --color-warning: #f90;
+  --color-error: #ff5724;
+  --color-error-strong: #dc2626;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    180deg,
+    #5561ff 0%,
+    #3643fc 100%,
+    #3643fc 100%
+  );
+
+  /* Text */
+  --text-content: #01011c;
+  --text-content-soft: #717185;
+}

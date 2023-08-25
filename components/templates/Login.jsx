@@ -1,26 +1,37 @@
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import { DiscordIcon } from "@tutellus/tutellus-components/lib/components/icons/brands/DiscordIcon"
+import { HumanWalletLogo } from "../icons"
+import { useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/router"
+import styles from "./dashboard.module.css"
 
 export const Login = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     if (session) {
-      router.push("/dashboard");
+      router.push("/dashboard")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, [session])
 
-  const isLoading = status === "loading";
+  const isLoading = status === "loading"
 
   return (
-    <div className="login">
-      <button type="submit" onClick={() => signIn("discord")} disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Log in"}
-      </button>
+    <div className={styles.loginContainer}>
+      <div className={styles.logoContainer}>
+        <HumanWalletLogo />
+      </div>
+      <Button
+        iconLeft={<DiscordIcon />}
+        onClick={() => signIn("discord")}
+        disabled={isLoading}
+      >
+        {isLoading ? "Logging in..." : "CONECTAR"}
+      </Button>
     </div>
-  );
-};
+  )
+}

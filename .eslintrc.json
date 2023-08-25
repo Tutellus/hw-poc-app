@@ -1,3 +1,7 @@
 {
+  "plugins": ["react"],
+  "rules": {
+    "react/no-unknown-property": ["error"]
+  },
   "extends": "next/core-web-vitals"
 }

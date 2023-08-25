@@ -1,29 +1,24 @@
 import { useHuman } from "@/state/human.context"
-import { Proposal } from "./Proposal"
+import { ProcessedProposal } from "./ProcessedProposal"
+import styles from "./proposals.module.css"
 
 export const ProposalsList = () => {
-  const { proposals, processingProposal, confirmProposal } = useHuman()
+  const { proposals } = useHuman()
 
   return (
-    <div
-      className="box"
-      style={{
-        gridColumn: "1 / 5",
-      }}
-    >
-      <div className="title">Proposals</div>
-      <div className="data">
-        {proposals?.length > 0 ? (
-          proposals.map((proposal, index) => (
-            <Proposal
-              key={index}
-              proposal={proposal}
-              processingProposal={processingProposal}
-              confirmProposal={confirmProposal}
-            />
-          ))
+    <div className={styles.container}>
+      <div className={styles.title}>Historial</div>
+      <div className={styles.list}>
+        {proposals.length > 0 ? (
+          proposals
+            ?.filter((proposal) => proposal.status === "CONFIRMED")
+            .map((mappedProposal, index) => (
+              <div key={index}>
+                <ProcessedProposal proposal={mappedProposal} />
+              </div>
+            ))
         ) : (
-          <p>No available proposals yet</p>
+          <p className={styles.text}>No hay transacciones disponibles</p>
         )}
       </div>
     </div>

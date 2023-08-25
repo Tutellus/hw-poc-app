@@ -3,20 +3,22 @@ const compareAddresses = (a, b) => {
 }
 
 const explorerLink = ({ value, type = "address" }) => {
-  return `https://mumbai.polygonscan.com/${type}/${value}`
+  return `https://mumbai.polygonscan.com/${type}/${value}#tokentxns`
 }
 
 const truncateAddress = (
-  { address = "", chars = 8, stringify = false, extend = false },
+  { address = "", chars = 6, stringify = false, extend = false },
   noLink
 ) => {
-  const value = address.slice(2, chars + 2).toUpperCase()
+  const valueStart = address.slice(0, chars)
+  const valueEnd = address.slice(address.length - chars)
+  const value = `${valueStart}...${valueEnd}`
   if (stringify) return value
   return noLink ? (
     extend ? (
       address
     ) : (
-      value
+      `${valueStart}...${valueEnd}`
     )
   ) : (
     <a
