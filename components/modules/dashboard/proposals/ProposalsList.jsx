@@ -11,7 +11,11 @@ export const ProposalsList = () => {
       <div className={styles.list}>
         {proposals.length > 0 ? (
           proposals
-            ?.filter((proposal) => proposal.status === "CONFIRMED")
+            ?.filter(
+              (proposal) =>
+                proposal.status === "CONFIRMED" ||
+                proposal.status === "REVERTED"
+            )
             .map((mappedProposal, index) => (
               <div key={index}>
                 <ProcessedProposal proposal={mappedProposal} />
