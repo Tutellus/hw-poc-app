@@ -21,8 +21,10 @@ export const ProcessedProposal = ({ proposal }) => {
       <div>
         {proposal?.status === "CONFIRMED" ? (
           <CheckOKIcon />
-        ) : proposal?.status === "REJECTED" ? (
-          <CheckKOIcon />
+        ) : proposal?.status === "REVERTED" ? (
+          <span className={styles.reverted}>
+            <CheckKOIcon />
+          </span>
         ) : null}
       </div>
     </div>
