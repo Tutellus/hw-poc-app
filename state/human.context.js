@@ -126,9 +126,7 @@ function HumanProvider(props) {
   useEffect(() => {
     if (!humanSDK) return
     humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
-      if (proposal?.status === "PENDING") {
-        console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-      }
+      console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
     })
 
     humanSDK.events().on("proposalExecuted", async ({ proposal }) => {
@@ -144,6 +142,26 @@ function HumanProvider(props) {
     humanSDK.events().on("proposalProcessed", async ({ proposal }) => {
       console.log(
         "PROPOSAL PROCESSED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    humanSDK.events().on("proposalConfirmed", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL CONFIRMED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    humanSDK.events().on("proposalReverted", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL REVERTED",
         proposal.status,
         proposal.txHash,
         proposal
