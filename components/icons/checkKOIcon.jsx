@@ -34,7 +34,7 @@ export const CheckKOIcon = () => (
         <rect
           width="13.0909"
           height="13.0909"
-          fill="white"
+          fill="currentColor"
           transform="translate(5.45312 5.45508)"
         />
       </clipPath>
