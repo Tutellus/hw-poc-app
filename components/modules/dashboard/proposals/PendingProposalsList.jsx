@@ -10,7 +10,10 @@ export const PendingProposalsList = () => {
       <div className={styles.title}>Proposals pendientes</div>
       {proposals?.length > 0 &&
         proposals
-          .filter((proposal) => proposal.status !== "CONFIRMED")
+          .filter(
+            (proposal) =>
+              proposal.status !== "CONFIRMED" && proposal.status !== "REVERTED"
+          )
           .map((proposal, index) => (
             <div className={styles.max} key={index}>
               <Proposal
@@ -20,8 +23,10 @@ export const PendingProposalsList = () => {
               />
             </div>
           ))}
-      {proposals.filter((proposal) => proposal.status !== "CONFIRMED")
-        .length === 0 && (
+      {proposals.filter(
+        (proposal) =>
+          proposal.status !== "CONFIRMED" || proposal.status !== "REVERTED"
+      ).length === 0 && (
         <p className={styles.text}>No hay transacciones en cola</p>
       )}
     </div>
