@@ -29,6 +29,8 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+const events = humanSDK.events()
+
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
@@ -36,16 +38,17 @@ function HumanProvider(props) {
 
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
-  const [currentProposal, setCurrentProposal] = useState(null)
+  const [currentProposal, setCurrentProposal] = useState([])
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
   const [subgraphStatus, setSubgraphStatus] = useState(null)
+  const [proposal, setProposal] = useState([])
 
   const loadProposals = async () => {
     if (!humanSDK.isReady()) return
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
-    console.log("Proposals", response); // This response is OK when event is emitted
+    console.log("Proposals", response) // This response is OK when event is emitted
     setProposals(response)
     setLoadingProposals(false)
   }
@@ -95,83 +98,103 @@ function HumanProvider(props) {
     return balances
   }
 
+  const getSubgraphStatus = async () => {
+    const response = await humanSDK.getSubgraphStatus()
+    setSubgraphStatus(response)
+  }
+
+  useEffect(() => {
+    console.log("HUMAN LOADED USE EFFECT")
+    events.on("humanStatus", async (human) => {
+      console.log(
+        "\n>>>>>>\n HUMAN STATUS:",
+        {
+          ADDRESS: human.address,
+          STATUS: human.status,
+          IS_READY: humanSDK.isReady(),
+        },
+        "\n",
+        "\n>>>>>>\n"
+      )
+      if (humanSDK.isReady()) {
+        console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
+        setHuman(human)
+        loadProposals()
+        getSubgraphStatus()
+        console.log("HUMAN IS READY ------- GETTING SUBGRAPH STATUS", human)
+      }
+    })
+
+    events.on("proposalUpdate", onProposalUpdate)
+
+    events.on("proposalExecuted", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL EXECUTED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    events.on("proposalProcessed", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL PROCESSED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    events.on("proposalConfirmed", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL CONFIRMED EVENT LISTENED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+      getTokensBalance()
+    })
+
+    events.on("proposalReverted", async ({ proposal }) => {
+      console.log(
+        "PROPOSAL REVERTED",
+        proposal.status,
+        proposal.txHash,
+        proposal
+      )
+      loadProposals()
+    })
+
+    return () => {
+      events.off("humanStatus")
+      events.off("proposalUpdate")
+      events.off("proposalExecuted")
+      events.off("proposalProcessed")
+      events.off("proposalConfirmed")
+      events.off("proposalReverted")
+    }
+  }, [])
+
+  const onProposalUpdate = ({ proposal }) => {
+    console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
+    console.log("proposalUpdate = CURRENT PROPOSAL IS", currentProposal)
+    setCurrentProposal((oldValue) => [...oldValue, proposal])
+  }
+
   useEffect(() => {
     if (web3Provider && accessToken) {
       // We connect to the HumanWalletSDK instance when we have the web3Provider and the accessToken
       console.log("Connecting to HumanWalletSDK")
-      
+
       humanSDK.connect({
         provider: web3Provider,
         accessToken,
-      });
+      })
     }
   }, [web3Provider, accessToken])
-
-  const events = humanSDK.events()
-
-  events.on("humanStatus", async (human) => {
-    const response = await humanSDK.getSubgraphStatus()
-    setSubgraphStatus(response)
-    console.log(
-      "\n>>>>>>\n HUMAN STATUS:",
-      {
-        ADDRESS: human.address,
-        STATUS: human.status,
-        IS_READY: humanSDK.isReady(),
-      },
-      "\n",
-      "\n>>>>>>\n"
-    )
-    if (humanSDK.isReady()) {
-      console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
-      setHuman(human)
-      loadProposals()
-    }
-  })
-
-  events.on("proposalUpdate", async ({ proposal }) => {
-    console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-  })
-
-  events.on("proposalExecuted", async ({ proposal }) => {
-    console.log(
-      "PROPOSAL EXECUTED EVENT LISTENED",
-      proposal.status,
-      proposal.txHash,
-      proposal
-    )
-    loadProposals()
-  })
-
-  events.on("proposalProcessed", async ({ proposal }) => {
-    console.log(
-      "PROPOSAL PROCESSED EVENT LISTENED",
-      proposal.status,
-      proposal.txHash,
-      proposal
-    )
-    loadProposals()
-  })
-
-  events.on("proposalConfirmed", async ({ proposal }) => {
-    console.log(
-      "PROPOSAL CONFIRMED EVENT LISTENED",
-      proposal.status,
-      proposal.txHash,
-      proposal
-    )
-    loadProposals()
-  })
-
-  events.on("proposalReverted", async ({ proposal }) => {
-    console.log(
-      "PROPOSAL REVERTED",
-      proposal.status,
-      proposal.txHash,
-      proposal
-    )
-    loadProposals()
-  })
 
   const memoizedData = useMemo(
     () => ({
