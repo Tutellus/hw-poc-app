@@ -19,12 +19,21 @@ const HumanContext = createContext({
 const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 
+// We build the HumanWalletSDK instance here
+const humanSDK = HumanWalletSDK.build({
+  uri,
+  projectId,
+  options: {
+    MAX_RETRIES: 50,
+    INTERVAL: 5000,
+  },
+})
+
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
   const { accessToken, user } = session || {}
 
-  const [humanSDK, setHumanSDK] = useState(null)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
   const [currentProposal, setCurrentProposal] = useState(null)
@@ -33,13 +42,16 @@ function HumanProvider(props) {
   const [subgraphStatus, setSubgraphStatus] = useState(null)
 
   const loadProposals = async () => {
+    if (!humanSDK.isReady()) return
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
+    console.log("Proposals", response); // This response is OK when event is emitted
     setProposals(response)
     setLoadingProposals(false)
   }
 
   const requestProposal = async ({ title, description, calls }) => {
+    if (!humanSDK.isReady()) return
     setProcessingProposal(true)
     let response
     try {
@@ -57,6 +69,7 @@ function HumanProvider(props) {
   }
 
   const confirmProposal = async ({ proposalId, code }) => {
+    if (!humanSDK.isReady()) return
     setProcessingProposal(true)
     let response
     try {
@@ -70,7 +83,7 @@ function HumanProvider(props) {
   }
 
   const getTokensBalance = async () => {
-    if (!human) return
+    if (!humanSDK.isReady()) return
     const balances = await humanSDK.getTokensBalance({
       tokens: tokens?.map(({ token, type, ids }) => ({
         token,
@@ -84,95 +97,84 @@ function HumanProvider(props) {
 
   useEffect(() => {
     if (web3Provider && accessToken) {
-      console.log("Building HumanWalletSDK")
-      const humanSDK = HumanWalletSDK.build({
-        uri,
-        projectId,
-        accessToken,
+      // We connect to the HumanWalletSDK instance when we have the web3Provider and the accessToken
+      console.log("Connecting to HumanWalletSDK")
+      
+      humanSDK.connect({
         provider: web3Provider,
-        options: {
-          MAX_RETRIES: 50,
-          INTERVAL: 5000,
-        },
-      })
-
-      setHumanSDK(humanSDK)
+        accessToken,
+      });
     }
   }, [web3Provider, accessToken])
 
-  useEffect(() => {
-    if (!humanSDK) return
-    humanSDK.events().on("humanStatus", async (human) => {
-      const response = await humanSDK.getSubgraphStatus()
-      setSubgraphStatus(response)
-      console.log(
-        "\n>>>>>>\n HUMAN STATUS:",
-        {
-          ADDRESS: human.address,
-          STATUS: human.status,
-          IS_READY: humanSDK.isReady(),
-        },
-        "\n",
-        "\n>>>>>>\n"
-      )
-      if (humanSDK.isReady()) {
-        console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
-        setHuman(human)
-        loadProposals()
-      }
-    })
-  }, [humanSDK, proposals, human])
+  const events = humanSDK.events()
 
-  useEffect(() => {
-    if (!humanSDK) return
-    humanSDK.events().on("proposalUpdate", async ({ proposal }) => {
-      console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-    })
-
-    humanSDK.events().on("proposalExecuted", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL EXECUTED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
+  events.on("humanStatus", async (human) => {
+    const response = await humanSDK.getSubgraphStatus()
+    setSubgraphStatus(response)
+    console.log(
+      "\n>>>>>>\n HUMAN STATUS:",
+      {
+        ADDRESS: human.address,
+        STATUS: human.status,
+        IS_READY: humanSDK.isReady(),
+      },
+      "\n",
+      "\n>>>>>>\n"
+    )
+    if (humanSDK.isReady()) {
+      console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
+      setHuman(human)
       loadProposals()
-    })
+    }
+  })
 
-    humanSDK.events().on("proposalProcessed", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL PROCESSED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-    })
+  events.on("proposalUpdate", async ({ proposal }) => {
+    console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
+  })
 
-    humanSDK.events().on("proposalConfirmed", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL CONFIRMED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-    })
+  events.on("proposalExecuted", async ({ proposal }) => {
+    console.log(
+      "PROPOSAL EXECUTED EVENT LISTENED",
+      proposal.status,
+      proposal.txHash,
+      proposal
+    )
+    loadProposals()
+  })
 
-    humanSDK.events().on("proposalReverted", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL REVERTED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-    })
-  }, [humanSDK, proposals])
+  events.on("proposalProcessed", async ({ proposal }) => {
+    console.log(
+      "PROPOSAL PROCESSED EVENT LISTENED",
+      proposal.status,
+      proposal.txHash,
+      proposal
+    )
+    loadProposals()
+  })
+
+  events.on("proposalConfirmed", async ({ proposal }) => {
+    console.log(
+      "PROPOSAL CONFIRMED EVENT LISTENED",
+      proposal.status,
+      proposal.txHash,
+      proposal
+    )
+    loadProposals()
+  })
+
+  events.on("proposalReverted", async ({ proposal }) => {
+    console.log(
+      "PROPOSAL REVERTED",
+      proposal.status,
+      proposal.txHash,
+      proposal
+    )
+    loadProposals()
+  })
 
   const memoizedData = useMemo(
     () => ({
-      humanSDK,
       human,
       proposals,
       currentProposal,
@@ -184,7 +186,6 @@ function HumanProvider(props) {
       subgraphStatus,
     }),
     [
-      humanSDK,
       human,
       proposals,
       currentProposal,
