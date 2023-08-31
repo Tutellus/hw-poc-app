@@ -37,7 +37,7 @@ export const Balance = ({ human, getTokensBalance }) => {
   useEffect(() => {
     updateTokenBalance()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [human?.status, balance])
+  }, [human?.status])
 
   return (
     <div className={balanceClass}>
