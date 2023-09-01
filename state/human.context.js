@@ -29,17 +29,20 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+function activateLogger() {
+  localStorage.setItem("debug", "hw:index,hw:monitor")
+}
+
 const events = humanSDK.events()
 
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
   const { accessToken, user } = session || {}
-  
-  const [connected, setConnected]= useState(false)
+
+  const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
-  const [currentProposal, setCurrentProposal] = useState([])
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
   const [subgraphStatus, setSubgraphStatus] = useState(null)
@@ -50,7 +53,6 @@ function HumanProvider(props) {
     if (!humanSDK.isReady()) return
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
-    console.log("Proposals", response) // This response is OK when event is emitted
     setProposals(response)
     setLoadingProposals(false)
   }
@@ -89,7 +91,6 @@ function HumanProvider(props) {
 
   const getTokensBalance = async () => {
     if (!humanSDK.isReady()) return
-    console.log("GETTING TOKENS BALANCE", human.address)
     const balances = await humanSDK.getTokensBalance({
       tokens: tokens?.map(({ token, type, ids }) => ({
         token,
@@ -107,39 +108,30 @@ function HumanProvider(props) {
   }
 
   const onHumanStatus = (human) => {
-    console.log(
-      "\n>>>>>>\n HUMAN STATUS:",
-      {
-        ADDRESS: human.address,
-        STATUS: human.status,
-        IS_READY: humanSDK.isReady(),
-      },
-      "\n",
-      "\n>>>>>>\n"
-    )
     if (humanSDK.isReady()) {
-      console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
       setHuman(human)
       loadProposals()
       getSubgraphStatus()
-      console.log("HUMAN IS READY ------- GETTING SUBGRAPH STATUS", human)
+      activateLogger()
     }
   }
 
-  const onProposalEventShowLog = (event) => ({ proposal, proposals, context }) => {
-    console.log(
-      `PROPOSAL ${event} EVENT LISTENED`,
-      proposal._id,
-      proposal.status,
-      proposal.txHash,
-      proposals,
-      context.id,
-    )
-    loadProposals()
-  }
+  const onProposalEventShowLog =
+    (event) =>
+    ({ proposal, proposals, context }) => {
+      console.log(
+        `PROPOSAL ${event} EVENT LISTENED`,
+        proposal._id,
+        proposal.status,
+        proposal.txHash,
+        proposals,
+        context.id
+      )
+      loadProposals()
+    }
 
   const onConfirmReloadBalance = async ({ proposal }) => {
-    console.log('Reload balance......');
+    console.log("Reload balance......")
     setUpdateDate(Date.now())
   }
 
@@ -150,17 +142,16 @@ function HumanProvider(props) {
 
   useEffect(() => {
     updateBalance()
-  },[updateDate])
+  }, [updateDate])
 
   useEffect(() => {
-    console.log("HUMAN LOADED USE EFFECT")
     events.on("humanStatus", onHumanStatus)
 
-    events.on("proposalProcessed", onProposalEventShowLog('proposalProcessed'))
-    events.on("proposalExecuted", onProposalEventShowLog('proposalExecuted'))
-    events.on("proposalExecuting", onProposalEventShowLog('proposalExecuting'))
-    events.on("proposalConfirmed", onProposalEventShowLog('proposalConfirmed'))
-    events.on("proposalReverted", onProposalEventShowLog('proposalReverted'))
+    events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
+    events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
+    events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
+    events.on("proposalConfirmed", onProposalEventShowLog("proposalConfirmed"))
+    events.on("proposalReverted", onProposalEventShowLog("proposalReverted"))
 
     events.on("proposalConfirmed", onConfirmReloadBalance)
 
@@ -178,9 +169,6 @@ function HumanProvider(props) {
     if (web3Provider && accessToken) {
       if (!connected) {
         setConnected(true)
-        // We connect to the HumanWalletSDK instance when we have the web3Provider and the accessToken
-        console.log("Connecting to HumanWalletSDK")
-
         humanSDK.connect({
           provider: web3Provider,
           accessToken,
@@ -194,7 +182,6 @@ function HumanProvider(props) {
       human,
       balances,
       proposals,
-      currentProposal,
       loadingProposals,
       processingProposal,
       requestProposal,
@@ -206,7 +193,6 @@ function HumanProvider(props) {
       human,
       balances,
       proposals,
-      currentProposal,
       loadingProposals,
       processingProposal,
       subgraphStatus,
