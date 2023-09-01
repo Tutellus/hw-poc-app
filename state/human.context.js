@@ -184,6 +184,7 @@ function HumanProvider(props) {
   const memoizedData = useMemo(
     () => ({
       human,
+      humanSDK,
       balances,
       proposals,
       loadingProposals,
@@ -195,6 +196,7 @@ function HumanProvider(props) {
       eventsProposals,
     }),
     [
+      humanSDK,
       human,
       balances,
       proposals,
