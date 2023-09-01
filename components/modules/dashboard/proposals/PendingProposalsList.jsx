@@ -3,13 +3,12 @@ import { Proposal } from "./Proposal"
 import styles from "./proposals.module.css"
 
 export const PendingProposalsList = () => {
-  const { proposals, processingProposal, confirmProposal } = useHuman()
-
+  const { processingProposal, confirmProposal, eventsProposals } = useHuman()
   return (
     <div className={styles.container}>
       <div className={styles.title}>Proposals pendientes</div>
-      {proposals?.length > 0 &&
-        proposals
+      {eventsProposals?.length > 0 &&
+        eventsProposals
           .filter(
             (proposal) =>
               proposal.status !== "CONFIRMED" && proposal.status !== "REVERTED"
@@ -23,7 +22,7 @@ export const PendingProposalsList = () => {
               />
             </div>
           ))}
-      {proposals.filter(
+      {eventsProposals.filter(
         (proposal) =>
           proposal.status !== "CONFIRMED" || proposal.status !== "REVERTED"
       ).length === 0 && (

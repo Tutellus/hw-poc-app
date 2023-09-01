@@ -22,7 +22,6 @@ export const Balance = ({ human, getTokensBalance }) => {
           (item) => item.token === CONTRACT.address
         ).bigNumber
         const innerBalance = ethers.utils.formatEther(value)
-        console.log("innerBalance", innerBalance)
         setBalance(innerBalance)
       }
     } catch (error) {

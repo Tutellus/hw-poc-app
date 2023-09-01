@@ -29,6 +29,10 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+function activateLogger() {
+  localStorage.setItem("debug", "hw:index,hw:monitor")
+}
+
 const events = humanSDK.events()
 
 function HumanProvider(props) {
@@ -36,19 +40,20 @@ function HumanProvider(props) {
   const { data: session } = useSession()
   const { accessToken, user } = session || {}
 
+  const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
-  const [currentProposal, setCurrentProposal] = useState([])
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
   const [subgraphStatus, setSubgraphStatus] = useState(null)
-  const [proposal, setProposal] = useState([])
+  const [balances, setBalances] = useState(null)
+  const [updateDate, setUpdateDate] = useState(Date.now())
+  const [eventsProposals, setEventsProposals] = useState([])
 
   const loadProposals = async () => {
     if (!humanSDK.isReady()) return
     setLoadingProposals(true)
     const response = await humanSDK.getProposals()
-    console.log("Proposals", response) // This response is OK when event is emitted
     setProposals(response)
     setLoadingProposals(false)
   }
@@ -103,118 +108,100 @@ function HumanProvider(props) {
     setSubgraphStatus(response)
   }
 
+  const onHumanStatus = (human) => {
+    if (humanSDK.isReady()) {
+      setHuman(human)
+      loadProposals()
+      getSubgraphStatus()
+      activateLogger()
+    }
+  }
+
+  const onProposalEventShowLog =
+    (event) =>
+    ({ proposal, proposals, context }) => {
+      console.log(
+        `PROPOSAL ${event} EVENT LISTENED`,
+        proposal._id,
+        proposal.status,
+        proposal.txHash,
+        proposals,
+        context.id
+      )
+      loadProposals()
+    }
+
+  const onConfirmReloadBalance = async ({ proposal }) => {
+    console.log("Reload balance......")
+    setUpdateDate(Date.now())
+  }
+
+  const updateBalance = async () => {
+    const balances = await getTokensBalance()
+    setBalances(balances)
+  }
+
   useEffect(() => {
-    console.log("HUMAN LOADED USE EFFECT")
-    events.on("humanStatus", async (human) => {
-      console.log(
-        "\n>>>>>>\n HUMAN STATUS:",
-        {
-          ADDRESS: human.address,
-          STATUS: human.status,
-          IS_READY: humanSDK.isReady(),
-        },
-        "\n",
-        "\n>>>>>>\n"
-      )
-      if (humanSDK.isReady()) {
-        console.log("\n>>>>>>\n HUMAN IS READY:", human, "\n>>>>>>\n")
-        setHuman(human)
-        loadProposals()
-        getSubgraphStatus()
-        console.log("HUMAN IS READY ------- GETTING SUBGRAPH STATUS", human)
-      }
-    })
+    updateBalance()
+  }, [updateDate])
 
-    events.on("proposalUpdate", onProposalUpdate)
-
-    events.on("proposalExecuted", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL EXECUTED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
+  useEffect(() => {
+    events.on("humanStatus", onHumanStatus)
+    events.on("statusUpdate", ({ proposals }) => {
+      const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
+      setEventsProposals(reversed)
     })
+    events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
+    events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
+    events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
+    events.on("proposalConfirmed", onProposalEventShowLog("proposalConfirmed"))
+    events.on("proposalReverted", onProposalEventShowLog("proposalReverted"))
 
-    events.on("proposalProcessed", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL PROCESSED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-    })
-
-    events.on("proposalConfirmed", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL CONFIRMED EVENT LISTENED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-      getTokensBalance()
-    })
-
-    events.on("proposalReverted", async ({ proposal }) => {
-      console.log(
-        "PROPOSAL REVERTED",
-        proposal.status,
-        proposal.txHash,
-        proposal
-      )
-      loadProposals()
-    })
+    events.on("proposalConfirmed", onConfirmReloadBalance)
 
     return () => {
       events.off("humanStatus")
-      events.off("proposalUpdate")
-      events.off("proposalExecuted")
       events.off("proposalProcessed")
+      events.off("proposalExecuted")
+      events.off("proposalExecuting")
       events.off("proposalConfirmed")
       events.off("proposalReverted")
     }
   }, [])
 
-  const onProposalUpdate = ({ proposal }) => {
-    console.log("proposalUpdate = PROPOSAL IS", proposal.status, proposal)
-    console.log("proposalUpdate = CURRENT PROPOSAL IS", currentProposal)
-    setCurrentProposal((oldValue) => [...oldValue, proposal])
-  }
-
   useEffect(() => {
     if (web3Provider && accessToken) {
-      // We connect to the HumanWalletSDK instance when we have the web3Provider and the accessToken
-      console.log("Connecting to HumanWalletSDK")
-
-      humanSDK.connect({
-        provider: web3Provider,
-        accessToken,
-      })
+      if (!connected) {
+        setConnected(true)
+        humanSDK.connect({
+          provider: web3Provider,
+          accessToken,
+        })
+      }
     }
-  }, [web3Provider, accessToken])
+  }, [web3Provider, accessToken, connected, setConnected])
 
   const memoizedData = useMemo(
     () => ({
       human,
+      balances,
       proposals,
-      currentProposal,
       loadingProposals,
       processingProposal,
       requestProposal,
       confirmProposal,
       getTokensBalance,
       subgraphStatus,
+      eventsProposals,
     }),
     [
       human,
+      balances,
       proposals,
-      currentProposal,
       loadingProposals,
       processingProposal,
       subgraphStatus,
+      eventsProposals,
     ]
   )
 
