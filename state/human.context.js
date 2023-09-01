@@ -48,6 +48,7 @@ function HumanProvider(props) {
   const [subgraphStatus, setSubgraphStatus] = useState(null)
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
+  const [eventsProposals, setEventsProposals] = useState([])
 
   const loadProposals = async () => {
     if (!humanSDK.isReady()) return
@@ -146,7 +147,10 @@ function HumanProvider(props) {
 
   useEffect(() => {
     events.on("humanStatus", onHumanStatus)
-
+    events.on("statusUpdate", ({ proposals }) => {
+      const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
+      setEventsProposals(reversed)
+    })
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
     events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
     events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
@@ -188,6 +192,7 @@ function HumanProvider(props) {
       confirmProposal,
       getTokensBalance,
       subgraphStatus,
+      eventsProposals,
     }),
     [
       human,
@@ -196,6 +201,7 @@ function HumanProvider(props) {
       loadingProposals,
       processingProposal,
       subgraphStatus,
+      eventsProposals,
     ]
   )
 
