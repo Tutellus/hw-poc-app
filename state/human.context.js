@@ -38,7 +38,7 @@ const events = humanSDK.events()
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
-  const { accessToken, user } = session || {}
+  const { accessToken } = session || {}
 
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
@@ -98,7 +98,7 @@ function HumanProvider(props) {
         type,
         ids,
       })),
-      address: human.address,
+      address: human?.address,
     })
     return balances
   }
