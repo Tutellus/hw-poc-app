@@ -126,7 +126,7 @@ export const Dashboard = () => {
           isDisabled={!canMint}
         />
         <TrxTypePanel
-          literal="Error transferring tokens with 2FA"
+          literal="Error transferring tokens 2FA"
           icon={<FailedIcon />}
           callback={() =>
             requestMint({
