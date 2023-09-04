@@ -6,13 +6,6 @@
   padding: 0 10em;
 }
 
-.logoContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
 .loginContainer {
   display: flex;
   flex-direction: column;
@@ -20,6 +13,16 @@
   justify-content: center;
   gap: 16px;
   width: 100%;
+}
+
+.balanceContainer {
+  border-radius: var(--size-s);
+  border: 1px solid var(--color-gray);
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto var(--size-3xl);
+  padding: var(--size-m);
+  max-width: 250px;
 }
 
 .title {
