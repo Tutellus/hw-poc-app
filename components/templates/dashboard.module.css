@@ -23,6 +23,7 @@
   margin: 0 auto var(--size-3xl);
   padding: var(--size-m);
   max-width: 250px;
+  gap: var(--size-l);
 }
 
 .title {
