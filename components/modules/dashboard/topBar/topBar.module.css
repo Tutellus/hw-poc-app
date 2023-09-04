@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  padding: var(--size-m);
+}
+
+.logo {
+  display: flex;
+  max-width: 200px;
+}
