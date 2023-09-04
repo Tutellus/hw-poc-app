@@ -1,4 +1,9 @@
+import { TopBar } from "../modules"
 import styles from "./layout.module.css"
+
 export const Layout = ({ children }) => (
-  <div className={styles.layoutContainer}>{children}</div>
+  <>
+    <TopBar />
+    <div className={styles.layoutContainer}>{children}</div>
+  </>
 )
