@@ -9,12 +9,8 @@ export const ProcessedProposal = ({ proposal }) => {
   return (
     <div className={styles.container} onClick={handleDetailPage}>
       <div className={styles.block}>
-        <div className={styles.keys}>
-          <div>Title</div>
-          <div>Description</div>
-        </div>
         <div className={styles.values}>
-          <div>{proposal?.title}</div>
+          <div className={styles.labelTitle}>{proposal?.title}</div>
           <div>{proposal?.description}</div>
         </div>
       </div>
