@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { truncateAddress } from "@/utils/address"
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { CopyIcon } from "@/components/icons"
+import { CopyIcon, SignOutIcon } from "@/components/icons"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
@@ -23,12 +23,14 @@ export const Account = ({ session, human, subgraphStatus }) => {
 
   return (
     <div className={styles.accountContainer}>
+      <div className={styles.subgraphStatus}>
+        <span className={styles.label}>Status</span>
+        <span className={statusClass}></span>
+      </div>
       <div
         className={cx(styles.account, {
           [styles.pulse]: isNotReady,
         })}
-        onMouseEnter={() => setExtendedAddress(true)}
-        onMouseLeave={() => setExtendedAddress(false)}
       >
         {address
           ? truncateAddress({
@@ -40,15 +42,8 @@ export const Account = ({ session, human, subgraphStatus }) => {
           <CopyIcon />
         </span>
       </div>
-      <span className={styles.accountLabel}>Ver en el explorador</span>
-      <div className={styles.subgraphStatus}>
-        <span>
-          Subgraph status: <span className={statusClass}>{status}</span>
-        </span>
-      </div>
       <div className={styles.userEmail}>
-        {user?.email || "No user"}
-        <Button onClick={() => signOut()}>Logout</Button>
+        <Button iconLeft={<SignOutIcon />} onClick={() => signOut()}></Button>
       </div>
     </div>
   )
