@@ -48,7 +48,12 @@
   width: 100%;
 }
 
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 768px) {
+  .dashboardContainer {
+    width: auto;
+    padding: 0;
+  }
+
   .modesContainer {
     display: block;
     flex-direction: column;
