@@ -151,6 +151,12 @@ function HumanProvider(props) {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
       setEventsProposals(reversed)
     })
+
+    events.on("proposalPending", async ({ proposal }) => {
+      humanSDK.confirmProposal({ proposalId: proposal._id, code: "123456" })
+      onProposalEventShowLog("proposalProcessed")
+    });
+
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
     events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
     events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
