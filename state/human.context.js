@@ -33,8 +33,6 @@ function activateLogger() {
   localStorage.setItem("debug", "hw:index,hw:monitor")
 }
 
-const events = humanSDK.events()
-
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
@@ -146,6 +144,8 @@ function HumanProvider(props) {
   }, [updateDate])
 
   useEffect(() => {
+    const events = humanSDK.events()
+
     events.on("humanStatus", onHumanStatus)
     events.on("statusUpdate", ({ proposals }) => {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
@@ -153,9 +153,8 @@ function HumanProvider(props) {
     })
 
     events.on("proposalPending", async ({ proposal }) => {
-      console.log(">>>> PROPOSAL PENDING ONLY ONE PLEASE!!!", proposal._id)
-      humanSDK.confirmProposal({ proposalId: proposal._id, code: "123456" })
-      onProposalEventShowLog("proposalPending")
+      await humanSDK.confirmProposal({ proposalId: proposal._id, code: "123456" })
+      onProposalEventShowLog("proposalProcessed")
     });
 
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
