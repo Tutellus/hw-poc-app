@@ -6,7 +6,7 @@ export const PendingProposalsList = () => {
   const { processingProposal, confirmProposal, eventsProposals } = useHuman()
   return (
     <div className={styles.container}>
-      <div className={styles.title}>Proposals pendientes</div>
+      <div className={styles.title}>Pending Proposals</div>
       {eventsProposals?.length > 0 &&
         eventsProposals
           .filter(
@@ -26,7 +26,7 @@ export const PendingProposalsList = () => {
         (proposal) =>
           proposal.status !== "CONFIRMED" || proposal.status !== "REVERTED"
       ).length === 0 && (
-        <p className={styles.text}>No hay transacciones en cola</p>
+        <p className={styles.text}>There are no pending proposals</p>
       )}
     </div>
   )

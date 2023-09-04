@@ -7,7 +7,7 @@ export const ProposalsList = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>Historial</div>
+      <div className={styles.title}>Proposals History</div>
       <div className={styles.list}>
         {proposals.length > 0 ? (
           proposals
@@ -22,7 +22,7 @@ export const ProposalsList = () => {
               </div>
             ))
         ) : (
-          <p className={styles.text}>No hay transacciones disponibles</p>
+          <p className={styles.text}>There are no proposals yet</p>
         )}
       </div>
     </div>

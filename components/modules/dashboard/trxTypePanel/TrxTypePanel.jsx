@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   buttonColors,
@@ -17,7 +16,7 @@ export const TrxTypePanel = ({ literal, icon, callback, isDisabled }) => (
       isDisabled={isDisabled}
       onClick={callback}
     >
-      PROBAR
+      TEST
     </Button>
   </div>
 )
