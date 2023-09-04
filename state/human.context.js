@@ -153,8 +153,9 @@ function HumanProvider(props) {
     })
 
     events.on("proposalPending", async ({ proposal }) => {
+      console.log(">>>> PROPOSAL PENDING ONLY ONE PLEASE!!!", proposal._id)
       humanSDK.confirmProposal({ proposalId: proposal._id, code: "123456" })
-      onProposalEventShowLog("proposalProcessed")
+      onProposalEventShowLog("proposalPending")
     });
 
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
@@ -166,12 +167,7 @@ function HumanProvider(props) {
     events.on("proposalConfirmed", onConfirmReloadBalance)
 
     return () => {
-      events.off("humanStatus")
-      events.off("proposalProcessed")
-      events.off("proposalExecuted")
-      events.off("proposalExecuting")
-      events.off("proposalConfirmed")
-      events.off("proposalReverted")
+      events.removeAllListeners()
     }
   }, [])
 
