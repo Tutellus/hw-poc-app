@@ -30,7 +30,7 @@
 @media screen and (max-width: 920px) {
   .container {
     display: flex;
-    padding: var(--size-l);
+    padding: 0 var(--size-m);
   }
 
   .logo {

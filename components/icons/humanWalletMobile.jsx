@@ -1,4 +1,4 @@
-export const HumanWalletLogoMobile = () => (
+export const HumanWalletMobile = () => (
   <svg
     width="48"
     height="60"

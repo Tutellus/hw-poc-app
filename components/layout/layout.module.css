@@ -13,7 +13,7 @@
 
 @media screen and (max-width: 920px) {
   .layoutContainer {
-    padding: 0 var(--size-m) var(--size-l);
+    padding: 0;
     width: 100%;
   }
 

@@ -7,7 +7,7 @@ import {
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { ProposalDetail } from "@/components/modules"
 import { useHuman } from "@/state/human.context"
-import { HumanWalletLogo } from "@/components/icons"
+import { HumanWalletDesktop } from "@/components/icons"
 import styles from "./proposalDetailPage.module.css"
 
 const Page = ({ id }) => {
@@ -33,7 +33,7 @@ const Page = ({ id }) => {
       </Head>
       <div className={styles.container}>
         <div className={styles.logo}>
-          <HumanWalletLogo />
+          <HumanWalletDesktop />
         </div>
         <Button
           iconLeft={<ArrowLeftIcon />}

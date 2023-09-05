@@ -1,6 +1,6 @@
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { DiscordIcon } from "@tutellus/tutellus-components/lib/components/icons/brands/DiscordIcon"
-import { HumanWalletLogo } from "../icons"
+import { HumanWalletDesktop } from "../icons"
 import { useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
@@ -23,7 +23,7 @@ export const Login = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.logoContainer}>
-        <HumanWalletLogo />
+        <HumanWalletDesktop />
       </div>
       <Button
         iconLeft={<DiscordIcon />}
