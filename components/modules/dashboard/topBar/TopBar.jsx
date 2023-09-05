@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useRouter } from "next/router"
-import { HumanWalletLogo } from "@/components/icons"
+import { HumanWalletLogo, HumanWalletLogoMobile } from "@/components/icons"
 import { Account } from "@/components/modules/dashboard"
 import { useSession } from "next-auth/react"
 import { useHuman } from "@/state/human.context"
@@ -21,8 +21,11 @@ export const TopBar = () => {
 
   return (
     <div className={styles.container}>
-      <span className={styles.logo}>
+      <span className={styles.logoDesktop}>
         <HumanWalletLogo />
+      </span>
+      <span className={styles.logoMobile}>
+        <HumanWalletLogoMobile />
       </span>
       <Account
         session={session}

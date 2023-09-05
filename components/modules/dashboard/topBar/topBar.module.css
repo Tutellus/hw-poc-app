@@ -5,7 +5,22 @@
   padding: var(--size-m);
 }
 
-.logo {
+.logoDesktop {
   display: flex;
   max-width: 200px;
+}
+
+.logoMobile {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .logoDesktop {
+    display: none;
+  }
+
+  .logoMobile {
+    display: flex;
+    max-width: var(--size-xl);
+  }
 }
