@@ -40,7 +40,7 @@ const Page = ({ id }) => {
           onClick={() => window.history.back()}
           type={buttonTypes.OUTLINE}
         >
-          Volver
+          Back
         </Button>
         <h2 className={styles.title}>{title}</h2>
         <h3 className={styles.description}>{description}</h3>

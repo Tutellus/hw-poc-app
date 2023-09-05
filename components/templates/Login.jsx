@@ -30,7 +30,7 @@ export const Login = () => {
         onClick={() => signIn("discord")}
         disabled={isLoading}
       >
-        {isLoading ? "Logging in..." : "CONECTAR"}
+        {isLoading ? "Logging in..." : "CONNECT WITH DISCORD"}
       </Button>
     </div>
   )
