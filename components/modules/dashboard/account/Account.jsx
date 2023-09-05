@@ -1,5 +1,8 @@
 import { truncateAddress } from "@/utils/address"
-import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import {
+  Button,
+  buttonTypes,
+} from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { LinkIcon, SignOutIcon } from "@/components/icons"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
@@ -42,7 +45,11 @@ export const Account = ({ session, human, subgraphStatus }) => {
         </span>
       </div>
       <div className={styles.userEmail}>
-        <Button iconLeft={<SignOutIcon />} onClick={() => signOut()}></Button>
+        <Button
+          type={buttonTypes.OUTLINE}
+          iconLeft={<SignOutIcon />}
+          onClick={() => signOut()}
+        ></Button>
       </div>
     </div>
   )
