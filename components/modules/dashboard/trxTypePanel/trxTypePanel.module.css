@@ -54,7 +54,7 @@
   width: 80%;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   .panelContainer {
     margin-bottom: var(--size-m);
     justify-content: space-between;
@@ -68,7 +68,8 @@
   }
 
   .titleContainer {
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: var(--size-m);
     margin: 0 var(--size-m) 0 0;
   }
 }

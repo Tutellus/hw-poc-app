@@ -28,6 +28,7 @@
 
 .title {
   font-size: 2rem;
+  line-height: 1.5;
   font-weight: 700;
   margin-bottom: var(--size-2xl);
 }
@@ -48,7 +49,7 @@
   width: 100%;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   .dashboardContainer {
     width: auto;
     padding: 0;
@@ -62,6 +63,21 @@
   .proposalsContainer {
     display: block;
     flex-direction: column;
+  }
+
+  .balanceContainer {
+    border-radius: var(--size-s);
+    border: 1px solid var(--color-gray);
+    display: flex;
+    justify-content: space-between;
+    margin: var(--size-m) auto var(--size-xl);
+    padding: var(--size-m);
+    max-width: 250px;
+    gap: var(--size-l);
+  }
+
+  .title {
+    text-align: center;
   }
 }
 

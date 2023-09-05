@@ -49,6 +49,31 @@
   animation: pulse 2s infinite;
 }
 
+.link {
+  height: var(--size-s);
+  width: var(--size-s);
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 920px) {
+  .accountContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sgHealthy {
+    width: var(--size-s);
+    height: var(--size-s);
+  }
+
+  .sgUnhealthy {
+    width: var(--size-s);
+    height: var(--size-s);
+  }
+}
+
 @keyframes pulse {
   0% {
     opacity: 1;

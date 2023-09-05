@@ -3,6 +3,7 @@
 
 body {
   display: flex;
+  justify-content: center;
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
@@ -23,64 +24,4 @@ h2 {
   font-weight: 500;
   margin: 0;
   padding: 0;
-}
-
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  justify-items: center;
-  margin: 2rem;
-  width: 100%;
-  max-width: 1600px;
-  gap: 16px;
-}
-
-.proposals {
-  display: flex;
-  gap: 16px;
-  width: 100%;
-}
-
-.proposal {
-  justify-content: start;
-  background-color: var(--color-background-mid-light);
-  border: 2px solid var(--color-border);
-  padding: 10px;
-  border-radius: 6px;
-  gap: 5px;
-  margin: 10px;
-  width: 100%;
-}
-
-.proposal .block {
-  display: flex;
-  padding: 10px;
-  border-radius: 6px;
-  gap: 5px;
-  margin: 10px;
-  width: 100%;
-}
-
-.proposal .keys {
-  display: flex;
-  flex-direction: column;
-  color: var(--color-primary-light);
-  padding: 10px;
-  gap: 10px;
-}
-
-.proposal .values {
-  display: flex;
-  flex-direction: column;
-  color: white;
-  padding: 10px;
-  gap: 10px;
-}
-
-.userOp {
-  border: 2px solid var(--color-border);
-  padding: 10px;
-  border-radius: 6px;
-  gap: 5px;
-  margin: 10px;
 }

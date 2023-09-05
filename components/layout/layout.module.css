@@ -11,9 +11,9 @@
   padding-top: 8em;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   .layoutContainer {
-    padding: 0 2em;
+    padding: 0 var(--size-m) var(--size-l);
     width: 100%;
   }
 

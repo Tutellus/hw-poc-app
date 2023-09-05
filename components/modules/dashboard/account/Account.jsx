@@ -1,6 +1,6 @@
 import { truncateAddress } from "@/utils/address"
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { CopyIcon, SignOutIcon } from "@/components/icons"
+import { LinkIcon, SignOutIcon } from "@/components/icons"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
@@ -37,8 +37,8 @@ export const Account = ({ session, human, subgraphStatus }) => {
               address,
             })
           : "No human connected"}
-        <span>
-          <CopyIcon />
+        <span className={styles.link}>
+          <LinkIcon />
         </span>
       </div>
       <div className={styles.userEmail}>

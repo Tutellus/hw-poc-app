@@ -42,3 +42,9 @@
 .reverted {
   color: var(--color-error);
 }
+
+@media screen and (max-width: 920px) {
+  .container {
+    padding: var(--size-m);
+  }
+}
