@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { truncateAddress } from "@/utils/address"
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { CopyIcon, SignOutIcon } from "@/components/icons"
@@ -7,9 +6,8 @@ import cx from "classnames"
 import styles from "./account.module.css"
 
 export const Account = ({ session, human, subgraphStatus }) => {
-  const [extendedAddress, setExtendedAddress] = useState(false)
   const user = session?.user
-  const { status, delay } = subgraphStatus || {}
+  const { status } = subgraphStatus || {}
   const { address } = human || {}
 
   const isDeploying = human?.status === "PENDING"
@@ -21,21 +19,22 @@ export const Account = ({ session, human, subgraphStatus }) => {
     [styles.sgUnhealthy]: status === "UNHEALTHY",
   })
 
+  const addressClass = cx(styles.account, {
+    [styles.pulse]: isNotReady,
+  })
+
   return (
     <div className={styles.accountContainer}>
-      <div className={styles.subgraphStatus}>
-        <span className={styles.label}>Status</span>
-        <span className={statusClass}></span>
-      </div>
-      <div
-        className={cx(styles.account, {
-          [styles.pulse]: isNotReady,
-        })}
-      >
+      {subgraphStatus && (
+        <div className={styles.subgraphStatus}>
+          <span className={styles.label}>Status</span>
+          <span className={statusClass}></span>
+        </div>
+      )}
+      <div className={addressClass}>
         {address
           ? truncateAddress({
               address,
-              extend: extendedAddress,
             })
           : "No human connected"}
         <span>

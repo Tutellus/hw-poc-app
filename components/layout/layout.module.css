@@ -7,9 +7,17 @@
   padding: 0 10em;
 }
 
+.withoutTopBar {
+  padding-top: 8em;
+}
+
 @media screen and (max-width: 768px) {
   .layoutContainer {
     padding: 0 2em;
     width: 100%;
+  }
+
+  .withoutTopBar {
+    padding-top: 8em;
   }
 }
