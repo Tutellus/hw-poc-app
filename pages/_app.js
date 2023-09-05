@@ -6,9 +6,10 @@ import { SessionProvider, useSession, signIn } from "next-auth/react"
 import "@/styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
+  const router = useRouter()
   return (
     <Providers>
-      <Layout>
+      <Layout router={router}>
         {Component.requireAuth ? (
           <Auth>
             <Component {...pageProps} />

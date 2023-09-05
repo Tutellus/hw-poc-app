@@ -1,37 +1,57 @@
 import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
-import { useSession } from "next-auth/react"
 import { ethers } from "ethers"
-import { CONTRACT } from "@/config"
+import { CONTRACT, tokens } from "@/config"
 import cx from "classnames"
 
 import {
-  Account,
   TrxTypePanel,
   ProposalsList,
   PendingProposalsList,
   Balance,
 } from "../modules/dashboard"
-import { HumanWalletLogo, ThumbIcon, MailIcon, FailedIcon } from "../icons"
+import { ThumbIcon, MailIcon, FailedIcon } from "../icons"
 import { useHuman } from "@/state/human.context"
 import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
-  const { data: session } = useSession()
-  const {
-    human,
-    processingProposal,
-    requestProposal,
-    subgraphStatus,
-    getTokensBalance,
-  } = useHuman()
-
-  const router = useRouter()
+  const { human, processingProposal, requestProposal, getTokensBalance } =
+    useHuman()
 
   const [minting, setMinting] = useState(false)
+  const [balance, setBalance] = useState("0")
+  const isDeploying = human?.status === "PENDING"
+  const isReady = human?.status === "CONFIRMED"
+  const isNotReady = !isDeploying && !isReady
 
   const canMint =
     human?.status === "CONFIRMED" && !minting && !processingProposal
+
+  const updateTokenBalance = async () => {
+    try {
+      const response = await getTokensBalance({
+        tokens,
+      })
+
+      if (response) {
+        const value = response.items.find(
+          (item) => item.token === CONTRACT.address
+        ).bigNumber
+        const innerBalance = ethers.utils.formatEther(value)
+        setBalance(innerBalance)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const balanceClass = cx(styles.balanceContainer, {
+    [styles.pulse]: isNotReady,
+  })
+
+  useEffect(() => {
+    updateTokenBalance()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [human?.status])
 
   const requestMint = async ({
     title = "Mint",
@@ -67,12 +87,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     document.body.classList.add("dark")
-
-    if (!session) {
-      router.push("/login")
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  }, [])
 
   const proposalsContainerClass = cx(styles.proposalsContainer, {
     [styles.pulse]: !canMint,
@@ -80,23 +95,14 @@ export const Dashboard = () => {
 
   return (
     <div className={styles.dashboardContainer}>
-      <div className={styles.loginContainer}>
-        <HumanWalletLogo />
-      </div>
-      <div>
-        <Account
-          session={session}
-          human={human}
-          subgraphStatus={subgraphStatus}
-        />
-        <Balance getTokensBalance={getTokensBalance} human={human} />
-      </div>
+      <Balance balanceClass={balanceClass} balance={balance} />
+
       <div className={styles.title}>
-        <h2>Prueba distintas operaciones en nuestro Human Wallet</h2>
+        <h2>Try different operations in our Human Wallet</h2>
       </div>
       <div className={styles.modesContainer}>
         <TrxTypePanel
-          literal="Minteo de 10 tokens sin 2FA"
+          literal="Mint 10 tokens without 2FA"
           icon={<ThumbIcon />}
           callback={() =>
             requestMint({
@@ -108,7 +114,7 @@ export const Dashboard = () => {
           isDisabled={!canMint}
         />
         <TrxTypePanel
-          literal="Minteo de 20 tokens con 2FA"
+          literal="Mint 20 tokens with 2FA"
           icon={<MailIcon />}
           callback={() =>
             requestMint({
@@ -120,7 +126,7 @@ export const Dashboard = () => {
           isDisabled={!canMint}
         />
         <TrxTypePanel
-          literal="Transfer tokens 2FA que da error"
+          literal="Error transferring tokens 2FA"
           icon={<FailedIcon />}
           callback={() =>
             requestMint({

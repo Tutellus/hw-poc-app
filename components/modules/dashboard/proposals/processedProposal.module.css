@@ -28,6 +28,11 @@
   gap: var(--size-xs);
 }
 
+.labelTitle {
+  font-size: var(--size-m);
+  font-weight: bold;
+}
+
 .values {
   display: flex;
   flex-direction: column;
@@ -36,4 +41,10 @@
 
 .reverted {
   color: var(--color-error);
+}
+
+@media screen and (max-width: 920px) {
+  .container {
+    padding: var(--size-m);
+  }
 }

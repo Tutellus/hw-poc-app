@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--size-m);
+}
+
+.logoDesktop {
+  display: flex;
+  max-width: 200px;
+}
+
+.logoMobile {
+  display: none;
+}
+
+@media screen and (max-width: 920px) {
+  .container {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .logoDesktop {
+    display: none;
+  }
+
+  .logoMobile {
+    display: flex;
+    max-width: var(--size-xl);
+  }
+}

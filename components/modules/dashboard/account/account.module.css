@@ -1,50 +1,77 @@
 .accountContainer {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   width: 100%;
-  margin-top: 2rem;
 }
 
 .account {
   align-items: center;
   border: 1px solid var(--color-gray);
   border-radius: var(--size-s);
+  background-color: var(--color-surface);
   display: flex;
   gap: var(--size-s);
   padding: var(--size-m);
+  margin-right: var(--size-m);
 }
 
-.accountLabel {
-  color: var(--color-gray-soft);
+.subgraphStatus {
+  align-items: center;
+  display: flex;
   margin: var(--size-m);
 }
 
-.userEmail {
+.label {
   align-items: center;
   display: flex;
-  gap: var(--size-s);
-  margin: var(--size-l);
+  gap: var(--size-2xs);
+  margin-right: var(--size-xs);
 }
 
 .sgHealthy {
-  color: black;
   background-color: greenyellow;
-  font-size: var(--font-size-s);
-  border-radius: var(--size-xs);
-  padding: var(--size-2xs);
+  width: var(--size-m);
+  border-radius: 50%;
+  height: var(--size-m);
+  display: flex;
 }
 
 .sgUnhealthy {
   background-color: red;
-  font-size: var(--font-size-s);
-  border-radius: var(--size-xs);
-  padding: var(--size-2xs);
+  width: var(--size-m);
+  border-radius: 50%;
+  height: var(--size-m);
+  display: flex;
 }
 
 .pulse {
   animation: pulse 2s infinite;
+}
+
+.link {
+  height: var(--size-s);
+  width: var(--size-s);
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 920px) {
+  .accountContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sgHealthy {
+    width: var(--size-s);
+    height: var(--size-s);
+  }
+
+  .sgUnhealthy {
+    width: var(--size-s);
+    height: var(--size-s);
+  }
 }
 
 @keyframes pulse {

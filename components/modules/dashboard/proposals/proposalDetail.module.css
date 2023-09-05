@@ -142,5 +142,21 @@
   max-width: 130px;
 }
 
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 920px) {
+  .block {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--size-m);
+    width: 100%;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .contentLabel {
+    text-overflow: ellipsis;
+    padding-right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }

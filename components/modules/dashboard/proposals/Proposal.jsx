@@ -28,11 +28,16 @@ export const Proposal = ({
         <div className={styles.values}>
           {proposal?.status !== "PENDING" && (
             <div className={styles.isPendingTrx}>
-              <div className={styles.nonceContainer}>
-                <span>{proposal?.nonce} -</span>
-                <span>{proposal?.title}</span>
-              </div>
               <div className={styles.statusContainer}>
+                <div className={styles.nonceContainer}>
+                  <span className={styles.labelTitle}>{proposal?.title}</span>
+                  <span className={styles.labelDescription}>
+                    {proposal?.description}
+                  </span>
+                </div>
+                <span className={styles.nonce}>{proposal?.nonce}</span>
+              </div>
+              <div className={styles.spinnerContainer}>
                 <span className={styles.label}>{proposal?.status}</span>
                 <div className={styles.pending}>
                   <Spinner />
@@ -46,8 +51,13 @@ export const Proposal = ({
       {requiresConfirmation && (
         <>
           <div className={styles.nonceContainer}>
-            <span>{proposal?.nonce} -</span>
-            <span>{proposal?.title}</span>
+            <div className={styles.statusContainer}>
+              <span className={styles.labelTitle}>{proposal?.title}</span>
+              <span className={styles.labelDescription}>
+                {proposal?.description}
+              </span>
+            </div>
+            <span className={styles?.nonce}>{proposal?.nonce}</span>
           </div>
           <div className={styles.blockInput}>
             <Input

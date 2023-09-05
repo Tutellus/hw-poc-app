@@ -7,7 +7,7 @@ import {
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { ProposalDetail } from "@/components/modules"
 import { useHuman } from "@/state/human.context"
-import { HumanWalletLogo } from "@/components/icons"
+import { HumanWalletDesktop } from "@/components/icons"
 import styles from "./proposalDetailPage.module.css"
 
 const Page = ({ id }) => {
@@ -16,7 +16,6 @@ const Page = ({ id }) => {
 
   useEffect(() => {
     document.body.classList.add("dark")
-    console.log("id", id)
     if (!humanSDK) return
     humanSDK.getProposal({ proposalId: id }).then((proposal) => {
       console.log("proposal", proposal)
@@ -34,14 +33,14 @@ const Page = ({ id }) => {
       </Head>
       <div className={styles.container}>
         <div className={styles.logo}>
-          <HumanWalletLogo />
+          <HumanWalletDesktop />
         </div>
         <Button
           iconLeft={<ArrowLeftIcon />}
           onClick={() => window.history.back()}
           type={buttonTypes.OUTLINE}
         >
-          Volver
+          Back
         </Button>
         <h2 className={styles.title}>{title}</h2>
         <h3 className={styles.description}>{description}</h3>

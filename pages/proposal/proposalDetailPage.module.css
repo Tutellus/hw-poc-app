@@ -26,3 +26,20 @@
   margin-bottom: 3em;
   width: 100%;
 }
+
+@media screen and (max-width: 920px) {
+  .container {
+    display: flex;
+    padding: 0 var(--size-m);
+  }
+
+  .logo {
+    display: none;
+  }
+
+  .description {
+    font-size: 1.2em;
+    margin: 0 0 var(--size-l);
+    color: var(--color-gray-strong);
+  }
+}

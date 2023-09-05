@@ -7,6 +7,8 @@
   flex-direction: column;
   justify-content: flex-start;
   margin: var(--size-m) 0 0;
+  max-height: 620px;
+  overflow-y: auto;
   padding: var(--size-l);
   width: 100%;
 }
@@ -54,13 +56,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-xs);
+  position: relative;
   width: 100%;
 }
 
 .statusContainer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--size-s);
+  flex-direction: column;
+}
+
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+  margin-top: var(--size-xl);
 }
 
 .text {
@@ -72,7 +83,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-xs);
-  padding: var(--size-l);
+  padding: var(--size-s) var(--size-l) var(--size-l);
   width: 100%;
   background-color: var(--color-background);
   border-radius: var(--size-s);
@@ -93,9 +104,36 @@
 
 .label {
   display: flex;
+  color: var(--color-text-highlighted);
+  background-color: var(--color-gray);
+  padding: var(--size-xs);
+  border-radius: var(--size-s);
+  font-size: var(--size-s);
+}
+
+.labelTitle {
+  font-size: var(--size-m);
+  font-weight: bold;
+}
+
+.labelDescription {
+  color: var(--color-gray-soft);
 }
 
 .nonceContainer {
   display: flex;
-  gap: var(--size-xs);
+  gap: var(--size-s);
+  position: relative;
+  flex-direction: column;
+}
+
+.nonce {
+  position: absolute;
+  right: 0;
+}
+
+@media screen and (max-width: 920px) {
+  .container {
+    max-height: 520px;
+  }
 }

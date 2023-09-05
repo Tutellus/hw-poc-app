@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   buttonColors,
@@ -10,14 +9,16 @@ export const TrxTypePanel = ({ literal, icon, callback, isDisabled }) => (
   <div
     className={cx(styles.panelContainer, { [styles.isDisabled]: isDisabled })}
   >
-    <div className={styles.title}>{literal}</div>
-    <div className={styles.description}>{icon}</div>
+    <div className={styles.titleContainer}>
+      <div className={styles.title}>{literal}</div>
+      <div className={styles.icon}>{icon}</div>
+    </div>
     <Button
       color={buttonColors.ACCENT}
       isDisabled={isDisabled}
       onClick={callback}
     >
-      PROBAR
+      TEST
     </Button>
   </div>
 )
