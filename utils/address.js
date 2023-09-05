@@ -7,7 +7,7 @@ const explorerLink = ({ value, type = "address" }) => {
 }
 
 const truncateAddress = (
-  { address = "", chars = 6, stringify = false, extend = false },
+  { address = "", chars = 4, stringify = false, extend = false },
   noLink
 ) => {
   const valueStart = address.slice(0, chars)
