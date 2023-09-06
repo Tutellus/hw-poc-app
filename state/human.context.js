@@ -152,11 +152,7 @@ function HumanProvider(props) {
       setEventsProposals(reversed)
     })
 
-    events.on("proposalPending", async ({ proposal }) => {
-      await humanSDK.confirmProposal({ proposalId: proposal._id, code: "123456" })
-      onProposalEventShowLog("proposalProcessed")
-    });
-
+    events.on("proposalPending", onProposalEventShowLog("proposalPending"))
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
     events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
     events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
