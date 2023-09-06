@@ -78,12 +78,12 @@ function Web3AuthProvider(props) {
   const accessToken = data?.accessToken
 
   const login = async () => {
-    if (web3auth.status !== 'ready') {
+    if (web3auth.status !== "ready") {
       web3auth.configureAdapter(openloginAdapter)
       await web3auth.init()
     }
 
-    let provider;
+    let provider
     if (web3auth.connected) {
       provider = new ethers.providers.Web3Provider(web3auth.provider)
     } else {
@@ -106,7 +106,6 @@ function Web3AuthProvider(props) {
 
   const logout = async () => {
     if (!web3auth.connected) {
-      console.log("web3auth not initialized yet")
       return
     }
     await web3auth.logout()
@@ -115,7 +114,6 @@ function Web3AuthProvider(props) {
 
   const getUser = async () => {
     if (!web3auth.connected) {
-      console.log("web3auth not initialized yet")
       return
     }
     const user = data.user

@@ -3,7 +3,6 @@ import styles from "./layout.module.css"
 import cx from "classnames"
 
 export const Layout = ({ children, router }) => {
-  console.log({ router })
   const showTopBar = router.pathname !== "/login"
 
   const layoutClass = cx({
