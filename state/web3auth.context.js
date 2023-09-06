@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useContext, useState, useMemo, useEffect, useRef } from "react"
+import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { Web3AuthNoModal } from "@web3auth/no-modal"
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter"
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base"
