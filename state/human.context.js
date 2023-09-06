@@ -33,12 +33,10 @@ function activateLogger() {
   localStorage.setItem("debug", "hw:index,hw:monitor")
 }
 
-const events = humanSDK.events()
-
 function HumanProvider(props) {
   const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
-  const { accessToken, user } = session || {}
+  const { accessToken } = session || {}
 
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
@@ -98,7 +96,7 @@ function HumanProvider(props) {
         type,
         ids,
       })),
-      address: human.address,
+      address: human?.address,
     })
     return balances
   }
@@ -146,11 +144,15 @@ function HumanProvider(props) {
   }, [updateDate])
 
   useEffect(() => {
+    const events = humanSDK.events()
+
     events.on("humanStatus", onHumanStatus)
     events.on("statusUpdate", ({ proposals }) => {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
       setEventsProposals(reversed)
     })
+
+    events.on("proposalPending", onProposalEventShowLog("proposalPending"))
     events.on("proposalProcessed", onProposalEventShowLog("proposalProcessed"))
     events.on("proposalExecuted", onProposalEventShowLog("proposalExecuted"))
     events.on("proposalExecuting", onProposalEventShowLog("proposalExecuting"))
@@ -160,12 +162,7 @@ function HumanProvider(props) {
     events.on("proposalConfirmed", onConfirmReloadBalance)
 
     return () => {
-      events.off("humanStatus")
-      events.off("proposalProcessed")
-      events.off("proposalExecuted")
-      events.off("proposalExecuting")
-      events.off("proposalConfirmed")
-      events.off("proposalReverted")
+      events.removeAllListeners()
     }
   }, [])
 
