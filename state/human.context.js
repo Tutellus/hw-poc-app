@@ -118,19 +118,10 @@ function HumanProvider(props) {
   const onProposalEventShowLog =
     (event) =>
     ({ proposal, proposals, context }) => {
-      console.log(
-        `PROPOSAL ${event} EVENT LISTENED`,
-        proposal._id,
-        proposal.status,
-        proposal.txHash,
-        proposals,
-        context.id
-      )
       loadProposals()
     }
 
   const onConfirmReloadBalance = async ({ proposal }) => {
-    console.log("Reload balance......")
     setUpdateDate(Date.now())
   }
 

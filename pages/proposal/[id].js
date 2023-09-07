@@ -18,7 +18,6 @@ const Page = ({ id }) => {
     document.body.classList.add("dark")
     if (!humanSDK) return
     humanSDK.getProposal({ proposalId: id }).then((proposal) => {
-      console.log("proposal", proposal)
       setProposal(proposal)
     })
   }, [humanSDK, id])
