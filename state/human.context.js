@@ -52,10 +52,10 @@ const openloginAdapter = new OpenloginAdapter({
         "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
       logoDark:
         "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
-      defaultLanguage: "es", // en, de, ja, ko, zh, es, fr, pt, nl
-      dark: false, // whether to enable dark mode. defaultValue: false
+      defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
+      dark: true, // whether to enable dark mode. defaultValue: false
       theme: {
-        primary: "#2020df",
+        primary: "#01011c",
       },
     },
   },
