@@ -14,7 +14,7 @@ import { useHuman } from "@/state/human.context"
 import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
-  const { human, processingProposal, requestProposal, getTokensBalance } =
+  const { human, processingProposal, requestProposal, balances } =
     useHuman()
 
   const [minting, setMinting] = useState(false)
@@ -28,17 +28,13 @@ export const Dashboard = () => {
 
   const updateTokenBalance = async () => {
     try {
-      const response = await getTokensBalance({
-        tokens,
-      })
+      if (!balances) return
 
-      if (response) {
-        const value = response.items.find(
-          (item) => item.token === CONTRACT.address
-        ).bigNumber
-        const innerBalance = ethers.utils.formatEther(value)
-        setBalance(innerBalance)
-      }
+      const value = balances.items.find(
+        (item) => item.token === CONTRACT.address
+      ).bigNumber
+      const innerBalance = ethers.utils.formatEther(value)
+      setBalance(innerBalance)
     } catch (error) {
       console.error(error)
     }
@@ -51,7 +47,7 @@ export const Dashboard = () => {
   useEffect(() => {
     updateTokenBalance()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [human?.status])
+  }, [balances])
 
   const requestMint = async ({
     title = "Mint",

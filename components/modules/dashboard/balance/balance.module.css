@@ -2,6 +2,14 @@
   animation: pulse 2s infinite;
 }
 
+.balance {
+}
+
+.balanceHighlight {
+  animation: pulse 1s infinite;
+  color: var(--color-accent);
+}
+
 @keyframes pulse {
   0% {
     opacity: 1;
