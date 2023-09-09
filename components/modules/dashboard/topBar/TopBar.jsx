@@ -9,7 +9,7 @@ import styles from "./topBar.module.css"
 
 export const TopBar = () => {
   const { data: session } = useSession()
-  const { human, subgraphStatus } = useHuman()
+  const { human } = useHuman()
   const router = useRouter()
 
   useEffect(() => {
@@ -30,7 +30,6 @@ export const TopBar = () => {
       <Account
         session={session}
         human={human}
-        subgraphStatus={subgraphStatus}
       />
     </div>
   )

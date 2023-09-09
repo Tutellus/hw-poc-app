@@ -16,33 +16,11 @@
   margin-right: var(--size-m);
 }
 
-.subgraphStatus {
-  align-items: center;
-  display: flex;
-  margin: var(--size-m);
-}
-
 .label {
   align-items: center;
   display: flex;
   gap: var(--size-2xs);
   margin-right: var(--size-xs);
-}
-
-.sgHealthy {
-  background-color: greenyellow;
-  width: var(--size-m);
-  border-radius: 50%;
-  height: var(--size-m);
-  display: flex;
-}
-
-.sgUnhealthy {
-  background-color: red;
-  width: var(--size-m);
-  border-radius: 50%;
-  height: var(--size-m);
-  display: flex;
 }
 
 .pulse {
@@ -60,17 +38,7 @@
   .accountContainer {
     display: flex;
     align-items: center;
-    justify-content: center;
-  }
-
-  .sgHealthy {
-    width: var(--size-s);
-    height: var(--size-s);
-  }
-
-  .sgUnhealthy {
-    width: var(--size-s);
-    height: var(--size-s);
+    justify-content: flex-end;
   }
 }
 
