@@ -5,7 +5,7 @@ import { useHighlightOnChange } from "./useHighlightOnChange"
 
 export const Balance = ({ balance, balanceClass }) => {
 
-  const isHighligth = useHighlightOnChange({ value: balance })
+  const isHighligth = useHighlightOnChange({ value: balance, timeout: 2000 })
 
   const addressClass = cx(styles.balance, {
     [styles.balanceHighlight]: isHighligth,
