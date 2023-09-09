@@ -10,8 +10,8 @@ export const ProcessedProposal = ({ proposal }) => {
     <div className={styles.container} onClick={handleDetailPage}>
       <div className={styles.block}>
         <div className={styles.values}>
-          <div className={styles.labelTitle}>{proposal?.title}</div>
-          <div>{proposal?.description}</div>
+          <div className={styles.labelTitle}>{proposal?.nonce}. {proposal?.title}</div>
+          <div className={styles.description}>{proposal?.description}</div>
         </div>
       </div>
       <div>
