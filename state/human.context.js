@@ -55,7 +55,7 @@ const openloginAdapter = new OpenloginAdapter({
       defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
       dark: true, // whether to enable dark mode. defaultValue: false
       theme: {
-        primary: "#ffffff",
+        primary: "#DDDDDD",
       },
     },
   },
