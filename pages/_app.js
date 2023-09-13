@@ -33,8 +33,11 @@ function Auth({ children }) {
     // Do nothing while loading
     if (status === "loading") return
     // If not authenticated, force log in
-    if (!isUser) return signIn()
-  }, [isUser, status, router.route])
+    if (!isUser) {
+      return
+    }
+    signIn({ email: user?.email })
+  }, [isUser, status, router.route, user?.email])
 
   if (isUser) {
     return children
