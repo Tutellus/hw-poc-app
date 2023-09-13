@@ -194,7 +194,9 @@ function HumanProvider(props) {
   }
 
   const getTokensBalance = async () => {
-    if (!humanSDK.isReady()) return
+    if (!humanSDK.isReady()) {
+      return
+    }
     const balances = await humanSDK.getTokensBalance({
       tokens: tokens?.map(({ token, type, ids }) => ({
         token,
@@ -232,12 +234,14 @@ function HumanProvider(props) {
 
   const updateBalance = async () => {
     const balances = await getTokensBalance()
+    if (!balances) return
     setBalances(balances)
   }
 
   useEffect(() => {
+    if (!humanSDK.isReady()) return
     updateBalance()
-  }, [updateDate])
+  }, [updateDate, humanSDK.isReady()])
 
   useEffect(() => {
     events.on("humanStatus", onHumanStatus)

@@ -23,6 +23,7 @@ export const Account = ({ status, address }) => {
         {address
           ? truncateAddress({
               address,
+              chars: 6,
             })
           : "No human connected"}
         <span className={styles.link}>

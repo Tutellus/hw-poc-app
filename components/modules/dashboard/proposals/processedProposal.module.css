@@ -2,6 +2,7 @@
   align-items: center;
   background-color: var(--color-background-light);
   border-radius: var(--size-s);
+  border: 2px solid var(--color-gray);
   cursor: pointer;
   display: flex;
   margin-bottom: var(--size-s);
@@ -31,6 +32,10 @@
 .labelTitle {
   font-size: var(--size-m);
   font-weight: bold;
+}
+
+.description {
+  color: var(--color-gray);
 }
 
 .values {

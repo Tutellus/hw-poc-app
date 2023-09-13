@@ -73,13 +73,14 @@ export const ProposalDetail = ({ proposal }) => {
             type={buttonTypes.OUTLINE}
             onClick={() =>
               window.open(
-                `https://mumbai.polygonscan.com/address/${proposal?.sender}#tokentxns`
+                `https://mumbai.polygonscan.com/address/${proposal.txHash}#tokentxns`
               )
             }
           >
             {truncateAddress(
               {
-                address: proposal?.sender,
+                address: proposal.txHash,
+                chars: 8,
               },
               { noLink: true }
             )}

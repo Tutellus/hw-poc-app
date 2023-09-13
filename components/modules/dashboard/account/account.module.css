@@ -23,22 +23,6 @@
   margin-right: var(--size-xs);
 }
 
-.sgHealthy {
-  background-color: greenyellow;
-  width: var(--size-m);
-  border-radius: 50%;
-  height: var(--size-m);
-  display: flex;
-}
-
-.sgUnhealthy {
-  background-color: red;
-  width: var(--size-m);
-  border-radius: 50%;
-  height: var(--size-m);
-  display: flex;
-}
-
 .pulse {
   animation: pulse 2s infinite;
 }
@@ -54,17 +38,7 @@
   .accountContainer {
     display: flex;
     align-items: center;
-    justify-content: center;
-  }
-
-  .sgHealthy {
-    width: var(--size-s);
-    height: var(--size-s);
-  }
-
-  .sgUnhealthy {
-    width: var(--size-s);
-    height: var(--size-s);
+    justify-content: flex-end;
   }
 }
 
