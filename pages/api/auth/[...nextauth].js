@@ -1,11 +1,12 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import DiscordProvider from "next-auth/providers/discord";
-import JWTHelper from "jsonwebtoken";
-import NextAuth from "next-auth";
+import { DynamoDB } from "@aws-sdk/client-dynamodb"
+import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter"
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
+import DiscordProvider from "next-auth/providers/discord"
+import JWTHelper from "jsonwebtoken"
+import NextAuth from "next-auth"
+import { GQLService } from "@/services"
 
-import { fetch } from "@/utils";
+import { fetch } from "@/utils"
 
 const config = {
   credentials: {
@@ -13,7 +14,7 @@ const config = {
     secretAccessKey: process.env.NEXTAUTH_AWS_SECRET_KEY,
   },
   region: process.env.NEXTAUTH_AWS_REGION,
-};
+}
 
 const client = DynamoDBDocument.from(new DynamoDB(config), {
   marshallOptions: {
@@ -21,80 +22,80 @@ const client = DynamoDBDocument.from(new DynamoDB(config), {
     removeUndefinedValues: true,
     convertClassInstanceToMap: true,
   },
-});
+})
 
-let currentAuthResponse = null;
-const MINUTES = 60 * 1000;
-const REFRESH_SESSION_GAP_IN_MINUTES = process.env.NEXTAUTH_REFRESH_SESSION_GAP_IN_MINUTES || 5;
+let currentAuthResponse = null
+const MINUTES = 60 * 1000
+const REFRESH_SESSION_GAP_IN_MINUTES =
+  process.env.NEXTAUTH_REFRESH_SESSION_GAP_IN_MINUTES || 5
 
-const signInPage = "/login";
+const signInPage = "/login"
 
-const generateAuthToken = ({ id, ...user }) => {
-  const authToken = JWTHelper.sign({ sub: id, ...user }, process.env.NEXTAUTH_JWT_SECRET, {
-    expiresIn: `${process.env.NEXTAUTH_JWT_SESSION_MAX_AGE_IN_SECONDS}s`,
-  });
-  return { authToken };
-};
+const generateAuthToken = async ({ email }) => {
+  if (!email) {
+    throw new Error("No email provided")
+  }
+  const response = await GQLService.authenticateUser({ email })
+  return response
+}
 
 /**
  * NextAuth Auth API. Authenticate
  */
 const authenticate = async (sessionUser) => {
   try {
-    const defaultParams = {
-      id: null,
-      email: null,
-      name: null,
-      surname: null,
-      emailVerified: null,
-      image: null,
-    };
+    const authenticate = await generateAuthToken({
+      email: sessionUser.email,
+    })
 
-    console.warn(">>> Authenticating user", sessionUser);
-    const { authToken } = generateAuthToken({
-      ...defaultParams,
-      ...sessionUser,
-    });
-    console.warn(">>> Authenticate", authToken);
-    const { authenticate } = await fetch(
-      "AUTHENTICATE",
-      { rfToken: null },
-      { "x-api-next-auth": `Bearer ${authToken}` }
-    );
-
-    const { token, tokenExpiry, refreshToken, user } = authenticate;
-    return { token, tokenExpiry, refreshToken, user };
+    const { token, tokenExpiry, refreshToken, user } = authenticate
+    console.warn(">>> Authenticate ITEMS", {
+      token,
+      tokenExpiry,
+      refreshToken,
+      user,
+    })
+    return { token, tokenExpiry, refreshToken, user }
   } catch (error) {
-    console.warn(">>> AUTHENTICATE ERROR", error);
+    console.warn(">>> AUTHENTICATE ERROR", error)
   }
-};
+}
 
 /**
  * NextAuth Auth API. Refresh token
  */
 const refresh = async (token, rfToken) => {
   try {
-    const { refreshToken: response } = await fetch("REFRESH_TOKEN", { rfToken }, { authorization: `Bearer ${token}` });
+    const { refreshToken: response } = await fetch(
+      "REFRESH_TOKEN",
+      { rfToken },
+      { authorization: `Bearer ${token}` }
+    )
 
-    const { token: accessToken, tokenExpiry, refreshToken, user: userResponse } = response;
+    const {
+      token: accessToken,
+      tokenExpiry,
+      refreshToken,
+      user: userResponse,
+    } = response
     return {
       token: accessToken,
       tokenExpiry,
       refreshToken,
       user: userResponse,
-    };
+    }
   } catch (error) {
-    console.warn(">>> Error refreshing session", error);
-    deleteToken(rfToken);
+    console.warn(">>> Error refreshing session", error)
+    deleteToken(rfToken)
   }
-};
+}
 
 /**
  * NextAuth Auth API. Delete token
  */
 const deleteToken = async (rfToken) => {
-  await fetch("DELETE_TOKEN", { rfToken });
-};
+  await fetch("DELETE_TOKEN", { rfToken })
+}
 
 export default NextAuth({
   providers: [
@@ -115,12 +116,12 @@ export default NextAuth({
       if (user) {
         // AUTHENTICATE. Se comporta como un signIn/signUp en función de si existe
         // previamente o no en BD
-        const response = await authenticate({ ...user });
-        currentAuthResponse = response;
+        const response = await authenticate({ ...user })
+        currentAuthResponse = response
 
-        return true;
+        return true
       }
-      return true;
+      return true
     },
 
     // JWT se ejecuta después del signIn en cualquiera de los providers.
@@ -128,10 +129,10 @@ export default NextAuth({
     // actual.
     async jwt({ token, user }) {
       if (user) {
-        token.api = currentAuthResponse;
+        token.api = currentAuthResponse
       }
 
-      return token;
+      return token
     },
 
     // Se ejecuta cada vez que se consulta la sesión: cada cambio de página,
@@ -140,10 +141,18 @@ export default NextAuth({
     // caducar, si es así, se llama al método de refreshToken y se actualiza
     async session({ session, token }) {
       if (token?.api) {
-        const { token: accessToken, refreshToken, tokenExpiry, user } = token?.api;
+        const {
+          token: accessToken,
+          refreshToken,
+          tokenExpiry,
+          user,
+        } = token?.api
 
-        const sessionExpiredInMin = Math.round((new Date(tokenExpiry) - new Date()) / MINUTES);
-        const isNextToExpire = sessionExpiredInMin < REFRESH_SESSION_GAP_IN_MINUTES;
+        const sessionExpiredInMin = Math.round(
+          (new Date(tokenExpiry) - new Date()) / MINUTES
+        )
+        const isNextToExpire =
+          sessionExpiredInMin < REFRESH_SESSION_GAP_IN_MINUTES
 
         console.warn(
           ">>> The session will expire in %s min. [Limit %s min] (%s - rfToken: %s)",
@@ -151,26 +160,28 @@ export default NextAuth({
           REFRESH_SESSION_GAP_IN_MINUTES,
           user.email,
           refreshToken
-        );
+        )
         if (isNextToExpire) {
-          console.warn(">>> The session is about to expire. Refreshing session...");
-          const response = await refresh(accessToken, refreshToken);
-          currentAuthResponse = response;
-          token.api = response;
+          console.warn(
+            ">>> The session is about to expire. Refreshing session..."
+          )
+          const response = await refresh(accessToken, refreshToken)
+          currentAuthResponse = response
+          token.api = response
 
-          session.accessToken = response?.token;
-          session.refreshToken = response?.refreshToken;
-          session.user = response?.user;
+          session.accessToken = response?.token
+          session.refreshToken = response?.refreshToken
+          session.user = response?.user
         } else {
-          session.accessToken = accessToken;
-          session.refreshToken = refreshToken;
-          session.user = user;
+          session.accessToken = accessToken
+          session.refreshToken = refreshToken
+          session.user = user
         }
       } else {
-        throw new Error("No token.api available");
+        throw new Error("No token.api available")
       }
 
-      return session;
+      return session
     },
   },
   pages: {
@@ -178,4 +189,4 @@ export default NextAuth({
     verifyRequest: `${signInPage}?error=EmailSent&type=success`,
     error: `${signInPage}?error=Default`,
   },
-});
+})
