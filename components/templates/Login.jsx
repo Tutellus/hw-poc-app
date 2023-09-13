@@ -1,7 +1,7 @@
 import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { DiscordIcon } from "@tutellus/tutellus-components/lib/components/icons/brands/DiscordIcon"
 import { HumanWalletDesktop } from "../icons"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/router"
@@ -10,27 +10,35 @@ import styles from "./dashboard.module.css"
 export const Login = () => {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [email, setEmail] = useState("dave74@gmail.com")
 
   useEffect(() => {
-    if (session) {
-      router.push("/dashboard")
-    }
+    session ? router.push("/dashboard") : null
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   const isLoading = status === "loading"
+  const handleSignIn = () => {
+    signIn({ email })
+  }
 
   return (
     <div className={styles.loginContainer}>
       <div className={styles.logoContainer}>
         <HumanWalletDesktop />
       </div>
+      <input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
       <Button
         iconLeft={<DiscordIcon />}
-        onClick={() => signIn("discord")}
+        onClick={handleSignIn}
         disabled={isLoading}
       >
-        {isLoading ? "Logging in..." : "CONNECT WITH DISCORD"}
+        {isLoading ? "Logging in..." : "LOGIN WITH EMAIL"}
       </Button>
     </div>
   )
