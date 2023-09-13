@@ -9,7 +9,7 @@ import styles from "./topBar.module.css"
 
 export const TopBar = () => {
   const { data: session } = useSession()
-  const { human, subgraphStatus } = useHuman()
+  const { human } = useHuman()
   const router = useRouter()
 
   useEffect(() => {
@@ -27,11 +27,7 @@ export const TopBar = () => {
       <span className={styles.logoMobile}>
         <HumanWalletMobile />
       </span>
-      <Account
-        session={session}
-        human={human}
-        subgraphStatus={subgraphStatus}
-      />
+      <Account status={human?.status} address={human?.address} />
     </div>
   )
 }

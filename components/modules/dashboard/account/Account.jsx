@@ -8,19 +8,10 @@ import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
 
-export const Account = ({ session, human, subgraphStatus }) => {
-  const user = session?.user
-  const { status } = subgraphStatus || {}
-  const { address } = human || {}
-
-  const isDeploying = human?.status === "PENDING"
-  const isReady = human?.status === "CONFIRMED"
+export const Account = ({ status, address }) => {
+  const isDeploying = status === "PENDING"
+  const isReady = status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
-
-  const statusClass = cx({
-    [styles.sgHealthy]: status === "HEALTHY",
-    [styles.sgUnhealthy]: status === "UNHEALTHY",
-  })
 
   const addressClass = cx(styles.account, {
     [styles.pulse]: isNotReady,
@@ -28,12 +19,6 @@ export const Account = ({ session, human, subgraphStatus }) => {
 
   return (
     <div className={styles.accountContainer}>
-      {subgraphStatus && (
-        <div className={styles.subgraphStatus}>
-          <span className={styles.label}>Status</span>
-          <span className={statusClass}></span>
-        </div>
-      )}
       <div className={addressClass}>
         {address
           ? truncateAddress({

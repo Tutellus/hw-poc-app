@@ -16,12 +16,6 @@
   margin-right: var(--size-m);
 }
 
-.subgraphStatus {
-  align-items: center;
-  display: flex;
-  margin: var(--size-m);
-}
-
 .label {
   align-items: center;
   display: flex;
