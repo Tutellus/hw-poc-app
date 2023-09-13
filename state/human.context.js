@@ -208,16 +208,10 @@ function HumanProvider(props) {
     return balances
   }
 
-  const getSubgraphStatus = async () => {
-    const response = await humanSDK.getSubgraphStatus()
-    setSubgraphStatus(response)
-  }
-
   const onHumanStatus = (human) => {
     if (humanSDK.isReady()) {
       setHuman(human)
       loadProposals()
-      getSubgraphStatus()
       activateLogger()
     }
   }
