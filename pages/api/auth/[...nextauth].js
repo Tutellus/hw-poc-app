@@ -2,7 +2,6 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb"
 import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter"
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
 import DiscordProvider from "next-auth/providers/discord"
-import JWTHelper from "jsonwebtoken"
 import NextAuth from "next-auth"
 import { GQLService } from "@/services"
 
