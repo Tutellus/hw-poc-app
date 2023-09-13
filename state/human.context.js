@@ -3,7 +3,66 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react"
 import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
 import { tokens } from "@/config"
-import { useWeb3Auth } from "./web3auth.context"
+import { Web3AuthNoModal } from "@web3auth/no-modal"
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter"
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base"
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider"
+import { ethers } from "ethers"
+
+const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
+const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
+const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: CHAIN_ID,
+  rpcTarget: "https://polygon-mumbai-bor.publicnode.com",
+  displayName: "Mumbai Testnet",
+  blockExplorer: "https://mumbai.polygonscan.com/",
+  ticker: "MATIC",
+  tickerName: "Matic",
+}
+
+const web3auth = new Web3AuthNoModal({
+  clientId: WEB3AUTH_CLIENT_ID,
+  chainConfig,
+  web3AuthNetwork: WEB3AUTH_NETWORK,
+  useCoreKitKey: false,
+})
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+})
+
+const openloginAdapter = new OpenloginAdapter({
+  adapterSettings: {
+    uxMode: "redirect",
+    loginConfig: {
+      jwt: {
+        verifier: WEB3AUTH_CUSTOMAUTH,
+        typeOfLogin: "jwt",
+        clientId: WEB3AUTH_CLIENT_ID,
+      },
+    },
+    whiteLabel: {
+      name: "Human Wallet",
+      url: "https://www.tutellus.com/",
+      logoLight:
+        "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
+      logoDark:
+        "https://d1ddeojt5lrj1t.cloudfront.net/images/tutellus-logo-large.png",
+      defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
+      dark: true, // whether to enable dark mode. defaultValue: false
+      theme: {
+        primary: "#DDDDDD",
+      },
+    },
+  },
+  privateKeyProvider,
+})
+
+web3auth.configureAdapter(openloginAdapter)
 
 const HumanContext = createContext({
   humanSDK: null,
@@ -29,12 +88,13 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+const events = humanSDK.events()
+
 function activateLogger() {
   localStorage.setItem("debug", "hw:index,hw:monitor")
 }
 
 function HumanProvider(props) {
-  const { web3Provider } = useWeb3Auth()
   const { data: session } = useSession()
   const { accessToken } = session || {}
 
@@ -47,6 +107,51 @@ function HumanProvider(props) {
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
+  // const [externalAccount, setExternalAccount] = useState(null)
+
+  const login = async () => {
+    if (!accessToken) return
+    if (web3auth.status !== "ready") {
+      await web3auth.init()
+    }
+
+    let provider
+    if (web3auth.connected) {
+      provider = new ethers.providers.Web3Provider(web3auth.provider)
+    } else {
+      const web3authProvider = await web3auth.connectTo(
+        WALLET_ADAPTERS.OPENLOGIN,
+        {
+          loginProvider: "jwt",
+          extraLoginOptions: {
+            id_token: accessToken,
+            verifierIdField: "sub",
+            domain: "http://localhost:3000",
+          },
+        }
+      )
+      provider = new ethers.providers.Web3Provider(web3authProvider)
+    }
+
+    humanSDK.connect({
+      provider,
+      accessToken,
+    })
+
+    // const signer = await provider.getSigner()
+    // const externalAccount = signer.address
+    // setExternalAccount(externalAccount)
+
+    setConnected(true)
+  }
+
+  const logout = async () => {
+    if (!web3auth.connected) {
+      return
+    }
+    await web3auth.logout()
+    setLoggedIn(false)
+  }
 
   const loadProposals = async () => {
     if (!humanSDK.isReady()) return
@@ -139,8 +244,6 @@ function HumanProvider(props) {
   }, [updateDate, humanSDK.isReady()])
 
   useEffect(() => {
-    const events = humanSDK.events()
-
     events.on("humanStatus", onHumanStatus)
     events.on("statusUpdate", ({ proposals }) => {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
@@ -162,30 +265,25 @@ function HumanProvider(props) {
   }, [])
 
   useEffect(() => {
-    if (web3Provider && accessToken) {
-      if (!connected) {
-        setConnected(true)
-        humanSDK.connect({
-          provider: web3Provider,
-          accessToken,
-        })
-      }
-    }
-  }, [web3Provider, accessToken, connected, setConnected])
+    login()
+  }, [accessToken])
 
   const memoizedData = useMemo(
     () => ({
+      connected,
       human,
       humanSDK,
       balances,
       proposals,
       loadingProposals,
       processingProposal,
+      subgraphStatus,
+      eventsProposals,
       requestProposal,
       confirmProposal,
       getTokensBalance,
-      subgraphStatus,
-      eventsProposals,
+      login,
+      logout,
     }),
     [
       humanSDK,

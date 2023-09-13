@@ -8,14 +8,10 @@ import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
 
-export const Account = ({ session, human }) => {
-  const user = session?.user
-  const { address } = human || {}
-
-  const isDeploying = human?.status === "PENDING"
-  const isReady = human?.status === "CONFIRMED"
+export const Account = ({ status, address }) => {
+  const isDeploying = status === "PENDING"
+  const isReady = status === "CONFIRMED"
   const isNotReady = !isDeploying && !isReady
-
 
   const addressClass = cx(styles.account, {
     [styles.pulse]: isNotReady,

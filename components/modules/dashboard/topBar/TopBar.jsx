@@ -27,10 +27,7 @@ export const TopBar = () => {
       <span className={styles.logoMobile}>
         <HumanWalletMobile />
       </span>
-      <Account
-        session={session}
-        human={human}
-      />
+      <Account status={human?.status} address={human?.address} />
     </div>
   )
 }
