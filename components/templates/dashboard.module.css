@@ -49,6 +49,13 @@
   width: 100%;
 }
 
+.error {
+  color: var(--color-error);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: var(--size-m);
+}
+
 @media screen and (max-width: 920px) {
   .dashboardContainer {
     width: auto;
