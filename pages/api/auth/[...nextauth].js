@@ -17,7 +17,6 @@ export default NextAuth({
         email: { label: "Email", type: "email" },
       },
       async authorize(credentials) {
-        console.warn(">>> authorize", credentials)
         const authenticate = await GQLService.authenticateUser({
           email: credentials.email,
         })
@@ -25,12 +24,6 @@ export default NextAuth({
         if (!authenticate) return null
 
         const { token, tokenExpiry, refreshToken, user } = authenticate
-        console.warn(">>> Authenticate ITEMS", {
-          token,
-          tokenExpiry,
-          refreshToken,
-          user,
-        })
         return { token, tokenExpiry, refreshToken, user }
       },
     }),
@@ -38,7 +31,6 @@ export default NextAuth({
   debug: process.env.NODE_ENV === "development",
   callbacks: {
     async signIn(data) {
-      console.warn(">>> AUTH signIn", data)
       const response = await GQLService.authenticateUser({
         email: data?.credentials.email,
       })
@@ -64,7 +56,6 @@ export default NextAuth({
     },
 
     async session({ session, token }) {
-      console.warn(">>> AUTH session", session)
       session.user.accessToken = token.accessToken
       session.user.refreshToken = token.refreshToken
       session.user.accessTokenExpires = token.accessTokenExpires
