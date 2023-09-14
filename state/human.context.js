@@ -96,7 +96,8 @@ function activateLogger() {
 
 function HumanProvider(props) {
   const { data: session } = useSession()
-  const { accessToken } = session || {}
+  console.log(">>> CONTEXT session", session)
+  const { accessToken } = session?.user || {}
 
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
