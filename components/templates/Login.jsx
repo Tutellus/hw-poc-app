@@ -8,18 +8,18 @@ import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
 
 export const Login = () => {
-  const { data: session, status } = useSession({ required: false })
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [email, setEmail] = useState("dave74@gmail.com")
 
-  // useEffect(() => {
-  //   session ? router.push("/") : null
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [session])
+  useEffect(() => {
+    session ? router.push("/dashboard") : null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session])
 
   const isLoading = status === "loading"
   const handleSignIn = () => {
-    console.log(">>>>> handleSignIn", email, session)
+    console.log(">>>>> handleSignIn", email)
     signIn("customJWT", { email })
   }
 

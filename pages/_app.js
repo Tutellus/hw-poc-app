@@ -31,13 +31,13 @@ function Auth({ children }) {
 
   useEffect(() => {
     // Do nothing while loading
-    console.log(">>> signIn USER", user)
+    console.log(">>> signIn SESSION", session)
     if (status === "loading") return
     // If not authenticated, force log in
     if (!session) {
       return
     }
-    // signIn("customJWT", { email: user?.email })
+    signIn("customJWT", { email: user?.email })
   }, [session, status, router.route, user?.email])
 
   if (session) {

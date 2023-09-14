@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { GQLService } from "@/services"
 
-const signInPage = "/"
+const signInPage = "/dashboard"
 
 export default NextAuth({
   session: {
@@ -37,17 +37,18 @@ export default NextAuth({
   ],
   debug: process.env.NODE_ENV === "development",
   callbacks: {
-    async signIn({ user, account, credentials }) {
-      console.warn(">>> AUTH signIn", user, account, credentials)
-      if (credentials.email) {
-        const response = await GQLService.authenticateUser({
-          email: credentials.email,
-        })
-        currentAuthResponse = response
+    async signIn(data) {
+      console.warn(">>> AUTH signIn", data)
+      const response = await GQLService.authenticateUser({
+        email: data?.credentials.email,
+      })
 
-        return true
+      return {
+        accessToken: response.token,
+        refreshToken: response.refreshToken,
+        user: data?.user,
+        account: data?.account,
       }
-      return true
     },
 
     async jwt({ token, user, account }) {
@@ -63,6 +64,7 @@ export default NextAuth({
     },
 
     async session({ session, token }) {
+      console.warn(">>> AUTH session", session)
       session.user.accessToken = token.accessToken
       session.user.refreshToken = token.refreshToken
       session.user.accessTokenExpires = token.accessTokenExpires
