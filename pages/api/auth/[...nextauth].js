@@ -22,6 +22,8 @@ export default NextAuth({
           email: credentials.email,
         })
 
+        if (!authenticate) return null
+
         const { token, tokenExpiry, refreshToken, user } = authenticate
         console.warn(">>> Authenticate ITEMS", {
           token,
@@ -35,9 +37,9 @@ export default NextAuth({
   ],
   debug: process.env.NODE_ENV === "development",
   callbacks: {
-    async signIn(id, { email }) {
-      console.warn(">>> AUTH signIn", email)
-      if (email) {
+    async signIn({ user, account, credentials }) {
+      console.warn(">>> AUTH signIn", user, account, credentials)
+      if (credentials.email) {
         const response = await GQLService.authenticateUser({
           email: credentials.email,
         })
