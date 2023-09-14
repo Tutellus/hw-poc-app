@@ -12,15 +12,15 @@ export const Login = () => {
   const router = useRouter()
   const [email, setEmail] = useState("dave74@gmail.com")
 
-  useEffect(() => {
-    session ? router.push("/dashboard") : null
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  // useEffect(() => {
+  //   session ? router.push("/") : null
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [session])
 
   const isLoading = status === "loading"
   const handleSignIn = () => {
-    console.log("handleSignIn", email)
-    signIn(email)
+    console.log(">>>>> handleSignIn", email, session)
+    signIn("customJWT", { email })
   }
 
   return (
