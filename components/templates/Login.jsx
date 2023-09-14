@@ -8,7 +8,7 @@ import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
 
 export const Login = () => {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession({ required: false })
   const router = useRouter()
   const [email, setEmail] = useState("dave74@gmail.com")
 
@@ -19,7 +19,8 @@ export const Login = () => {
 
   const isLoading = status === "loading"
   const handleSignIn = () => {
-    signIn({ email })
+    console.log("handleSignIn", email)
+    signIn(email)
   }
 
   return (
