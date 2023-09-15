@@ -2,7 +2,7 @@ import {
   Button,
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { DiscordIcon } from "@tutellus/tutellus-components/lib/components/icons/brands/DiscordIcon"
+import { MailIcon } from "../icons/mailIcon"
 import { HumanWalletDesktop } from "../icons"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
@@ -69,7 +69,7 @@ export const Login = () => {
         )}
         <Button
           type={buttonTypes.PRIMARY}
-          iconLeft={<DiscordIcon />}
+          iconLeft={<MailIcon />}
           onClick={handleSignIn}
           disabled={isLoading}
         >

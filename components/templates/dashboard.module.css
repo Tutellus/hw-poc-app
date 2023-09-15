@@ -15,6 +15,11 @@
   width: 100%;
 }
 
+.loginContainer button svg {
+  height: var(--size-l);
+  margin: var(--size-2xs) 0 0 var(--size-s);
+}
+
 .balanceContainer {
   border-radius: var(--size-s);
   border: 1px solid var(--color-gray);
