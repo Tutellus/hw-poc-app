@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { CONTRACT, tokens } from "@/config"
+import { CONTRACT } from "@/config"
 import cx from "classnames"
 
 import {
@@ -14,8 +14,7 @@ import { useHuman } from "@/state/human.context"
 import styles from "./dashboard.module.css"
 
 export const Dashboard = () => {
-  const { human, processingProposal, requestProposal, balances } =
-    useHuman()
+  const { human, processingProposal, requestProposal, balances } = useHuman()
 
   const [minting, setMinting] = useState(false)
   const [balance, setBalance] = useState("0")

@@ -96,7 +96,8 @@ function activateLogger() {
 
 function HumanProvider(props) {
   const { data: session } = useSession()
-  const { accessToken } = session || {}
+  console.log(">>> CONTEXT session", session)
+  const { accessToken } = session?.user || {}
 
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
@@ -208,16 +209,10 @@ function HumanProvider(props) {
     return balances
   }
 
-  const getSubgraphStatus = async () => {
-    const response = await humanSDK.getSubgraphStatus()
-    setSubgraphStatus(response)
-  }
-
   const onHumanStatus = (human) => {
     if (humanSDK.isReady()) {
       setHuman(human)
       loadProposals()
-      getSubgraphStatus()
       activateLogger()
     }
   }

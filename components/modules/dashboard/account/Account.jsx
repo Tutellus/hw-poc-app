@@ -14,7 +14,7 @@ export const Account = ({ status, address }) => {
   const isNotReady = !isDeploying && !isReady
 
   const addressClass = cx(styles.account, {
-    [styles.pulse]: isNotReady,
+    [styles.pulse]: isDeploying,
   })
 
   return (
