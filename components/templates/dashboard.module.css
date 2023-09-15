@@ -16,8 +16,9 @@
 }
 
 .loginContainer button svg {
-  height: var(--size-l);
-  margin: var(--size-2xs) 0 0 var(--size-s);
+  height: var(--size-xl);
+  margin-top: -8px;
+  margin-left: 0;
 }
 
 .balanceContainer {

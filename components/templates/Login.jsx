@@ -49,6 +49,7 @@ export const Login = () => {
         }}
       >
         <input
+          disabled={isLoading}
           type="text"
           placeholder="insert email here"
           value={email}
