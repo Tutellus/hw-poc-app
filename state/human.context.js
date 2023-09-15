@@ -96,9 +96,7 @@ function activateLogger() {
 
 function HumanProvider(props) {
   const { data: session } = useSession()
-  console.log(">>> CONTEXT session", session)
   const { accessToken } = session?.user || {}
-
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
@@ -108,9 +106,10 @@ function HumanProvider(props) {
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
+  const [activeProvider, setActiveProvider] = useState(null)
   // const [externalAccount, setExternalAccount] = useState(null)
 
-  const login = async () => {
+  const login = async ({ activeProvider }) => {
     if (!accessToken) return
     if (web3auth.status !== "ready") {
       await web3auth.init()
@@ -135,7 +134,7 @@ function HumanProvider(props) {
     }
 
     humanSDK.connect({
-      provider,
+      provider: activeProvider === "web3auth" ? provider : null,
       accessToken,
     })
 
@@ -260,7 +259,8 @@ function HumanProvider(props) {
   }, [])
 
   useEffect(() => {
-    login()
+    login({ activeProvider })
+    setActiveProvider(localStorage.getItem("provider"))
   }, [accessToken])
 
   const memoizedData = useMemo(

@@ -5,7 +5,7 @@ export const SelectProvider = () => {
   const [storedProvider, setStoredProvider] = useState("")
   useEffect(() => {
     setStoredProvider(localStorage.getItem("provider"))
-    console.log(">>>> handleProvider SELECT PROVIDER", storedProvider)
+    console.log(">>>> handleProvider", storedProvider)
   }, [])
 
   const handleProvider = (provider) => {
