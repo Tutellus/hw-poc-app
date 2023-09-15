@@ -1,4 +1,7 @@
-import { Button } from "@tutellus/tutellus-components/lib/components/atoms/button"
+import {
+  Button,
+  buttonTypes,
+} from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { DiscordIcon } from "@tutellus/tutellus-components/lib/components/icons/brands/DiscordIcon"
 import { HumanWalletDesktop } from "../icons"
 import { useEffect, useState } from "react"
@@ -65,7 +68,7 @@ export const Login = () => {
           <p className={styles.error}>Please insert a valid email address</p>
         )}
         <Button
-          type="submit"
+          type={buttonTypes.PRIMARY}
           iconLeft={<DiscordIcon />}
           onClick={handleSignIn}
           disabled={isLoading}
