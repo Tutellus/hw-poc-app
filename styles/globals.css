@@ -36,9 +36,17 @@ input {
   border-radius: var(--size-s);
   border: 1px solid var(--color-gray);
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 400;
   margin: var(--size-xl);
   padding: var(--size-s);
   color: var(--color-text);
+}
+
+select {
+  border-radius: var(--size-s);
+  padding: var(--size-s);
+  text-align: center;
+  color: var(--color-text);
+  font-size: 1rem;
 }
