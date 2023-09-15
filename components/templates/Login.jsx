@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
+import { SelectProvider } from "@/components/modules/dashboard"
 
 export const Login = () => {
   const { data: session, status } = useSession()
@@ -77,6 +78,7 @@ export const Login = () => {
           {isLoading ? "Logging in..." : "LOGIN WITH EMAIL"}
         </Button>
       </form>
+      <SelectProvider />
     </div>
   )
 }

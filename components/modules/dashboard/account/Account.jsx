@@ -4,14 +4,13 @@ import {
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { LinkIcon, SignOutIcon } from "@/components/icons"
+import { SelectProvider } from "@/components/modules/dashboard"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
 
 export const Account = ({ status, address }) => {
   const isDeploying = status === "PENDING"
-  const isReady = status === "CONFIRMED"
-  const isNotReady = !isDeploying && !isReady
 
   const addressClass = cx(styles.account, {
     [styles.pulse]: isDeploying,
@@ -19,6 +18,7 @@ export const Account = ({ status, address }) => {
 
   return (
     <div className={styles.accountContainer}>
+      <SelectProvider />
       <div className={addressClass}>
         {address
           ? truncateAddress({
