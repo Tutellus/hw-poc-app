@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
 import styles from "./selectProvider.module.css"
 
 export const SelectProvider = () => {
   const [storedProvider, setStoredProvider] = useState("")
+  const router = useRouter()
+
   useEffect(() => {
     setStoredProvider(localStorage.getItem("provider"))
     console.log(">>>> handleProvider", storedProvider)
@@ -11,6 +14,7 @@ export const SelectProvider = () => {
   const handleProvider = (provider) => {
     localStorage.setItem("provider", provider)
     setStoredProvider(provider)
+    router.reload()
   }
 
   return (
