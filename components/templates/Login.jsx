@@ -78,7 +78,10 @@ export const Login = () => {
           {isLoading ? "Logging in..." : "LOGIN WITH EMAIL"}
         </Button>
       </form>
-      <SelectProvider />
+      <div className={styles.providerSelect}>
+        <p>Select Provider</p>
+        <SelectProvider />
+      </div>
     </div>
   )
 }

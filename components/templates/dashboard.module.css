@@ -63,7 +63,12 @@
 }
 
 .providerSelect {
-  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-m);
+  justify-content: center;
+  margin: var(--size-l);
 }
 
 @media screen and (max-width: 920px) {
