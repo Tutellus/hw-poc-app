@@ -13,11 +13,13 @@ const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
 const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
+const RPC_URL = "https://polygon-mumbai-bor.publicnode.com"
+const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: CHAIN_ID,
-  rpcTarget: "https://polygon-mumbai-bor.publicnode.com",
+  rpcTarget: RPC_URL,
   displayName: "Mumbai Testnet",
   blockExplorer: "https://mumbai.polygonscan.com/",
   ticker: "MATIC",
@@ -30,6 +32,15 @@ const web3auth = new Web3AuthNoModal({
   web3AuthNetwork: WEB3AUTH_NETWORK,
   useCoreKitKey: false,
 })
+
+const ProviderMock = (privateKey, rpcUrl) => {
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
+  const signer = new ethers.Wallet(privateKey).connect(provider)
+
+  return {
+    getSigner: () => signer,
+  }
+}
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
@@ -94,6 +105,8 @@ function activateLogger() {
   localStorage.setItem("debug", "hw:index,hw:monitor")
 }
 
+let providerMock
+
 function HumanProvider(props) {
   const { data: session } = useSession()
   const { accessToken } = session?.user || {}
@@ -108,6 +121,7 @@ function HumanProvider(props) {
   const [eventsProposals, setEventsProposals] = useState([])
   const [activeProvider, setActiveProvider] = useState(null)
   // const [externalAccount, setExternalAccount] = useState(null)
+  providerMock = ProviderMock(PRIV_KEY, RPC_URL)
 
   const login = async ({ activeProvider }) => {
     if (!accessToken) return
@@ -134,7 +148,7 @@ function HumanProvider(props) {
     }
 
     humanSDK.connect({
-      provider: activeProvider === "web3auth" ? provider : null,
+      provider: activeProvider === "web3auth" ? provider : providerMock,
       accessToken,
     })
 
