@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
+import { HumanWalletSDK, ProviderMock } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
 import { tokens } from "@/config"
 import { Web3AuthNoModal } from "@web3auth/no-modal"
@@ -32,15 +32,6 @@ const web3auth = new Web3AuthNoModal({
   web3AuthNetwork: WEB3AUTH_NETWORK,
   useCoreKitKey: false,
 })
-
-const ProviderMock = (privateKey, rpcUrl) => {
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
-  const signer = new ethers.Wallet(privateKey).connect(provider)
-
-  return {
-    getSigner: () => signer,
-  }
-}
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
@@ -99,13 +90,16 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+const providerMock = ProviderMock.build({
+  privateKey: PRIV_KEY,
+  rpcUrl: RPC_URL,
+})
+
 const events = humanSDK.events()
 
 function activateLogger() {
   localStorage.setItem("debug", "hw:index,hw:monitor")
 }
-
-let providerMock
 
 function HumanProvider(props) {
   const { data: session } = useSession()
@@ -121,7 +115,7 @@ function HumanProvider(props) {
   const [eventsProposals, setEventsProposals] = useState([])
   const [activeProvider, setActiveProvider] = useState(null)
   // const [externalAccount, setExternalAccount] = useState(null)
-  providerMock = ProviderMock(PRIV_KEY, RPC_URL)
+  const mockedProvider = providerMock.getProvider()
 
   const login = async ({ activeProvider }) => {
     if (!accessToken) return
@@ -148,7 +142,7 @@ function HumanProvider(props) {
     }
 
     humanSDK.connect({
-      provider: activeProvider === "web3auth" ? provider : providerMock,
+      provider: activeProvider === "web3auth" ? provider : mockedProvider,
       accessToken,
     })
 
