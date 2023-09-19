@@ -8,7 +8,6 @@ export const SelectProvider = () => {
 
   useEffect(() => {
     setStoredProvider(localStorage.getItem("provider"))
-    console.log(">>>> handleProvider", storedProvider)
   }, [])
 
   const handleProvider = (provider) => {
