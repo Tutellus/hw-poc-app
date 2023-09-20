@@ -1,6 +1,10 @@
 @import "~@tutellus/human-wallet-theme/lib/index.css";
 @import "~@tutellus/tutellus-components/lib/components.css";
 
+html {
+  background-color: #01011c;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -8,7 +12,7 @@ body {
   padding: 0;
   font-family: "Roboto", sans-serif;
   letter-spacing: 1px;
-  background-color: var(--color-background);
+  background-color: #01011c;
   color: var(--color-text);
 }
 
