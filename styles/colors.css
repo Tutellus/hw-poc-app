@@ -22,12 +22,6 @@
   --color-text: var(--color-gray);
   --color-text-highlighted: var(--color-gray-strong);
 
-  /* tut color */
-  --color-tut: #00f;
-  --color-tut-strong: #0000a8;
-  --color-tut-soft: #a0a0ff;
-  --color-tut-surface: #f0f0ff;
-
   /* stateful */
   --color-info: #2094f3;
   --color-success: #05fa46;
