@@ -91,7 +91,7 @@ const humanSDK = HumanWalletSDK.build({
 })
 
 const providerMock = ProviderMock.build({
-  key: "DaveCarterTest",
+  key: PRIV_KEY,
   rpcUrl: RPC_URL,
 })
 

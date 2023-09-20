@@ -13,7 +13,7 @@ export const SelectProvider = () => {
   const handleProvider = (provider) => {
     localStorage.setItem("provider", provider)
     setStoredProvider(provider)
-    router.reload()
+    router.reload("/dashboard")
   }
 
   return (
