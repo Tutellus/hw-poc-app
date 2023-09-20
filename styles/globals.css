@@ -1,5 +1,6 @@
 @import "~@tutellus/human-wallet-theme/lib/index.css";
 @import "~@tutellus/tutellus-components/lib/components.css";
+@import "./colors.css";
 
 html {
   background-color: #01011c;
