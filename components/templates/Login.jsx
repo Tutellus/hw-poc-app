@@ -2,13 +2,13 @@ import {
   Button,
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { HumanWalletDesktop } from "../icons"
+import { HumanWalletDesktop, GearIcon, Web3authIcon } from "../icons"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
-import { SelectProvider, MobileAnimation } from "@/components/modules/dashboard"
+import { MobileAnimation } from "@/components/modules/dashboard"
 
 export const Login = () => {
   const { data: session, status } = useSession()
@@ -72,7 +72,16 @@ export const Login = () => {
           )}
           <div className={styles.providerSelect}>
             <p>Select your Provider</p>
-            <SelectProvider />
+            <div className={styles.selectorContainer}>
+              <div className={styles.selectorWithIcon}>
+                <GearIcon />
+                <span className={styles.selectorLabel}>Mocked Provider</span>
+              </div>
+              <div className={styles.selectorWithIcon}>
+                <Web3authIcon />
+                <span className={styles.selectorLabel}>Web3Auth Provider</span>
+              </div>
+            </div>
           </div>
           <Button
             type={buttonTypes.PRIMARY}
