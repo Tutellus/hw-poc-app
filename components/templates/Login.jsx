@@ -2,7 +2,6 @@ import {
   Button,
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { MailIcon } from "../icons/mailIcon"
 import { HumanWalletDesktop } from "../icons"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
@@ -40,47 +39,56 @@ export const Login = () => {
 
   return (
     <div className={styles.loginContainer}>
-      <div className={styles.logoContainer}>
-        <HumanWalletDesktop />
-      </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleSignIn()
-        }}
-      >
-        <input
-          disabled={isLoading}
-          type="text"
-          placeholder="insert email here"
-          value={email}
-          onFocus={() => {
-            setEmail("")
-            showEmailError(false)
+      <div className={styles.leftPanel}>
+        <div className={styles.logoContainer}>
+          <HumanWalletDesktop />
+        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSignIn()
           }}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              handleSignIn()
-            }
-          }}
-        />
-        {emailError && (
-          <p className={styles.error}>Please insert a valid email address</p>
-        )}
-        <Button
-          type={buttonTypes.PRIMARY}
-          iconLeft={<MailIcon />}
-          onClick={handleSignIn}
-          disabled={isLoading}
         >
-          {isLoading ? "Logging in..." : "LOGIN WITH EMAIL"}
-        </Button>
-      </form>
-      <div className={styles.providerSelect}>
-        <p>Select Provider</p>
-        <SelectProvider />
+          <h2 className={styles.loginSubtitle}>Sign up for an account</h2>
+          <input
+            disabled={isLoading}
+            type="text"
+            placeholder="Email address"
+            value={email}
+            onFocus={() => {
+              setEmail("")
+              showEmailError(false)
+            }}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                handleSignIn()
+              }
+            }}
+          />
+          {emailError && (
+            <p className={styles.error}>Please insert a valid email address</p>
+          )}
+          <div className={styles.providerSelect}>
+            <p>Select your Provider</p>
+            <SelectProvider />
+          </div>
+          <Button
+            type={buttonTypes.PRIMARY}
+            onClick={handleSignIn}
+            disabled={isLoading}
+          >
+            {isLoading ? "Logging in..." : "SIGN UP"}
+          </Button>
+        </form>
+      </div>
+      <div className={styles.rightPanel}>
+        <h1 className={styles.subTitle}>Web3 wallet for Web2 users</h1>
+        <p className={styles.description}>
+          HumanWallet solves the pain DAPPs have in the crypto scene, attracting
+          new users with zero knowledge about crypto and Web3 wallets.
+        </p>
       </div>
     </div>
   )
