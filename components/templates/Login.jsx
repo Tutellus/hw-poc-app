@@ -2,19 +2,24 @@ import {
   Button,
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
-import { HumanWalletDesktop, GearIcon, Web3authIcon } from "../icons"
+import { HumanWalletDesktop } from "../icons"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
-import { MobileAnimation } from "@/components/modules/dashboard"
+import {
+  MobileAnimation,
+  SelectProviderIcon,
+} from "@/components/modules/dashboard"
 
 export const Login = () => {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [email, setEmail] = useState("insert email here")
+  const [email, setEmail] = useState("Email address")
   const [emailError, showEmailError] = useState(false)
+
+  const noEmptyEmail = email === "" || email === "Email address"
 
   const isValidEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
@@ -43,12 +48,7 @@ export const Login = () => {
         <div className={styles.logoContainer}>
           <HumanWalletDesktop />
         </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleSignIn()
-          }}
-        >
+        <div className={styles.formContainer}>
           <h2 className={styles.loginSubtitle}>Sign up for an account</h2>
           <input
             disabled={isLoading}
@@ -70,27 +70,15 @@ export const Login = () => {
           {emailError && (
             <p className={styles.error}>Please insert a valid email address</p>
           )}
-          <div className={styles.providerSelect}>
-            <p>Select your Provider</p>
-            <div className={styles.selectorContainer}>
-              <div className={styles.selectorWithIcon}>
-                <GearIcon />
-                <span className={styles.selectorLabel}>Mocked Provider</span>
-              </div>
-              <div className={styles.selectorWithIcon}>
-                <Web3authIcon />
-                <span className={styles.selectorLabel}>Web3Auth Provider</span>
-              </div>
-            </div>
-          </div>
+          <SelectProviderIcon isDisabled={isLoading || noEmptyEmail} />
           <Button
             type={buttonTypes.PRIMARY}
             onClick={handleSignIn}
-            disabled={isLoading}
+            isDisabled={isLoading || noEmptyEmail}
           >
             {isLoading ? "Logging in..." : "SIGN UP"}
           </Button>
-        </form>
+        </div>
       </div>
       <div className={styles.rightPanel}>
         <h1 className={styles.subTitle}>Web3 wallet for Web2 users</h1>
