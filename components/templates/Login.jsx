@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/router"
 import styles from "./dashboard.module.css"
-import { SelectProvider } from "@/components/modules/dashboard"
+import { SelectProvider, MobileAnimation } from "@/components/modules/dashboard"
 
 export const Login = () => {
   const { data: session, status } = useSession()
@@ -89,6 +89,7 @@ export const Login = () => {
           HumanWallet solves the pain DAPPs have in the crypto scene, attracting
           new users with zero knowledge about crypto and Web3 wallets.
         </p>
+        <MobileAnimation />
       </div>
     </div>
   )

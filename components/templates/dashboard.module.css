@@ -19,6 +19,7 @@
 .rightPanel {
   background: linear-gradient(149.39deg, #e53e7d 0%, #fcb038 100%);
   padding: 10em 6em;
+  position: relative;
 }
 
 .loginContainer {
