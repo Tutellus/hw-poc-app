@@ -1,0 +1,47 @@
+.providerSelect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-m);
+  justify-content: center;
+  margin: 0 0 var(--size-l);
+}
+
+.selectorContainer {
+  display: flex;
+  gap: var(--size-m);
+}
+
+.selectorWithIcon {
+  background-color: transparent;
+  padding: var(--size-m);
+  border-radius: var(--size-s);
+  border: 1px solid var(--color-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.selectorWithIcon:hover,
+.mockIsSelected,
+.web3authIsSelected {
+  background-color: var(--color-background-light);
+  cursor: pointer;
+}
+
+.isDisabled {
+  background-color: transparent;
+  opacity: 0.5;
+  cursor: none;
+  pointer-events: none;
+}
+
+.selectorWithIcon svg {
+  margin: var(--size-l);
+  max-width: var(--size-2xl);
+}
+
+.selectorLabel {
+  text-align: center;
+}
