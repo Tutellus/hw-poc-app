@@ -1,8 +1,8 @@
 .containerAnimation {
   position: absolute;
-  right: 220px;
   top: 320px;
-  left: 220px;
+  margin: 0 auto;
+  width: 300px;
 }
 .containerAnimation img {
   position: absolute;
@@ -53,6 +53,13 @@
   animation: hideAll 7.1s infinite;
   animation-delay: 2.02s;
   display: block;
+}
+
+@media screen and (max-width: 1240px) {
+  .containerAnimation {
+    top: 420px;
+    width: 200px;
+  }
 }
 
 @keyframes hideAll {
