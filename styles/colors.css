@@ -12,6 +12,7 @@
   --color-gray-strong: #e5ecf2;
   --color-gray-soft: #949dac;
   --color-background: #01011c;
+  --color-background-light: #020258;
   --color-surface: #131339;
   --color-text: var(--color-gray);
   --color-text-highlighted: var(--color-gray-strong);

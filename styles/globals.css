@@ -43,9 +43,9 @@ input {
   text-align: center;
   font-size: 1rem;
   font-weight: 400;
-  margin: var(--size-xl);
+  margin: var(--size-xl) 0;
   padding: var(--size-s);
-  color: var(--color-text);
+  color: var(--color-text-highlighted);
   background-color: transparent;
 }
 
