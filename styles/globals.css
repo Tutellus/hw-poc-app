@@ -31,12 +31,6 @@ h2 {
   padding: 0;
 }
 
-form {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
 input {
   border-radius: var(--size-s);
   border: 1px solid var(--color-gray);

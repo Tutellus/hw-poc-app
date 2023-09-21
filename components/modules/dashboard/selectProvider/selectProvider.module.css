@@ -20,3 +20,9 @@
   padding-right: var(--size-m);
   outline: none;
 }
+
+@media screen and (max-width: 920px) {
+  .selectProvider {
+    display: none;
+  }
+}

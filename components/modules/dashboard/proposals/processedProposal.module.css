@@ -1,6 +1,5 @@
 .container {
   align-items: center;
-  background-color: var(--color-background-light);
   border-radius: var(--size-s);
   border: 2px solid var(--color-gray);
   cursor: pointer;
