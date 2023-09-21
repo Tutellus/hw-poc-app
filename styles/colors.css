@@ -15,6 +15,7 @@
   --color-surface: #131339;
   --color-text: var(--color-gray);
   --color-text-highlighted: var(--color-gray-strong);
+  --color-text-highlighted-strong: #22222a;
   --color-error: #ff5724;
   --color-error-strong: #dc2626;
 

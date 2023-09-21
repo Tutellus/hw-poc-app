@@ -46,6 +46,7 @@ input {
   margin: var(--size-xl);
   padding: var(--size-s);
   color: var(--color-text);
+  background-color: transparent;
 }
 
 select {
