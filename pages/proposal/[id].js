@@ -15,7 +15,6 @@ const Page = ({ id }) => {
   const [proposal, setProposal] = useState()
 
   useEffect(() => {
-    document.body.classList.add("dark")
     if (!humanSDK) return
     humanSDK.getProposal({ proposalId: id }).then((proposal) => {
       setProposal(proposal)

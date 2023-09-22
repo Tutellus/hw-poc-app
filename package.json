@@ -15,7 +15,7 @@
     "@aws-sdk/lib-dynamodb": "3.354.0",
     "@next-auth/dynamodb-adapter": "3.0.2",
     "@tutellus/human-wallet-theme": "1",
-    "@tutellus/humanwalletsdk": "0.24",
+    "@tutellus/humanwalletsdk": "0.25",
     "@tutellus/tutellus-components": "6",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",

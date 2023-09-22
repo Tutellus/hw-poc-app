@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useState, useMemo, useEffect } from "react"
-import { HumanWalletSDK } from "@tutellus/humanwalletsdk"
+import { HumanWalletSDK, ProviderMock } from "@tutellus/humanwalletsdk"
 import { useSession } from "next-auth/react"
 import { tokens } from "@/config"
 import { Web3AuthNoModal } from "@web3auth/no-modal"
@@ -13,11 +13,13 @@ const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
 const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
+const RPC_URL = "https://polygon-mumbai-bor.publicnode.com"
+const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: CHAIN_ID,
-  rpcTarget: "https://polygon-mumbai-bor.publicnode.com",
+  rpcTarget: RPC_URL,
   displayName: "Mumbai Testnet",
   blockExplorer: "https://mumbai.polygonscan.com/",
   ticker: "MATIC",
@@ -88,6 +90,11 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
+const providerMock = ProviderMock.build({
+  key: PRIV_KEY,
+  rpcUrl: RPC_URL,
+})
+
 const events = humanSDK.events()
 
 function activateLogger() {
@@ -96,9 +103,7 @@ function activateLogger() {
 
 function HumanProvider(props) {
   const { data: session } = useSession()
-  console.log(">>> CONTEXT session", session)
   const { accessToken } = session?.user || {}
-
   const [connected, setConnected] = useState(false)
   const [human, setHuman] = useState(null)
   const [proposals, setProposals] = useState([])
@@ -108,9 +113,11 @@ function HumanProvider(props) {
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
+  const [activeProvider, setActiveProvider] = useState(null)
   // const [externalAccount, setExternalAccount] = useState(null)
+  const mockedProvider = providerMock.getProvider()
 
-  const login = async () => {
+  const login = async ({ activeProvider }) => {
     if (!accessToken) return
     if (web3auth.status !== "ready") {
       await web3auth.init()
@@ -135,7 +142,7 @@ function HumanProvider(props) {
     }
 
     humanSDK.connect({
-      provider,
+      provider: activeProvider === "web3auth" ? provider : mockedProvider,
       accessToken,
     })
 
@@ -260,7 +267,8 @@ function HumanProvider(props) {
   }, [])
 
   useEffect(() => {
-    login()
+    login({ activeProvider })
+    setActiveProvider(localStorage.getItem("provider"))
   }, [accessToken])
 
   const memoizedData = useMemo(

@@ -3,15 +3,30 @@
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  padding: 0 10em;
+  padding: 0;
+}
+
+.leftPanel,
+.rightPanel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 50%;
+  padding: 10em;
+  height: 100vh;
+}
+
+.rightPanel {
+  background: linear-gradient(149.39deg, #e53e7d 0%, #fcb038 100%);
+  padding: 10em 6em;
+  position: relative;
 }
 
 .loginContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 16px;
   width: 100%;
 }
 
@@ -32,6 +47,11 @@
   gap: var(--size-l);
 }
 
+.title,
+.subTitle {
+  text-align: center;
+}
+
 .title {
   font-size: 2rem;
   line-height: 1.5;
@@ -39,12 +59,32 @@
   margin-bottom: var(--size-2xl);
 }
 
+.subTitle {
+  font-size: 1.8rem;
+  color: var(--color-text-highlighted-strong);
+  letter-spacing: -0.5px;
+}
+
+.loginSubtitle {
+  letter-spacing: -0.5px;
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--size-l);
+}
+
+.description {
+  margin-top: 1em;
+  color: var(--color-text-highlighted-strong);
+  letter-spacing: -0.1px;
+  text-align: center;
+}
+
 .modesContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  width: 100%;
+  width: 80%;
 }
 
 .proposalsContainer {
@@ -52,14 +92,21 @@
   align-items: stretch;
   justify-content: center;
   gap: 16px;
-  width: 100%;
+  width: 80%;
 }
 
 .error {
   color: var(--color-error);
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: var(--size-m);
+  font-size: 1rem;
+  margin: -16px auto var(--size-m);
+  letter-spacing: -0.2px;
+  text-align: center;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 @media screen and (max-width: 920px) {
@@ -69,12 +116,12 @@
   }
 
   .modesContainer {
-    display: block;
+    display: flex;
     flex-direction: column;
   }
 
   .proposalsContainer {
-    display: block;
+    display: flex;
     flex-direction: column;
   }
 
@@ -88,9 +135,17 @@
     max-width: 250px;
     gap: var(--size-l);
   }
+}
 
-  .title {
-    text-align: center;
+@media screen and (max-width: 1024px) {
+  .leftPanel {
+    padding: 2em;
+    height: auto;
+    flex: 1 1 auto;
+  }
+
+  .rightPanel {
+    display: none;
   }
 }
 

@@ -60,6 +60,7 @@
     justify-content: space-between;
     flex-direction: row;
     padding: var(--size-m);
+    width: 100%;
   }
 
   .panelContainer svg {

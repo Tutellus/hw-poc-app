@@ -80,10 +80,6 @@ export const Dashboard = () => {
     setMinting(false)
   }
 
-  useEffect(() => {
-    document.body.classList.add("dark")
-  }, [])
-
   const proposalsContainerClass = cx(styles.proposalsContainer, {
     [styles.pulse]: !canMint,
   })

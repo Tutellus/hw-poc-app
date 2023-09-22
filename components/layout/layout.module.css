@@ -4,11 +4,11 @@
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  padding: 0 10em;
+  padding: 0;
 }
 
 .withoutTopBar {
-  padding-top: 8em;
+  padding-top: 0;
 }
 
 @media screen and (max-width: 920px) {
@@ -18,6 +18,6 @@
   }
 
   .withoutTopBar {
-    padding-top: 8em;
+    padding-top: 0;
   }
 }

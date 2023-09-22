@@ -1,5 +1,10 @@
 @import "~@tutellus/human-wallet-theme/lib/index.css";
 @import "~@tutellus/tutellus-components/lib/components.css";
+@import "./colors.css";
+
+html {
+  background-color: #01011c;
+}
 
 body {
   display: flex;
@@ -8,7 +13,7 @@ body {
   padding: 0;
   font-family: "Roboto", sans-serif;
   letter-spacing: 1px;
-  background-color: var(--color-background);
+  background-color: #01011c;
   color: var(--color-text);
 }
 
@@ -26,19 +31,22 @@ h2 {
   padding: 0;
 }
 
-form {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
 input {
   border-radius: var(--size-s);
   border: 1px solid var(--color-gray);
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 400;
-  margin: var(--size-xl);
+  margin: var(--size-xl) 0;
   padding: var(--size-s);
+  color: var(--color-text-highlighted);
+  background-color: transparent;
+}
+
+select {
+  border-radius: var(--size-s);
+  padding: var(--size-s);
+  text-align: center;
   color: var(--color-text);
+  font-size: 1rem;
 }
