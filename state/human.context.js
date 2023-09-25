@@ -113,7 +113,7 @@ function HumanProvider(props) {
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
-  const [activeProvider, setActiveProvider] = useState(null)
+  const [activeProvider, setActiveProvider] = useState("mock")
   // const [externalAccount, setExternalAccount] = useState(null)
   const mockedProvider = providerMock.getProvider()
 
@@ -140,7 +140,6 @@ function HumanProvider(props) {
       )
       provider = new ethers.providers.Web3Provider(web3authProvider)
     }
-
     humanSDK.connect({
       provider: activeProvider === "web3auth" ? provider : mockedProvider,
       accessToken,
@@ -268,7 +267,7 @@ function HumanProvider(props) {
 
   useEffect(() => {
     login({ activeProvider })
-    setActiveProvider(localStorage.getItem("provider"))
+    setActiveProvider(localStorage.getItem("provider") || "mock")
   }, [accessToken])
 
   const memoizedData = useMemo(
