@@ -5,10 +5,14 @@ import cx from "classnames"
 import styles from "./selectProviderIcon.module.css"
 
 export const SelectProviderIcon = ({ isDisabled }) => {
-  const [storedProvider, setStoredProvider] = useState("")
+  const [storedProvider, setStoredProvider] = useState("mock")
 
   useEffect(() => {
-    setStoredProvider(localStorage.getItem("provider"))
+    const localStorageProvider = localStorage.getItem("provider")
+    localStorageProvider === undefined
+      ? localStorage.setItem("provider", "mock")
+      : null
+    setStoredProvider("mock")
   }, [])
 
   const handleProvider = (provider) => {
