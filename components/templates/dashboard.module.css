@@ -109,6 +109,10 @@
   flex-direction: column;
 }
 
+.secretKey {
+  margin-top: calc(var(--size-m) * -1);
+}
+
 @media screen and (max-width: 920px) {
   .dashboardContainer {
     width: auto;
