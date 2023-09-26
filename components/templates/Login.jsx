@@ -3,6 +3,7 @@ import {
   buttonTypes,
 } from "@tutellus/tutellus-components/lib/components/atoms/button"
 import { ethers } from "ethers"
+
 import { HumanWalletDesktop } from "../icons"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
@@ -19,12 +20,11 @@ export const Login = () => {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [emailError, showEmailError] = useState(false)
-  const [secretKey, setSecretKey] = useState("")
   const [storedProvider, setStoredProvider] = useState("mock")
 
   const noEmptyEmail = email === "" || email === "Email address"
   const isWeb3auth = storedProvider === "web3auth"
-  const keccaKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secretKey))
+  const keccaKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(email))
 
   const isValidEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
@@ -50,8 +50,6 @@ export const Login = () => {
   }, [session])
 
   const isLoading = status === "loading"
-  const isDisabled =
-    isLoading || noEmptyEmail || (!isWeb3auth && secretKey === "")
 
   const handleSignIn = () => {
     if (!isValidEmail(email)) {
@@ -82,34 +80,18 @@ export const Login = () => {
             }}
             onChange={(e) => setEmail(e.target.value)}
           />
-          {!noEmptyEmail && !isWeb3auth && (
-            <input
-              className={styles.secretKey}
-              disabled={isLoading}
-              type="text"
-              placeholder="Enter secret key"
-              value={secretKey}
-              onChange={(e) => setSecretKey(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault()
-                  handleSignIn()
-                }
-              }}
-            />
-          )}
           {emailError && (
             <p className={styles.error}>Please insert a valid email address</p>
           )}
           <SelectProviderIcon
-            isDisabled={isDisabled}
+            isDisabled={isLoading || noEmptyEmail}
             handleProvider={handleProvider}
             storedProvider={storedProvider}
           />
           <Button
             type={buttonTypes.PRIMARY}
             onClick={handleSignIn}
-            isDisabled={isLoading || noEmptyEmail || secretKey === ""}
+            isDisabled={isLoading || noEmptyEmail}
           >
             {isLoading ? "Logging in..." : "SIGN UP"}
           </Button>
