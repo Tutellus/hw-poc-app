@@ -110,7 +110,17 @@ function HumanProvider(props) {
   const [activeProvider, setActiveProvider] = useState("mock")
   const [mockedProvider, setMockedProvider] = useState(undefined)
 
-  const login = async () => {
+  const mockedProviderConnect = () => {
+    const providerMock = ProviderMock.build({
+      key: localStorage.getItem("key") || "0x000000",
+      rpcUrl: RPC_URL,
+    })
+
+    const provider = providerMock.getProvider()
+    return provider
+  }
+
+  const web3authConnect = async () => {
     if (!accessToken) return
     if (web3auth.status !== "ready") {
       await web3auth.init()
@@ -133,8 +143,20 @@ function HumanProvider(props) {
       )
       provider = new ethers.providers.Web3Provider(web3authProvider)
     }
+    return provider
+  }
+
+  const login = async () => {
+    if (!accessToken) return
+    let provider
+    if (activeProvider === "web3auth") {
+      provider = await web3authConnect()
+    } else {
+      provider = mockedProviderConnect()
+    }
+
     humanSDK.connect({
-      provider: activeProvider === "web3auth" ? provider : mockedProvider,
+      provider,
       accessToken,
     })
 
@@ -234,13 +256,6 @@ function HumanProvider(props) {
   }, [updateDate, humanSDK.isReady()])
 
   useEffect(() => {
-    const providerMock = ProviderMock.build({
-      key: localStorage.getItem("key") || "0x000000",
-      rpcUrl: RPC_URL,
-    })
-
-    setMockedProvider(providerMock.getProvider())
-
     events.on("humanStatus", onHumanStatus)
     events.on("statusUpdate", ({ proposals }) => {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
