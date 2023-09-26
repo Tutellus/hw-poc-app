@@ -79,6 +79,12 @@ export const Login = () => {
               showEmailError(false)
             }}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                handleSignIn()
+              }
+            }}
           />
           {emailError && (
             <p className={styles.error}>Please insert a valid email address</p>
