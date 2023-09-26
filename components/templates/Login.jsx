@@ -20,8 +20,10 @@ export const Login = () => {
   const [email, setEmail] = useState("")
   const [emailError, showEmailError] = useState(false)
   const [secretKey, setSecretKey] = useState("")
+  const [storedProvider, setStoredProvider] = useState("mock")
 
   const noEmptyEmail = email === "" || email === "Email address"
+  const isWeb3auth = storedProvider === "web3auth"
   const keccaKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secretKey))
 
   const isValidEmail = (email) => {
@@ -30,11 +32,27 @@ export const Login = () => {
   }
 
   useEffect(() => {
+    const localStorageProvider = localStorage.getItem("provider")
+    localStorageProvider === undefined
+      ? localStorage.setItem("provider", "mock")
+      : null
+    setStoredProvider("mock")
+  }, [])
+
+  const handleProvider = (provider) => {
+    localStorage.setItem("provider", provider)
+    setStoredProvider(provider)
+  }
+
+  useEffect(() => {
     session ? router.push("/dashboard") : null
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   const isLoading = status === "loading"
+  const isDisabled =
+    isLoading || noEmptyEmail || (!isWeb3auth && secretKey === "")
+
   const handleSignIn = () => {
     if (!isValidEmail(email)) {
       showEmailError(true)
@@ -70,7 +88,7 @@ export const Login = () => {
               }
             }}
           />
-          {!noEmptyEmail && (
+          {!noEmptyEmail && !isWeb3auth && (
             <input
               className={styles.secretKey}
               disabled={isLoading}
@@ -84,7 +102,9 @@ export const Login = () => {
             <p className={styles.error}>Please insert a valid email address</p>
           )}
           <SelectProviderIcon
-            isDisabled={isLoading || noEmptyEmail || secretKey === ""}
+            isDisabled={isDisabled}
+            handleProvider={handleProvider}
+            storedProvider={storedProvider}
           />
           <Button
             type={buttonTypes.PRIMARY}
