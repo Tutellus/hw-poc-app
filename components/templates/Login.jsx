@@ -32,14 +32,14 @@ export const Login = () => {
   }
 
   useEffect(() => {
-    const localStorageProvider = localStorage.getItem("provider")
-    localStorageProvider === undefined
-      ? localStorage.setItem("provider", "mock")
-      : null
     setStoredProvider("mock")
   }, [])
 
   const handleProvider = (provider) => {
+    const localStorageProvider = localStorage.getItem("provider")
+    if (localStorageProvider === null) {
+      localStorage.setItem("provider", "mock")
+    }
     localStorage.setItem("provider", provider)
     setStoredProvider(provider)
   }
@@ -81,12 +81,6 @@ export const Login = () => {
               showEmailError(false)
             }}
             onChange={(e) => setEmail(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault()
-                handleSignIn()
-              }
-            }}
           />
           {!noEmptyEmail && !isWeb3auth && (
             <input
@@ -96,6 +90,12 @@ export const Login = () => {
               placeholder="Enter secret key"
               value={secretKey}
               onChange={(e) => setSecretKey(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                  handleSignIn()
+                }
+              }}
             />
           )}
           {emailError && (

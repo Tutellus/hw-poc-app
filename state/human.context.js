@@ -14,7 +14,6 @@ const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
 const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
 const RPC_URL = "https://polygon-mumbai-bor.publicnode.com"
-const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -90,11 +89,6 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
-const providerMock = ProviderMock.build({
-  key: PRIV_KEY,
-  rpcUrl: RPC_URL,
-})
-
 const events = humanSDK.events()
 
 function activateLogger() {
@@ -114,10 +108,9 @@ function HumanProvider(props) {
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
   const [activeProvider, setActiveProvider] = useState("mock")
-  // const [externalAccount, setExternalAccount] = useState(null)
-  const mockedProvider = providerMock.getProvider()
+  const [mockedProvider, setMockedProvider] = useState(undefined)
 
-  const login = async ({ activeProvider }) => {
+  const login = async () => {
     if (!accessToken) return
     if (web3auth.status !== "ready") {
       await web3auth.init()
@@ -144,10 +137,6 @@ function HumanProvider(props) {
       provider: activeProvider === "web3auth" ? provider : mockedProvider,
       accessToken,
     })
-
-    // const signer = await provider.getSigner()
-    // const externalAccount = signer.address
-    // setExternalAccount(externalAccount)
 
     setConnected(true)
   }
@@ -245,6 +234,13 @@ function HumanProvider(props) {
   }, [updateDate, humanSDK.isReady()])
 
   useEffect(() => {
+    const providerMock = ProviderMock.build({
+      key: localStorage.getItem("key") || "0x000000",
+      rpcUrl: RPC_URL,
+    })
+
+    setMockedProvider(providerMock.getProvider())
+
     events.on("humanStatus", onHumanStatus)
     events.on("statusUpdate", ({ proposals }) => {
       const reversed = proposals.sort((a, b) => a.nonce - b.nonce)
@@ -266,7 +262,7 @@ function HumanProvider(props) {
   }, [])
 
   useEffect(() => {
-    login({ activeProvider })
+    login()
     setActiveProvider(localStorage.getItem("provider") || "mock")
   }, [accessToken])
 
