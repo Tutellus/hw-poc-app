@@ -4,22 +4,11 @@ import cx from "classnames"
 
 import styles from "./selectProviderIcon.module.css"
 
-export const SelectProviderIcon = ({ isDisabled }) => {
-  const [storedProvider, setStoredProvider] = useState("mock")
-
-  useEffect(() => {
-    const localStorageProvider = localStorage.getItem("provider")
-    localStorageProvider === undefined
-      ? localStorage.setItem("provider", "mock")
-      : null
-    setStoredProvider("mock")
-  }, [])
-
-  const handleProvider = (provider) => {
-    localStorage.setItem("provider", provider)
-    setStoredProvider(provider)
-  }
-
+export const SelectProviderIcon = ({
+  isDisabled,
+  storedProvider,
+  handleProvider,
+}) => {
   const mockIconClass = cx(styles.selectorWithIcon, {
     [styles.mockIsSelected]: storedProvider === "mock",
     [styles.isDisabled]: isDisabled,
