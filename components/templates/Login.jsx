@@ -30,10 +30,6 @@ export const Login = () => {
     return regex.test(email)
   }
 
-  useEffect(() => {
-    setStoredProvider("mock")
-  }, [])
-
   const handleProvider = (provider) => {
     const localStorageProvider = localStorage.getItem("provider")
     if (localStorageProvider === null) {
