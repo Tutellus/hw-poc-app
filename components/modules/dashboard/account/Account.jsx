@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
 import { truncateAddress } from "@/utils/address"
 import {
   Button,
@@ -8,17 +10,41 @@ import { SelectProvider } from "@/components/modules/dashboard"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
+import { useHuman } from "@/state/human.context"
 
 export const Account = ({ status, address }) => {
+  const [storedProvider, setStoredProvider] = useState("")
+  const { logoutWeb3Auth } = useHuman()
+  const router = useRouter()
   const isDeploying = status === "PENDING"
 
   const addressClass = cx(styles.account, {
     [styles.pulse]: isDeploying,
   })
 
+  const handleProvider = (provider) => {
+    localStorage.setItem("provider", provider)
+    setStoredProvider(provider)
+    router.reload("/dashboard")
+  }
+
+  const handleSignOut = () => {
+    localStorage.setItem("provider", "mock")
+    logoutWeb3Auth()
+    signOut()
+  }
+
+  useEffect(() => {
+    const previousValue = localStorage.getItem("provider")
+    setStoredProvider(previousValue)
+  }, [storedProvider])
+
   return (
     <div className={styles.accountContainer}>
-      <SelectProvider />
+      <SelectProvider
+        handleProvider={handleProvider}
+        storedProvider={storedProvider}
+      />
       <div className={addressClass}>
         {address
           ? truncateAddress({
@@ -34,7 +60,7 @@ export const Account = ({ status, address }) => {
         <Button
           type={buttonTypes.OUTLINE}
           iconLeft={<SignOutIcon />}
-          onClick={() => signOut()}
+          onClick={handleSignOut}
         ></Button>
       </div>
     </div>

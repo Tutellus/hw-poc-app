@@ -14,7 +14,6 @@ const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const WEB3AUTH_CUSTOMAUTH = process.env.NEXT_PUBLIC_WEB3AUTH_CUSTOMAUTH
 const WEB3AUTH_NETWORK = process.env.NEXT_PUBLIC_WEB3AUTH_NETWORK
 const RPC_URL = "https://polygon-mumbai-bor.publicnode.com"
-const PRIV_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -90,11 +89,6 @@ const humanSDK = HumanWalletSDK.build({
   },
 })
 
-const providerMock = ProviderMock.build({
-  key: PRIV_KEY,
-  rpcUrl: RPC_URL,
-})
-
 const events = humanSDK.events()
 
 function activateLogger() {
@@ -109,15 +103,22 @@ function HumanProvider(props) {
   const [proposals, setProposals] = useState([])
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
-  const [subgraphStatus, setSubgraphStatus] = useState(null)
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
-  const [activeProvider, setActiveProvider] = useState(null)
-  // const [externalAccount, setExternalAccount] = useState(null)
-  const mockedProvider = providerMock.getProvider()
+  const [activeProvider, setActiveProvider] = useState("mock")
 
-  const login = async ({ activeProvider }) => {
+  const mockedProviderConnect = () => {
+    const providerMock = ProviderMock.build({
+      key: localStorage.getItem("key") || "0x000000",
+      rpcUrl: RPC_URL,
+    })
+
+    const provider = providerMock.getProvider()
+    return provider
+  }
+
+  const web3authConnect = async () => {
     if (!accessToken) return
     if (web3auth.status !== "ready") {
       await web3auth.init()
@@ -140,20 +141,27 @@ function HumanProvider(props) {
       )
       provider = new ethers.providers.Web3Provider(web3authProvider)
     }
+    return provider
+  }
+
+  const login = async () => {
+    if (!accessToken) return
+    let provider
+    if (activeProvider === "web3auth") {
+      provider = await web3authConnect()
+    } else {
+      provider = mockedProviderConnect()
+    }
 
     humanSDK.connect({
-      provider: activeProvider === "web3auth" ? provider : mockedProvider,
+      provider,
       accessToken,
     })
-
-    // const signer = await provider.getSigner()
-    // const externalAccount = signer.address
-    // setExternalAccount(externalAccount)
 
     setConnected(true)
   }
 
-  const logout = async () => {
+  const logoutWeb3Auth = async () => {
     if (!web3auth.connected) {
       return
     }
@@ -267,8 +275,8 @@ function HumanProvider(props) {
   }, [])
 
   useEffect(() => {
-    login({ activeProvider })
-    setActiveProvider(localStorage.getItem("provider"))
+    login()
+    setActiveProvider(localStorage.getItem("provider") || "mock")
   }, [accessToken])
 
   const memoizedData = useMemo(
@@ -280,13 +288,12 @@ function HumanProvider(props) {
       proposals,
       loadingProposals,
       processingProposal,
-      subgraphStatus,
       eventsProposals,
       requestProposal,
       confirmProposal,
       getTokensBalance,
       login,
-      logout,
+      logoutWeb3Auth,
     }),
     [
       humanSDK,
@@ -295,8 +302,8 @@ function HumanProvider(props) {
       proposals,
       loadingProposals,
       processingProposal,
-      subgraphStatus,
       eventsProposals,
+      logoutWeb3Auth,
     ]
   )
 
