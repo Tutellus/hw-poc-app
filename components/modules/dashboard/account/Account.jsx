@@ -10,9 +10,11 @@ import { SelectProvider } from "@/components/modules/dashboard"
 import { signOut } from "next-auth/react"
 import cx from "classnames"
 import styles from "./account.module.css"
+import { useHuman } from "@/state/human.context"
 
 export const Account = ({ status, address }) => {
   const [storedProvider, setStoredProvider] = useState("")
+  const { logoutWeb3Auth } = useHuman()
   const router = useRouter()
   const isDeploying = status === "PENDING"
 
@@ -28,6 +30,7 @@ export const Account = ({ status, address }) => {
 
   const handleSignOut = () => {
     localStorage.setItem("provider", "mock")
+    logoutWeb3Auth()
     signOut()
   }
 

@@ -103,7 +103,6 @@ function HumanProvider(props) {
   const [proposals, setProposals] = useState([])
   const [loadingProposals, setLoadingProposals] = useState(false)
   const [processingProposal, setProcessingProposal] = useState(false)
-  const [subgraphStatus, setSubgraphStatus] = useState(null)
   const [balances, setBalances] = useState(null)
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
@@ -162,7 +161,7 @@ function HumanProvider(props) {
     setConnected(true)
   }
 
-  const logout = async () => {
+  const logoutWeb3Auth = async () => {
     if (!web3auth.connected) {
       return
     }
@@ -289,13 +288,12 @@ function HumanProvider(props) {
       proposals,
       loadingProposals,
       processingProposal,
-      subgraphStatus,
       eventsProposals,
       requestProposal,
       confirmProposal,
       getTokensBalance,
       login,
-      logout,
+      logoutWeb3Auth,
     }),
     [
       humanSDK,
@@ -304,8 +302,8 @@ function HumanProvider(props) {
       proposals,
       loadingProposals,
       processingProposal,
-      subgraphStatus,
       eventsProposals,
+      logoutWeb3Auth,
     ]
   )
 
