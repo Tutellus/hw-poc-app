@@ -108,7 +108,6 @@ function HumanProvider(props) {
   const [updateDate, setUpdateDate] = useState(Date.now())
   const [eventsProposals, setEventsProposals] = useState([])
   const [activeProvider, setActiveProvider] = useState("mock")
-  const [mockedProvider, setMockedProvider] = useState(undefined)
 
   const mockedProviderConnect = () => {
     const providerMock = ProviderMock.build({

@@ -23,7 +23,6 @@ export const Login = () => {
   const [storedProvider, setStoredProvider] = useState("mock")
 
   const noEmptyEmail = email === "" || email === "Email address"
-  const isWeb3auth = storedProvider === "web3auth"
   const keccaKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(email))
 
   const isValidEmail = (email) => {
