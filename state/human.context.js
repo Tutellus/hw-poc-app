@@ -30,6 +30,7 @@ const web3auth = new Web3AuthNoModal({
   chainConfig,
   web3AuthNetwork: WEB3AUTH_NETWORK,
   useCoreKitKey: false,
+  sessionTime: 604800, // 7 days in seconds
 })
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
@@ -137,6 +138,7 @@ function HumanProvider(props) {
             verifierIdField: "sub",
             domain: "http://localhost:3000",
           },
+          mfaLevel: "none",
         }
       )
       provider = new ethers.providers.Web3Provider(web3authProvider)
