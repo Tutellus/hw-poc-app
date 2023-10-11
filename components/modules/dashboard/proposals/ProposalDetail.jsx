@@ -73,7 +73,7 @@ export const ProposalDetail = ({ proposal }) => {
             type={buttonTypes.OUTLINE}
             onClick={() =>
               window.open(
-                `https://mumbai.polygonscan.com/address/${proposal.txHash}#tokentxns`
+                `https://mumbai.polygonscan.com/tx/${proposal.txHash}#tokentxns`
               )
             }
           >
