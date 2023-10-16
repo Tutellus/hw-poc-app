@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "cp .env.test .env.development.local && next dev",
     "dev:pro": "cp .env.pro .env.development.local && next dev",
+    "dev:local": "cp .env.local .env.development.local && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -15,7 +16,7 @@
     "@aws-sdk/lib-dynamodb": "3.354.0",
     "@next-auth/dynamodb-adapter": "3.0.2",
     "@tutellus/human-wallet-theme": "1",
-    "@tutellus/humanwalletsdk": "0.26",
+    "@tutellus/humanwalletsdk": "0.29",
     "@tutellus/tutellus-components": "6",
     "@web3auth/base": "6.1.1",
     "@web3auth/ethereum-provider": "6.1.1",

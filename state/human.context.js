@@ -93,7 +93,7 @@ const humanSDK = HumanWalletSDK.build({
 const events = humanSDK.events()
 
 function activateLogger() {
-  localStorage.setItem("debug", "hw:index,hw:monitor")
+  localStorage.setItem("debug", "hw:*")
 }
 
 function HumanProvider(props) {
