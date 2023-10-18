@@ -56,21 +56,24 @@
 
 .tooltip {
   visibility: hidden;
-  width: 200px;
   background-color: #555;
   color: #fff;
   text-align: center;
-  padding: 5px 0;
+  padding: 8px 10px;
   border-radius: 6px;
   font-size: var(--size-s);
-  line-height: 1.125rem;
+  text-wrap: nowrap;
   
   /* Posición del tooltip */
   position: absolute;
   z-index: 1;
-  bottom: -50%; /* Posición por encima del texto */
-  left: -20%;
-  margin-left: -200px; /* Centrar el tooltip */
+  
+  right: 100%; /* Mueve el tooltip a la izquierda del texto */
+  top: 50%; /* Alinea al centro verticalmente */
+  transform: translateY(-50%); /* Ajuste vertical */
+  
+  margin-right: 10px; /* Espacio entre el tooltip y el texto */
+  
   opacity: 0;
   transition: opacity 0.3s;
 }
