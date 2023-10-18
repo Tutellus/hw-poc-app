@@ -44,7 +44,35 @@
 }
 
 .reverted {
+  position: relative;
+  cursor: pointer;
   color: var(--color-error);
+}
+
+.reverted:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: var(--size-s);
+  line-height: 1.125rem;
+  
+  /* Posición del tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: -50%; /* Posición por encima del texto */
+  left: -20%;
+  margin-left: -200px; /* Centrar el tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 @media screen and (max-width: 920px) {

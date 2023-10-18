@@ -19,6 +19,7 @@ export const ProcessedProposal = ({ proposal }) => {
           <CheckOKIcon />
         ) : proposal?.status === "REVERTED" ? (
           <span className={styles.reverted}>
+            <span className={styles.tooltip}>{proposal.error.reason}</span>
             <CheckKOIcon />
           </span>
         ) : null}

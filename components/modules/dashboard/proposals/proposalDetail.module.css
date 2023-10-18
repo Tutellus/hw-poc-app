@@ -20,6 +20,15 @@
   width: 100%;
 }
 
+.inline {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--size-l);
+  width: 100%;
+  margin-bottom: var(--size-s);
+}
+
 .block {
   display: flex;
   justify-content: flex-start;

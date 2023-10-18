@@ -25,8 +25,11 @@ export const ProposalDetail = ({ proposal }) => {
         <CheckOKIcon /> SUCCESS
       </span>
     ) : (
-      <span className={styles.tagKo}>
-        <CheckKOIcon /> FAILED
+      <span className={styles.inline}>
+        {proposal?.error?.reason}
+        <span className={styles.tagKo}>
+          <CheckKOIcon /> FAILED
+        </span>
       </span>
     )
 
