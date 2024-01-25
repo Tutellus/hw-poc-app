@@ -12,7 +12,7 @@ import {
 import styles from "./proposalDetail.module.css"
 export const ProposalDetail = ({ proposal }) => {
   const network =
-    proposal?.chainId === "0x13881" ? (
+    proposal?.chainId === '80001' ? (
       <span className={styles.tagMumbai}>
         <PolygonScanIcon /> MUMBAI
       </span>
@@ -43,7 +43,7 @@ export const ProposalDetail = ({ proposal }) => {
         </div>
         <div className={styles.itemContainer}>
           <span className={styles.label}>Nonce</span>
-          <span className={styles.contentLabel}>{proposal.nonce}</span>
+          <span className={styles.contentLabel}>{proposal.userOp?.nonce}</span>
         </div>
         <div className={styles.itemContainer}>
           <span className={styles.label}>Required 2FA</span>
